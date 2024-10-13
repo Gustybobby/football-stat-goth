@@ -39,7 +39,9 @@ func main() {
 	}
 
 	if os.Getenv("DB_AUTOMIGRATE") == "true" {
-		models.MigrateSchema(db)
+		if err := models.MigrateSchema(db); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	repo := &repos.Repository{
