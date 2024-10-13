@@ -2,6 +2,7 @@ package main
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/models"
 	"football-stat-goth/repos"
 	"log"
 	"log/slog"
@@ -35,6 +36,10 @@ func main() {
 	db, err := repos.NewConnection(config)
 	if err != nil {
 		log.Fatal("could not connect to database")
+	}
+
+	if os.Getenv("DB_AUTOMIGRATE") == "true" {
+		models.MigrateSchema(db)
 	}
 
 	repo := &repos.Repository{
