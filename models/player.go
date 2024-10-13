@@ -8,8 +8,8 @@ import (
 
 type Player struct {
 	ID                uint       `gorm:"primaryKey;autoIncrement" json:"id"`
-	TeamID            string     `gorm:"index:idx_Player_team_id;uniqueIndex:idx_Player_team_id_shirt_number;not null" json:"team_id"`
-	ShirtNumber       uint       `gorm:"uniqueIndex:idx_Player_team_id_shirt_number;not null" json:"shirt_number"`
+	TeamID            string     `gorm:"index:players_team_id_key;uniqueIndex:players_team_id_shirt_number_key;not null" json:"team_id"`
+	ShirtNumber       uint       `gorm:"uniqueIndex:players_team_id_shirt_number_key;not null" json:"shirt_number"`
 	ShirtName         string     `gorm:"not null" json:"shirt_name"`
 	FirstName         string     `gorm:"not null" json:"first_name"`
 	LastName          string     `gorm:"not null" json:"last_name"`
