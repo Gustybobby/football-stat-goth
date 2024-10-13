@@ -1,16 +1,12 @@
 package models
 
-import (
-	"time"
-
-	"gorm.io/gorm"
-)
+import "gorm.io/gorm"
 
 type Team struct {
-	ID      string    `gorm:"primaryKey" json:"id"`
-	Name    string    `gorm:"not null" json:"name"`
-	Founded time.Time `gorm:"not null" json:"founded"`
-	Owner   *string   `json:"owner"`
+	ID      string  `gorm:"primaryKey" json:"id"`
+	Name    string  `gorm:"not null" json:"name"`
+	Founded uint    `gorm:"not null" json:"founded"`
+	Owner   *string `json:"owner"`
 
 	Players []Player `gorm:"foreignKey:TeamID;references:ID"`
 }
