@@ -2,6 +2,7 @@ package main
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/repos"
 	"log"
 	"log/slog"
 	"net/http"
@@ -11,6 +12,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
+func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
+	router.Get("/", handlers.Make(handlers.HandleHelloWorld))
+}
+
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
@@ -18,7 +23,25 @@ func main() {
 
 	router := chi.NewMux()
 
-	router.Get("/", handlers.Make(handlers.HandleHelloWorld))
+	config := &repos.Config{
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		Password: os.Getenv("DB_PASSWORD"),
+		User:     os.Getenv("DB_USER"),
+		DBName:   os.Getenv("DB_NAME"),
+		SSLMode:  os.Getenv("DB_SSLMODE"),
+	}
+
+	db, err := repos.NewConnection(config)
+	if err != nil {
+		log.Fatal("could not connect to database")
+	}
+
+	repo := &repos.Repository{
+		DB: db,
+	}
+
+	SetupRoutes(router, repo)
 
 	serverAddr := os.Getenv("SERVER_ADDR")
 
