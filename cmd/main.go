@@ -14,8 +14,7 @@ import (
 )
 
 func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
-	router.Get("/", handlers.Make(handlers.HandleHelloWorld))
-	router.Post("/teams", handlers.MakeWithRepo(handlers.HandleCreateTeam, repo))
+	router.Post("/teams", handlers.Make(handlers.HandleCreateTeam, repo))
 }
 
 func main() {
