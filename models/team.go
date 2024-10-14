@@ -11,7 +11,7 @@ type Team struct {
 	Players []Player `gorm:"foreignKey:TeamID;references:ID"`
 }
 
-func MigrateTeam(db *gorm.DB) error {
+func migrateTeam(db *gorm.DB) error {
 	err := db.AutoMigrate(&Team{})
 	return err
 }

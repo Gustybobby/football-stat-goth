@@ -2,6 +2,8 @@ package main
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/handlers/api"
+	"football-stat-goth/handlers/pages"
 	"football-stat-goth/models"
 	"football-stat-goth/repos"
 	"log"
@@ -14,7 +16,9 @@ import (
 )
 
 func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
-	router.Post("/teams", handlers.Make(handlers.HandleCreateTeam, repo))
+	router.Get("/", handlers.Make(pages.HandleHomePage, repo))
+
+	router.Post("/teams", handlers.Make(api.HandleCreateTeam, repo))
 }
 
 func main() {

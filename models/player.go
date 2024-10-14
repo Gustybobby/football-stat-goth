@@ -18,7 +18,7 @@ type Player struct {
 	PreferredPosition *string    `json:"preferred_position"`
 }
 
-func MigratePlayer(db *gorm.DB) error {
+func migratePlayer(db *gorm.DB) error {
 	err := db.AutoMigrate(&Player{})
 	return err
 }
