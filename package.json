@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "twc": "npx tailwindcss -i views/css/app.css -o public/styles.css",
+    "tgen": "templ generate",
+    "build": "npm run tgen && npm run twc",
+    "start": "go run main.go",
+    "bstart": "npm run build && npm run start"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.13"
+  }
+}
