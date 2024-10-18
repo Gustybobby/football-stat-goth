@@ -3,12 +3,18 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"football-stat-goth/handlers"
 	"football-stat-goth/models"
 	"football-stat-goth/repos"
 	"net/http"
 )
 
 func HandleCreateTeam(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	if err := handlers.AuthAPIKey(r); err != nil {
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return err
+	}
+
 	var team models.Team
 
 	err := json.NewDecoder(r.Body).Decode(&team)
