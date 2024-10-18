@@ -1,9 +1,15 @@
 package views
 
 import "football-stat-goth/views/layouts"
+import "football-stat-goth/models"
 
-templ Home() {
+templ Home(teams []models.Team) {
     @layouts.Base() {
         <div class="text-xl font-bold">Hello, World!</div>
+        <ul>
+        for _, item := range teams {
+            <li>{ item.Name }</li>
+        }
+        </ul>
     }
 }
