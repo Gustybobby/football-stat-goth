@@ -8,8 +8,10 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "football-stat-goth/views/layouts"
-import "football-stat-goth/models"
+import (
+	"football-stat-goth/models"
+	"football-stat-goth/views/layouts"
+)
 
 func Home(teams []models.Team) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -44,7 +46,7 @@ func Home(teams []models.Team) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"text-xl font-bold\">Hello, World!</div><ul>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<main class=\"w-full p-4 bg-lime-300 min-h-screen\"><div class=\"my-12 w-full flex flex-col items-center\"><div class=\"flex items-center space-x-2\"><img src=\"/public/icon.png\" width=\"75px\" height=\"75px\"><div class=\"flex flex-col items-start space-y-1\"><h1 class=\"text-6xl font-extrabold\"><p class=\"inline text-indigo-600\">PL</p>aymaker</h1><h2 class=\"text-2xl font-bold\"><p class=\"inline text-indigo-600\">P</p>remier <p class=\"inline text-indigo-600\">L</p>eague Fantasy</h2></div></div></div><ul>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -56,7 +58,7 @@ func Home(teams []models.Team) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(item.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home.templ`, Line: 11, Col: 27}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home.templ`, Line: 25, Col: 20}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -67,7 +69,7 @@ func Home(teams []models.Team) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
