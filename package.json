@@ -4,7 +4,8 @@
     "tgen": "templ generate",
     "build": "npm run tgen && npm run twc",
     "start": "go run main.go",
-    "bstart": "npm run build && npm run start"
+    "bstart": "npm run build && npm run start",
+    "up:build": "npm run build && docker compose up --build"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.13"
