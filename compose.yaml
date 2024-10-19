@@ -1,0 +1,15 @@
+services:
+  playmaker:
+    build: 
+      context: .
+    environment:
+      SERVER_ADDR : ${SERVER_ADDR}
+      DB_HOST : ${DB_HOST}
+      DB_PORT : ${DB_PORT}
+      DB_PASSWORD : ${DB_PASSWORD}
+      DB_USER : ${DB_USER}
+      DB_NAME : ${DB_NAME}
+      DB_SSLMODE : ${DB_SSLMODE}
+      DB_AUTOMIGRATE : ${DB_AUTOMIGRATE}
+    ports:
+      - ${SERVER_ADDR}:3000
