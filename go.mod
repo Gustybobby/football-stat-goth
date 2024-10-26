@@ -6,6 +6,7 @@ require (
 	github.com/a-h/templ v0.2.778
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/joho/godotenv v1.5.1
+	golang.org/x/crypto v0.28.0
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12
 )
@@ -17,7 +18,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
 )
