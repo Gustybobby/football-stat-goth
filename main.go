@@ -3,7 +3,6 @@ package main
 import (
 	"embed"
 	"football-stat-goth/handlers"
-	"football-stat-goth/handlers/api"
 	"football-stat-goth/handlers/pages"
 	"football-stat-goth/models"
 	"football-stat-goth/repos"
@@ -23,8 +22,6 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Handle("/*", http.FileServerFS(publicFS))
 
 	router.Get("/", handlers.Make(pages.HandleHomePage, repo))
-
-	router.Post("/teams", handlers.Make(api.HandleCreateTeam, repo))
 }
 
 func main() {

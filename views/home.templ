@@ -1,11 +1,8 @@
 package views
 
-import (
-	"football-stat-goth/models"
-	"football-stat-goth/views/layouts"
-)
+import "football-stat-goth/views/layouts"
 
-templ Home(teams []models.Team) {
+templ Home() {
 	@layouts.Base() {
 		<main class="w-full p-4 bg-lime-300 min-h-screen">
 			<div class="my-12 w-full flex flex-col items-center">
@@ -20,11 +17,6 @@ templ Home(teams []models.Team) {
 					</div>
 				</div>
 			</div>
-			<ul>
-				for _, item := range teams {
-					<li>{ item.Name }</li>
-				}
-			</ul>
 		</main>
 	}
 }

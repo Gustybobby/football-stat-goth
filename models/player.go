@@ -6,16 +6,27 @@ import (
 	"gorm.io/gorm"
 )
 
+type PlayerPosition string
+
+const (
+	GK  PlayerPosition = "GK"
+	DEF PlayerPosition = "DEF"
+	MFD PlayerPosition = "MFD"
+	FWD PlayerPosition = "FWD"
+	SUB PlayerPosition = "SUB"
+)
+
 type Player struct {
-	ID                uint       `gorm:"primaryKey;autoIncrement" json:"id"`
-	TeamID            string     `gorm:"index:players_team_id_key;uniqueIndex:players_team_id_shirt_number_key;not null" json:"team_id"`
-	ShirtNumber       uint       `gorm:"uniqueIndex:players_team_id_shirt_number_key;not null" json:"shirt_number"`
-	ShirtName         string     `gorm:"not null" json:"shirt_name"`
-	FirstName         string     `gorm:"not null" json:"first_name"`
-	LastName          string     `gorm:"not null" json:"last_name"`
-	DOB               *time.Time `json:"dob"`
-	Nationality       *string    `json:"nationality"`
-	PreferredPosition *string    `json:"preferred_position"`
+	PlayerNo    uint           `gorm:"primaryKey" json:"player_no"`
+	ClubID      string         `gorm:"primaryKey" json:"club_id"`
+	FirstName   string         `gorm:"not null" json:"first_name"`
+	LastName    string         `gorm:"not null" json:"last_name"`
+	DOB         time.Time      `gorm:"not null" json:"dob"`
+	Height      uint           `gorm:"not null" json:"height"`
+	Nationality string         `gorm:"not null" json:"nationality"`
+	Position    PlayerPosition `gorm:"not null;type:player_position" json:"position"`
+
+	LineupPlayers []LineupPlayer `gorm:"foreignKey:PlayerNo,ClubID;references:PlayerNo,ClubID"`
 }
 
 func migratePlayer(db *gorm.DB) error {
