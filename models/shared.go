@@ -18,5 +18,11 @@ func MigrateSchema(db *gorm.DB) error {
 	if err := migrateMatch(db); err != nil {
 		return err
 	}
+	if err := migrateUser(db); err != nil {
+		return err
+	}
+	if err := migrateSession(db); err != nil {
+		return err
+	}
 	return nil
 }

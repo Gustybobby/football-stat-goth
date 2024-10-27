@@ -5,6 +5,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type Repository struct {
@@ -25,7 +26,9 @@ func NewConnection(config *Config) (*gorm.DB, error) {
 		"host=%s port=%s password=%s user=%s dbname=%s sslmode=%s",
 		config.Host, config.Port, config.Password, config.User, config.DBName, config.SSLMode,
 	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		return db, err
 	}
