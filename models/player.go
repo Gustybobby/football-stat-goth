@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -30,6 +31,10 @@ type Player struct {
 }
 
 func migratePlayer(db *gorm.DB) error {
-	err := db.AutoMigrate(&Player{})
-	return err
+	err1 := db.Exec("CREATE TYPE player_position AS ENUM ('GK','DEF','MFD','FWD','SUB');")
+	if err1 != nil {
+		log.Default().Println("Type player_position already exist")
+	}
+	err2 := db.AutoMigrate(&Player{})
+	return err2
 }
