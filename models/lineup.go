@@ -17,6 +17,8 @@ type Lineup struct {
 	FoulsConceded uint    `gorm:"not null" json:"fouls_conceded"`
 
 	LineupPlayers []LineupPlayer `gorm:"foreignKey:LineupID;references:LineupID"`
+
+	Club Club `gorm:"foreignKey:ClubID;references:ClubID"`
 }
 
 func migrateLineup(db *gorm.DB) error {

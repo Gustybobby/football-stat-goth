@@ -8,5 +8,9 @@ import (
 )
 
 func HandleHomePage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	return handlers.Render(w, r, views.Home())
+	matches, err := repos.FindFixtureMatches(repo)
+	if err != nil {
+		return err
+	}
+	return handlers.Render(w, r, views.Home(matches))
 }
