@@ -17,8 +17,8 @@ const (
 )
 
 type Player struct {
-	PlayerNo    uint           `gorm:"primaryKey" json:"player_no"`
-	ClubID      string         `gorm:"primaryKey" json:"club_id"`
+	PlayerID    uint           `gorm:"primaryKey" json:"player_id"`
+	ClubID      string         `json:"club_id"`
 	FirstName   string         `gorm:"not null" json:"first_name"`
 	LastName    string         `gorm:"not null" json:"last_name"`
 	DOB         time.Time      `gorm:"not null" json:"dob"`
@@ -26,7 +26,7 @@ type Player struct {
 	Nationality string         `gorm:"not null" json:"nationality"`
 	Position    PlayerPosition `gorm:"not null;type:player_position" json:"position"`
 
-	LineupPlayers []LineupPlayer `gorm:"foreignKey:PlayerNo,ClubID;references:PlayerNo,ClubID"`
+	LineupPlayers []LineupPlayer `gorm:"foreignKey:PlayerID;references:PlayerID"`
 }
 
 func migratePlayer(db *gorm.DB) error {
