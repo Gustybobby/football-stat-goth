@@ -4,6 +4,7 @@ import (
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
 	"net/http"
+	"os"
 )
 
 func HandleSignup(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
@@ -22,7 +23,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 		return err
 	}
 
-	plauth.SetSessionTokenCookie(w, token, session.ExpiresAt, false)
+	plauth.SetSessionTokenCookie(w, token, session.ExpiresAt, os.Getenv("ENV") == "production")
 
 	w.Header().Add("Hx-Redirect", "/")
 	return nil
