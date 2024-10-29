@@ -10,3 +10,12 @@ func FindClubsWithNameAsc(repo *Repository) ([]models.Club, error) {
 	}
 	return clubs, nil
 }
+
+func FindClubs(repo *Repository) ([]models.Club, error) {
+	var clubs []models.Club
+	results := repo.DB.Find(&clubs)
+	if results.Error != nil {
+		return nil, results.Error
+	}
+	return clubs, nil
+}

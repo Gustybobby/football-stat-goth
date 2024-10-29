@@ -1,0 +1,54 @@
+package views
+
+import (
+	"football-stat-goth/models"
+	"football-stat-goth/views/components"
+	"football-stat-goth/views/layouts"
+	"strconv"
+)
+
+templ Standings(clubs []models.Club) {
+	@layouts.Base() {
+		@components.Nav()
+		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
+			<h1 class="text-center font-bold text-4xl my-8">Premier League Standings</h1>
+			<table>
+				<thead>
+					<tr class="bg-primary-foreground border-b border-primary">
+						<th class="px-4 py-2 text-left">Position</th>
+						<th class="px-4 py-2 text-left">Club</th>
+						<th class="px-4 py-2 text-left">Games</th>
+						<th class="px-4 py-2 text-left">Won</th>
+						<th class="px-4 py-2 text-left">Drawn</th>
+						<th class="px-4 py-2 text-left">Lost</th>
+						<th class="px-4 py-2 text-left">GF</th>
+						<th class="px-4 py-2 text-left">GA</th>
+						<th class="px-4 py-2 text-left">GD</th>
+						<th class="px-4 py-2 text-left">Points</th>
+					</tr>
+				</thead>
+				<tbody>
+					for idx,club := range clubs {
+						<tr class="border-b border-primary">
+							<td class="font-bold px-4 py-2 text-secondary text-center">{ strconv.Itoa(idx+1) }</td>
+							<td class="px-4 py-2 text-secondary">
+								<a class="flex items-center space-x-4 hover:underline" href={ templ.SafeURL("/clubs/" + club.ClubID) }>
+									<img src={ club.Logo } class="size-10"/>
+									<p class="font-bold">{ club.Name }</p>
+								</a>
+							</td>
+							<td class="px-4 py-2 text-secondary text-center">0</td>
+							<td class="px-4 py-2 text-secondary text-center">0</td>
+							<td class="px-4 py-2 text-secondary text-center">0</td>
+							<td class="px-4 py-2 text-secondary text-center">0</td>
+							<td class="px-4 py-2 text-secondary text-center">0</td>
+							<td class="px-4 py-2 text-secondary text-center">0</td>
+							<td class="px-4 py-2 text-secondary text-center">0</td>
+							<td class="px-4 py-2 text-secondary font-bold text-center">0</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</main>
+	}
+}
