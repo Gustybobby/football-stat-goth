@@ -18,7 +18,7 @@ type Lineup struct {
 
 	LineupPlayers []LineupPlayer `gorm:"foreignKey:LineupID;references:LineupID"`
 
-	Club Club `gorm:"foreignKey:ClubID;references:ClubID"`
+	Club Club
 }
 
 func migrateLineup(db *gorm.DB) error {
