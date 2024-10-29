@@ -2,9 +2,9 @@ package repos
 
 import "football-stat-goth/models"
 
-func FindClubsByNameAsc(repo *Repository) ([]models.Club, error) {
+func FindClubsWithNameAsc(repo *Repository) ([]models.Club, error) {
 	var clubs []models.Club
-	results := repo.DB.Order("name ASC").Find(&clubs)
+	results := repo.DB.Select("ClubID", "Name", "Logo").Order("name ASC").Find(&clubs)
 	if results.Error != nil {
 		return nil, results.Error
 	}

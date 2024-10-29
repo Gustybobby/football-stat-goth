@@ -8,7 +8,7 @@ import (
 )
 
 func HandleClubsPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	clubs, err := repos.FindClubsByNameAsc(repo)
+	clubs, err := repos.FindClubsWithNameAsc(repo)
 	if err != nil {
 		return err
 	}
