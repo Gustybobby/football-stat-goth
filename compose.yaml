@@ -10,6 +10,6 @@ services:
       DB_USER: ${DB_USER}
       DB_NAME: ${DB_NAME}
       DB_SSLMODE: ${DB_SSLMODE}
-      DB_AUTOMIGRATE: false
+      DB_AUTOMIGRATE: ${DB_AUTOMIGRATE}
     ports:
       - ${SERVER_ADDR}:3000
