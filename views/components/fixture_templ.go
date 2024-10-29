@@ -49,7 +49,7 @@ func Fixture(matches []models.Match) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex flex-col items-center font-bold text-white bg-indigo-600 p-2 w-fit rounded-md shadow-lg hover:bg-indigo-500 hover:cursor-pointer\"><div class=\"flex items-center text-center\"><img src=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex flex-col items-center font-bold text-white bg-indigo-600 p-2 w-fit rounded-md shadow-lg hover:bg-indigo-500 hover:cursor-pointer transition-colors\"><div class=\"flex items-center text-center\"><img src=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
