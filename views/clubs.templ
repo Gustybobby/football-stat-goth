@@ -10,10 +10,13 @@ templ Clubs(matches []models.Match, clubs []models.Club) {
 	@layouts.Base() {
 		@components.Fixture(matches)
 		@components.Nav()
-		<main class="w-full p-4 bg-white min-h-screen flex flex-col items-center">
+		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
 			<div class="grid grid-cols-5 gap-4">
 				for _, club := range clubs {
-					<a href={ templ.SafeURL("/clubs/" + club.ClubID) } class="p-4 bg-gradient-to-br border border-gray-300 shadow-lg rounded-md from-white to-gray-100 flex flex-col items-center hover:cursor-pointer hover:scale-105 transition-all">
+					<a
+						href={ templ.SafeURL("/clubs/" + club.ClubID) }
+						class="p-4 border border-primary shadow-lg rounded-md bg-gradient-to-br from-primary-background to-primary-foreground flex flex-col items-center hover:cursor-pointer hover:scale-105 transition-all"
+					>
 						<img src={ club.Logo } class="size-32"/>
 						<h1 class="font-bold text-lg text-center">{ club.Name }</h1>
 					</a>

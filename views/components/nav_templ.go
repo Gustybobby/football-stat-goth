@@ -29,7 +29,7 @@ func Nav() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"h-16 w-full flex justify-between items-center px-4 sticky top-0 bg-indigo-600 text-white shadow-lg z-50 border-b-4 border-indigo-800\"><a class=\"flex items-center space-x-2\" href=\"/\"><img src=\"/public/icon.png\" class=\"size-8\"><h1 class=\"font-bold text-3xl\">PLaymaker</h1></a><nav class=\"space-x-4 font-semibold\"><a href=\"/\" class=\"hover:underline\">Home</a> <a href=\"/clubs\" class=\"hover:underline\">Clubs</a> <a href=\"/\" class=\"hover:underline\">Players</a> <a href=\"/\" class=\"hover:underline\">Fantasy</a> <a href=\"/signup\" class=\"hover:underline\">Signin</a></nav></header>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"h-16 w-full flex justify-between items-center px-4 sticky top-0 bg-secondary-background text-primary-background shadow-lg z-50 border-b-4 border-secondary\"><a class=\"flex items-center space-x-2\" href=\"/\"><img src=\"/public/icon.png\" class=\"size-8\"><h1 class=\"font-bold text-3xl\">PLaymaker</h1></a><nav class=\"space-x-4 font-semibold\"><a href=\"/\" class=\"hover:underline\">Home</a> <a href=\"/clubs\" class=\"hover:underline\">Clubs</a> <a href=\"/\" class=\"hover:underline\">Players</a> <a href=\"/\" class=\"hover:underline\">Fantasy</a> <a href=\"/signup\" class=\"hover:underline\">Signin</a></nav></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

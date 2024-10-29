@@ -59,7 +59,7 @@ func Home(matches []models.Match) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <main class=\"w-full p-4 bg-white min-h-screen\"><div class=\"my-12 w-full flex flex-col items-center\"><div class=\"flex items-center space-x-2\"><img src=\"/public/icon.png\" width=\"75px\" height=\"75px\"><div class=\"flex flex-col items-start space-y-1\"><h1 class=\"text-6xl font-extrabold\"><p class=\"inline text-indigo-600\">PL</p>aymaker</h1><h2 class=\"text-2xl font-bold\"><p class=\"inline text-indigo-600\">P</p>remier <p class=\"inline text-indigo-600\">L</p>eague Fantasy</h2></div></div></div></main>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <main class=\"w-full p-4 bg-primary-background min-h-screen\"><div class=\"my-12 w-full flex flex-col items-center\"><div class=\"flex items-center space-x-2\"><img src=\"/public/icon.png\" width=\"75px\" height=\"75px\"><div class=\"flex flex-col items-start space-y-1\"><h1 class=\"text-6xl font-extrabold\"><p class=\"inline text-secondary-background\">PL</p>aymaker</h1><h2 class=\"text-2xl font-bold\"><p class=\"inline text-secondary-background\">P</p>remier <p class=\"inline text-secondary-background\">L</p>eague Fantasy</h2></div></div></div></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

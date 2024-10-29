@@ -7,9 +7,12 @@ import (
 
 templ Fixture(matches []models.Match) {
 	if len(matches) > 0 {
-		<div class="p-2 bg-indigo-800 flex items-center space-x-8">
+		<div class="p-2 bg-secondary flex items-center space-x-8">
 			for _, match := range matches {
-				<a href={ templ.SafeURL("/matches/" + strconv.FormatUint(uint64(match.MatchID), 10)) } class="flex flex-col items-center font-bold text-white bg-indigo-600 p-2 w-fit rounded-md shadow-lg hover:bg-indigo-500 hover:cursor-pointer transition-colors">
+				<a
+					href={ templ.SafeURL("/matches/" + strconv.FormatUint(uint64(match.MatchID), 10)) }
+					class="flex flex-col items-center font-bold text-primary-background bg-secondary-background p-2 w-fit rounded-md shadow-lg hover:bg-secondary-foreground hover:cursor-pointer transition-colors"
+				>
 					<div class="flex items-center text-center">
 						<img src={ match.HomeLineup.Club.Logo } class="size-6 mr-1"/>
 						<h1>{ match.HomeLineup.ClubID }</h1>
@@ -19,7 +22,9 @@ templ Fixture(matches []models.Match) {
 						<img src={ match.AwayLineup.Club.Logo } class="size-6 mr-1"/>
 						<h1>{ match.AwayLineup.ClubID }</h1>
 					</div>
-					<span class="text-lg">{ strconv.FormatUint(uint64(match.HomeGoals),10) } - { strconv.FormatUint(uint64(match.AwayGoals),10) }</span>
+					<span class="text-lg">
+						{ strconv.FormatUint(uint64(match.HomeGoals),10) } - { strconv.FormatUint(uint64(match.AwayGoals),10) }
+					</span>
 					<span>{ match.DateTime.Format("02/01/2006 15:04") }</span>
 				</a>
 			}
