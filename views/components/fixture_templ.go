@@ -35,7 +35,7 @@ func Fixture(matches []models.Match) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(matches) > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-2 bg-secondary flex items-center space-x-8\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-2 bg-secondary flex items-center space-x-8 overflow-x-auto\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -49,7 +49,7 @@ func Fixture(matches []models.Match) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex flex-col items-center font-bold text-primary-background bg-secondary-background p-2 w-fit rounded-md shadow-lg hover:bg-secondary-foreground hover:cursor-pointer transition-colors\"><div class=\"flex items-center text-center\"><img src=\"")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"flex flex-col items-center font-bold text-primary-background bg-secondary-background p-2 min-w-fit rounded-md shadow-lg hover:bg-secondary-foreground hover:cursor-pointer transition-colors\"><div class=\"flex items-center text-center\"><img src=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

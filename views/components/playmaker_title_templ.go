@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Nav() templ.Component {
+func PlaymakerTitle() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,7 @@ func Nav() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"h-16 w-full flex justify-between items-center px-4 sticky top-0 bg-secondary-background text-primary-background shadow-lg z-50 border-b-4 border-secondary\"><a class=\"flex items-center space-x-2\" href=\"/\"><img src=\"/public/icon.png\" class=\"size-8\"><h1 class=\"font-bold text-3xl\">PLaymaker</h1></a><nav class=\"space-x-4 font-semibold hidden sm:flex\"><a href=\"/\" class=\"hover:underline\">Home</a> <a href=\"/clubs\" class=\"hover:underline\">Clubs</a> <a href=\"/\" class=\"hover:underline\">Players</a> <a href=\"/\" class=\"hover:underline\">Fantasy</a> <a href=\"/signup\" class=\"hover:underline\">Signin</a></nav></header>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex items-center space-x-2\"><img src=\"/public/icon.png\" width=\"75px\" height=\"75px\"><div class=\"flex flex-col items-start space-y-1\"><h1 class=\"text-6xl font-extrabold\"><p class=\"inline text-secondary-background\">PL</p>aymaker</h1><h2 class=\"text-2xl font-bold\"><p class=\"inline text-secondary-background\">P</p>remier <p class=\"inline text-secondary-background\">L</p>eague Fantasy</h2></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
