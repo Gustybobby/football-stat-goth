@@ -3,12 +3,13 @@ package views
 import (
 	"football-stat-goth/models"
 	"football-stat-goth/views/layouts"
+	"football-stat-goth/views/components"
 )
 
 templ Home(matches []models.Match) {
 	@layouts.Base() {
-		@layouts.Fixture(matches)
-		@layouts.Nav()
+		@components.Fixture(matches)
+		@components.Nav()
 		<main class="w-full p-4 bg-white min-h-screen">
 			<div class="my-12 w-full flex flex-col items-center">
 				<div class="flex items-center space-x-2">

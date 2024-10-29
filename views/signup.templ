@@ -1,10 +1,11 @@
 package views
 
 import "football-stat-goth/views/layouts"
+import "football-stat-goth/views/components"
 
 templ Signup() {
 	@layouts.Base() {
-		@layouts.Nav()
+		@components.Nav()
 		<main class="w-full p-4 bg-white min-h-screen">
 			<div class="my-12 w-full flex flex-col items-center">
 				<div class="flex items-center space-x-2">

@@ -2,13 +2,14 @@ package views
 
 import (
 	"football-stat-goth/models"
+	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 )
 
 templ Clubs(matches []models.Match, clubs []models.Club) {
 	@layouts.Base() {
-		@layouts.Fixture(matches)
-		@layouts.Nav()
+		@components.Fixture(matches)
+		@components.Nav()
 		<main class="w-full p-4 bg-white min-h-screen flex flex-col items-center">
 			<div class="grid grid-cols-5 gap-4">
 				for _, club := range clubs {

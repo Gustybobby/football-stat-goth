@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"football-stat-goth/models"
+	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 )
 
@@ -46,7 +47,7 @@ func Home(matches []models.Match) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = layouts.Fixture(matches).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.Fixture(matches).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -54,7 +55,7 @@ func Home(matches []models.Match) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = layouts.Nav().Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.Nav().Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
