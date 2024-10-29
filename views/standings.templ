@@ -1,13 +1,13 @@
 package views
 
 import (
-	"football-stat-goth/models"
+	"football-stat-goth/repos"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 	"strconv"
 )
 
-templ Standings(clubs []models.Club) {
+templ Standings(clubs []repos.ClubStanding) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
@@ -37,14 +37,14 @@ templ Standings(clubs []models.Club) {
 									<p class="font-bold">{ club.Name }</p>
 								</a>
 							</td>
-							<td class="px-4 py-2 text-secondary text-center">0</td>
-							<td class="px-4 py-2 text-secondary text-center">0</td>
-							<td class="px-4 py-2 text-secondary text-center">0</td>
-							<td class="px-4 py-2 text-secondary text-center">0</td>
-							<td class="px-4 py-2 text-secondary text-center">0</td>
-							<td class="px-4 py-2 text-secondary text-center">0</td>
-							<td class="px-4 py-2 text-secondary text-center">0</td>
-							<td class="px-4 py-2 text-secondary font-bold text-center">0</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Games) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Won) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Drawn) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Lost) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GF) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GA) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GF - club.GA) }</td>
+							<td class="px-4 py-2 text-secondary font-bold text-center">{ strconv.Itoa(club.Won*3 + club.Drawn*1 + club.Lost*0) }</td>
 						</tr>
 					}
 				</tbody>

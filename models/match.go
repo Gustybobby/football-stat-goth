@@ -16,6 +16,7 @@ type Match struct {
 	Location     string    `gorm:"not null" json:"location"`
 	DateTime     time.Time `gorm:"not null" json:"date_time"`
 	MatchWeek    uint      `gorm:"not null" json:"match_week"`
+	IsFinished   bool      `gorm:"not null;default:false" json:"is_finished"`
 
 	HomeLineup Lineup `gorm:"foreignKey:HomeLineupID;references:LineupID"`
 	AwayLineup Lineup `gorm:"foreignKey:AwayLineupID;references:LineupID"`
