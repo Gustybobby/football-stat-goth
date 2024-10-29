@@ -13,10 +13,5 @@ func HandleClubsPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposit
 		return err
 	}
 
-	matches, err := repos.FindFixtureMatches(repo)
-	if err != nil {
-		return err
-	}
-
-	return handlers.Render(w, r, views.Clubs(matches, clubs))
+	return handlers.Render(w, r, views.Clubs(clubs))
 }

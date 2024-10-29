@@ -6,12 +6,11 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ Clubs(matches []models.Match, clubs []models.Club) {
+templ Clubs(clubs []models.Club) {
 	@layouts.Base() {
-		@components.Fixture(matches)
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
-			<div class="grid grid-cols-5 gap-4">
+			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
 				for _, club := range clubs {
 					<a
 						href={ templ.SafeURL("/clubs/" + club.ClubID) }
