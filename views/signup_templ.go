@@ -8,8 +8,10 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "football-stat-goth/views/layouts"
-import "football-stat-goth/views/components"
+import (
+	"football-stat-goth/views/components"
+	"football-stat-goth/views/layouts"
+)
 
 func Signup() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
