@@ -19,7 +19,8 @@ const (
 
 type Player struct {
 	PlayerID    uint           `gorm:"primaryKey" json:"player_id"`
-	ClubID      string         `json:"club_id"`
+	ClubID      string         `gorm:"uniqueIndex:idx_players_club_id_player_no" json:"club_id"`
+	PlayerNo    uint           `gorm:"uniqueIndex:idx_players_club_id_player_no" json:"player_no"`
 	FirstName   string         `gorm:"not null" json:"first_name"`
 	LastName    string         `gorm:"not null" json:"last_name"`
 	DOB         time.Time      `gorm:"not null" json:"dob"`
