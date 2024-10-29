@@ -35,7 +35,7 @@ func Fixture(matches []models.Match) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if len(matches) > 0 {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-2 bg-indigo-800 flex items-center space-x-2\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-2 bg-indigo-800 flex items-center space-x-8\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

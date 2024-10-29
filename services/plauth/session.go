@@ -5,7 +5,6 @@ import (
 	"encoding/base32"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"football-stat-goth/models"
 	"football-stat-goth/repos"
 	"strings"
@@ -29,7 +28,6 @@ func ValidateSessionToken(token string, repo *repos.Repository) (*ValidationResu
 	if results := repo.DB.First(&user); results.Error != nil {
 		return nil, results.Error
 	}
-	fmt.Printf("%#v\n%#v", session, user)
 
 	if time.Now().Compare(session.ExpiresAt) >= 0 {
 		return nil, errors.New("session expired")
