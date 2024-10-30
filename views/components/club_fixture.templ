@@ -1,0 +1,12 @@
+package components
+
+import "football-stat-goth/models"
+
+templ ClubFixture(matches []models.Match) {
+	<div class="rounded-lg border border-primary">
+		<h1 class="text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">Fixtures</h1>
+		for _, match := range matches {
+			<div>{ match.HomeLineup.ClubID } vs { match.AwayLineup.ClubID }</div>
+		}
+	</div>
+}

@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-templ Club(club models.Club) {
+templ Club(club models.Club, fixtures []models.Match, results []models.Match) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
@@ -19,6 +19,8 @@ templ Club(club models.Club) {
 					<p class="text-xl font-bold">{ club.Stadium }</p>
 				</div>
 			</div>
+			@components.ClubFixture(fixtures)
+			@components.ClubResult(results)
 		</main>
 	}
 }

@@ -16,5 +16,15 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	return handlers.Render(w, r, views.Club(*club))
+	fixtures, err := repos.FindFixtureMatchesByClubID(clubID, repo)
+	if err != nil {
+		return err
+	}
+
+	matches, err := repos.FindResultMatchesByClubID(clubID, repo)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Club(*club, fixtures, matches))
 }
