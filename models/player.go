@@ -27,6 +27,7 @@ type Player struct {
 	Height      uint           `gorm:"not null" json:"height"`
 	Nationality string         `gorm:"not null" json:"nationality"`
 	Position    PlayerPosition `gorm:"not null;type:player_position" json:"position"`
+	Image       *string        `json:"image"`
 
 	LineupPlayers []LineupPlayer `gorm:"foreignKey:PlayerID;references:PlayerID"`
 }

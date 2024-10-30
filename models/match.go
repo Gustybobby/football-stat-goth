@@ -8,8 +8,8 @@ import (
 
 type Match struct {
 	MatchID      uint      `gorm:"primaryKey" json:"match_id"`
-	HomeLineupID uint      `gorm:"uniqueIndex" json:"home_lineup_id"`
-	AwayLineupID uint      `gorm:"uniqueIndex" json:"away_lineup_id"`
+	HomeLineupID uint      `gorm:"not null;uniqueIndex" json:"home_lineup_id"`
+	AwayLineupID uint      `gorm:"not null;uniqueIndex" json:"away_lineup_id"`
 	Season       string    `gorm:"not null" json:"season"`
 	HomeGoals    uint      `gorm:"not null;default:0" json:"home_goals"`
 	AwayGoals    uint      `gorm:"not null;default:0" json:"away_goals"`
