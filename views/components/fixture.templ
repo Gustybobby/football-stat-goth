@@ -10,7 +10,7 @@ templ Fixture(matches []models.Match) {
 		<div class="p-2 bg-secondary flex items-center space-x-8 overflow-x-auto">
 			for _, match := range matches {
 				<a
-					href={ templ.SafeURL("/matches/" + strconv.FormatUint(uint64(match.MatchID), 10)) }
+					href={ templ.SafeURL("/matches/" + strconv.Itoa(int(match.MatchID))) }
 					class="flex flex-col items-center font-bold text-primary-background bg-secondary-background p-2 min-w-fit rounded-md shadow-lg hover:bg-secondary-foreground hover:cursor-pointer transition-colors"
 				>
 					<div class="flex items-center text-center">
@@ -23,7 +23,7 @@ templ Fixture(matches []models.Match) {
 						<h1>{ match.AwayLineup.ClubID }</h1>
 					</div>
 					<span class="text-lg">
-						{ strconv.FormatUint(uint64(match.HomeGoals),10) } - { strconv.FormatUint(uint64(match.AwayGoals),10) }
+						{ strconv.Itoa(int(match.HomeGoals)) } - { strconv.Itoa(int(match.AwayGoals)) }
 					</span>
 					<span>{ match.DateTime.Format("02/01/2006 15:04") }</span>
 				</a>

@@ -16,6 +16,15 @@ func FindClubsWithNameAsc(repo *Repository) ([]models.Club, error) {
 	return clubs, nil
 }
 
+func FindClub(clubID string, repo *Repository) (*models.Club, error) {
+	var club models.Club
+	results := repo.DB.Where("club_id = ?", clubID).First(&club)
+	if results.Error != nil {
+		return nil, results.Error
+	}
+	return &club, nil
+}
+
 func FindClubStandings(repo *Repository) ([]ClubStanding, error) {
 	var clubs []models.Club
 	clubResults := repo.DB.Find(&clubs)

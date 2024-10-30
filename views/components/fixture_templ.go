@@ -44,7 +44,7 @@ func Fixture(matches []models.Match) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var2 templ.SafeURL = templ.SafeURL("/matches/" + strconv.FormatUint(uint64(match.MatchID), 10))
+				var templ_7745c5c3_Var2 templ.SafeURL = templ.SafeURL("/matches/" + strconv.Itoa(int(match.MatchID)))
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var2)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -106,9 +106,9 @@ func Fixture(matches []models.Match) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatUint(uint64(match.HomeGoals), 10))
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.HomeGoals)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 26, Col: 54}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 26, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -119,9 +119,9 @@ func Fixture(matches []models.Match) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatUint(uint64(match.AwayGoals), 10))
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.AwayGoals)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 26, Col: 107}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 26, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
