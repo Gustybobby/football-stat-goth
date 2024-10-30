@@ -30,7 +30,7 @@ templ Standings(clubs []repos.ClubStanding) {
 				<tbody>
 					for idx,club := range clubs {
 						<tr class="border-b border-primary">
-							<td class="font-bold px-4 py-2 text-secondary text-center">{ strconv.Itoa(idx+1) }</td>
+							<td class="font-semibold px-4 py-2 text-secondary text-center">{ strconv.Itoa(idx+1) }</td>
 							<td class="px-4 py-2 text-secondary">
 								<a class="flex items-center space-x-4 hover:underline" href={ templ.SafeURL("/clubs/" + club.ClubID) }>
 									<img src={ club.Logo } class="size-10"/>
@@ -44,7 +44,7 @@ templ Standings(clubs []repos.ClubStanding) {
 							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GF) }</td>
 							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GA) }</td>
 							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GF - club.GA) }</td>
-							<td class="px-4 py-2 text-secondary font-bold text-center">{ strconv.Itoa(club.Won*3 + club.Drawn*1 + club.Lost*0) }</td>
+							<td class="px-4 py-2 text-secondary font-extrabold text-center">{ strconv.Itoa(club.Won*3 + club.Drawn*1 + club.Lost*0) }</td>
 						</tr>
 					}
 				</tbody>

@@ -3,6 +3,9 @@ module.exports = {
   content: ["./**/*.html", "./**/*.templ", "./**/*.go"],
   theme: {
     extend: {
+      fontFamily: {
+        poppins: ["Poppins"],
+      },
       colors: {
         primary: {
           DEFAULT: "#d1d5db",

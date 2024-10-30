@@ -57,14 +57,14 @@ func Standings(clubs []repos.ClubStanding) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			for idx, club := range clubs {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"border-b border-primary\"><td class=\"font-bold px-4 py-2 text-secondary text-center\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"border-b border-primary\"><td class=\"font-semibold px-4 py-2 text-secondary text-center\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(idx + 1))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/standings.templ`, Line: 33, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/standings.templ`, Line: 33, Col: 91}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -196,14 +196,14 @@ func Standings(clubs []repos.ClubStanding) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"px-4 py-2 text-secondary font-bold text-center\">")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"px-4 py-2 text-secondary font-extrabold text-center\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var14 string
 				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(club.Won*3 + club.Drawn*1 + club.Lost*0))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/standings.templ`, Line: 47, Col: 121}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/standings.templ`, Line: 47, Col: 126}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 				if templ_7745c5c3_Err != nil {

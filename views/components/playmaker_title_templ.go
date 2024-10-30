@@ -29,7 +29,7 @@ func PlaymakerTitle() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex items-center space-x-2\"><img src=\"/public/icon.png\" width=\"75px\" height=\"75px\"><div class=\"flex flex-col items-start space-y-1\"><h1 class=\"text-6xl font-extrabold\"><p class=\"inline text-secondary-background\">PL</p>aymaker</h1><h2 class=\"text-2xl font-bold\"><p class=\"inline text-secondary-background\">P</p>remier <p class=\"inline text-secondary-background\">L</p>eague Fantasy</h2></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex items-center space-x-2\"><img src=\"/public/icon.png\" width=\"75px\" height=\"75px\"><div class=\"flex flex-col items-start space-y-1\"><h1 class=\"text-6xl font-extrabold\"><p class=\"inline text-secondary-background\">PL</p>aymaker</h1><h2 class=\"text-2xl font-semibold\"><p class=\"inline text-secondary-background\">P</p>remier <p class=\"inline text-secondary-background\">L</p>eague Fantasy</h2></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
