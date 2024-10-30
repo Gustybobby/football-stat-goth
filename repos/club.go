@@ -16,7 +16,7 @@ func FindClubsWithNameAsc(repo *Repository) ([]models.Club, error) {
 	return clubs, nil
 }
 
-func FindClubs(repo *Repository) ([]ClubStanding, error) {
+func FindClubStandings(repo *Repository) ([]ClubStanding, error) {
 	var clubs []models.Club
 	clubResults := repo.DB.Find(&clubs)
 	if clubResults.Error != nil {
@@ -81,7 +81,17 @@ func FindClubs(repo *Repository) ([]ClubStanding, error) {
 	sort.SliceStable(standings, func(i int, j int) bool {
 		var a = standings[i]
 		var b = standings[j]
-		return a.Won*3+a.Drawn*1+a.Lost*0 > b.Won*3+b.Drawn*1+b.Lost*0
+		var aPoints = a.Won*3 + a.Drawn*1 + a.Lost*0
+		var bPoints = b.Won*3 + b.Drawn*1 + b.Lost*0
+		if aPoints == bPoints {
+			var aGD = a.GF - a.GA
+			var bGD = b.GF - b.GA
+			if aGD == bGD {
+				return a.GF > b.GF
+			}
+			return aGD > bGD
+		}
+		return aPoints > bPoints
 	})
 
 	return standings, nil

@@ -8,7 +8,7 @@ import (
 )
 
 func HandleStandingsPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	clubs, err := repos.FindClubs(repo)
+	clubs, err := repos.FindClubStandings(repo)
 	if err != nil {
 		return err
 	}
