@@ -13,13 +13,11 @@ templ Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) {
 					href={ templ.SafeURL("/matches/" + strconv.Itoa(int(match.ID))) }
 					class="flex flex-col items-center font-bold text-primary-background bg-secondary-background p-2 min-w-fit rounded-md shadow-lg hover:bg-secondary-foreground hover:cursor-pointer transition-colors"
 				>
-					<div class="flex items-center text-center">
-						<img src={ match.HomeClubLogo } class="size-6 mr-1"/>
+					<div class="flex items-center text-center space-x-1">
 						<h1>{ match.HomeClubID }</h1>
-						&nbsp;
+						<img src={ match.HomeClubLogo } class="size-6"/>
 						<p>vs</p>
-						&nbsp;
-						<img src={ match.AwayClubLogo } class="size-6 mr-1"/>
+						<img src={ match.AwayClubLogo } class="size-6"/>
 						<h1>{ match.AwayClubID }</h1>
 					</div>
 					<span class="text-lg">
