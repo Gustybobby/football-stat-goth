@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "sqlc generate & templ generate & npx tailwindcss -i views/css/app.css -o public/styles.css --minify",
+    "build": "sqlc generate && templ generate & npx tailwindcss -i views/css/app.css -o public/styles.css --minify",
     "start": "go run main.go",
     "start:build": "npm run build && npm run start",
     "compose:build": "npm run build && docker compose up --build"
