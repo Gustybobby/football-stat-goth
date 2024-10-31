@@ -21,14 +21,14 @@ SELECT
     "away_club".logo AS away_club_logo,
     "away_lineup".goals AS away_goals
 FROM "match"
-INNER JOIN "lineup" as home_lineup
-ON "match".home_lineup_id = home_lineup.id
-INNER JOIN "club" as home_club
-ON home_lineup.club_id = home_club.id
-INNER JOIN "lineup" as away_lineup
-ON "match".away_lineup_id = away_lineup.id
-INNER JOIN "club" as away_club
-ON away_lineup.club_id = away_club.id
+INNER JOIN "lineup" as "home_lineup"
+ON "match".home_lineup_id = "home_lineup".id
+INNER JOIN "club" as "home_club"
+ON "home_lineup".club_id = "home_club".id
+INNER JOIN "lineup" as "away_lineup"
+ON "match".away_lineup_id = "away_lineup".id
+INNER JOIN "club" as "away_club"
+ON "away_lineup".club_id = "away_club".id
 WHERE
     is_finished = $1::bool AND
     CASE WHEN $2::bool

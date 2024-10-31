@@ -15,5 +15,5 @@ RETURNING *;
 -- name: UpdateSessionExpiresAt :one
 UPDATE "session"
 SET expires_at = sqlc.arg(expires_at)::timestamp
-WHERE token = sqlc.arg(token)::text
+WHERE "session".token = sqlc.arg(token)::text
 RETURNING *; 

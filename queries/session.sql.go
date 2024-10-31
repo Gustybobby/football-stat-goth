@@ -60,7 +60,7 @@ func (q *Queries) FindSessionByToken(ctx context.Context, token string) (Session
 const updateSessionExpiresAt = `-- name: UpdateSessionExpiresAt :one
 UPDATE "session"
 SET expires_at = $1::timestamp
-WHERE token = $2::text
+WHERE "session".token = $2::text
 RETURNING token, username, expires_at, created_at
 `
 
