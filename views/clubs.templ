@@ -10,7 +10,7 @@ templ Clubs(clubs []queries.Club) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
-			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+			<section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
 				for _, club := range clubs {
 					<a
 						href={ templ.SafeURL("/clubs/" + club.ID) }
@@ -20,7 +20,7 @@ templ Clubs(clubs []queries.Club) {
 						<h1 class="font-bold text-lg text-center">{ club.Name }</h1>
 					</a>
 				}
-			</div>
+			</section>
 		</main>
 	}
 }
