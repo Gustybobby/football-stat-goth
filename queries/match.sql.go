@@ -32,7 +32,7 @@ ON "away_lineup".club_id = "away_club".id
 WHERE
     is_finished = $1::bool AND
     CASE WHEN $2::bool
-    THEN "home_club".id = $3::text
+    THEN "home_club".id = $3::text OR "away_club".id = $3::text
     ELSE true
     END
 ORDER BY

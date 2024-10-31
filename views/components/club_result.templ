@@ -8,12 +8,24 @@ import (
 templ ClubResult(results []queries.ListMatchesWithClubsAndGoalsRow) {
 	<div class="rounded-lg border border-primary">
 		<h1 class="text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">Results</h1>
-		<div class="p-2 ">
+		<div class="p-2 space-y-2">
 			for _, match := range results {
 				<div class="grid grid-cols-5 text-secondary font-bold gap-2 place-items-center">
 					<img src={ match.HomeClubLogo } class="size-8"/>
 					<span>{ match.HomeClubID }</span>
-					<span class="font-semibold">{ strconv.Itoa(int(match.HomeGoals)) } - { strconv.Itoa(int(match.AwayGoals)) }</span>
+					<span class="font-semibold">
+						if match.HomeGoals > match.AwayGoals {
+							<p class="inline font-extrabold">{ strconv.Itoa(int(match.HomeGoals)) }</p>
+						} else {
+							<p class="inline">{ strconv.Itoa(int(match.HomeGoals)) }</p>
+						}
+						&nbsp;-
+						if match.HomeGoals < match.AwayGoals {
+							<p class="inline font-extrabold">{ strconv.Itoa(int(match.AwayGoals)) }</p>
+						} else {
+							<p class="inline">{ strconv.Itoa(int(match.AwayGoals)) }</p>
+						}
+					</span>
 					<img src={ match.AwayClubLogo } class="size-8"/>
 					<span>{ match.AwayClubID }</span>
 				</div>

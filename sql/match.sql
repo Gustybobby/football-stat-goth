@@ -19,7 +19,7 @@ ON "away_lineup".club_id = "away_club".id
 WHERE
     is_finished = sqlc.arg(is_finished)::bool AND
     CASE WHEN sqlc.arg(filter_club_id)::bool
-    THEN "home_club".id = sqlc.arg(club_id)::text
+    THEN "home_club".id = sqlc.arg(club_id)::text OR "away_club".id = sqlc.arg(club_id)::text
     ELSE true
     END
 ORDER BY
