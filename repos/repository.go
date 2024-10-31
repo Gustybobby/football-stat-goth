@@ -3,6 +3,7 @@ package repos
 import (
 	"context"
 	"football-stat-goth/queries"
+	"log/slog"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -14,7 +15,12 @@ type Repository struct {
 
 func (repo *Repository) Connect() (*queries.Queries, *pgx.Conn, context.Context, error) {
 	ctx := context.Background()
-	conn, err := pgx.Connect(ctx, repo.dsn)
+	config, err := pgx.ParseConfig(repo.dsn)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	config.Tracer = NewMultiQueryTracer(NewLoggingQueryTracer(slog.Default()))
+	conn, err := pgx.ConnectConfig(ctx, config)
 	if err != nil {
 		return nil, nil, nil, err
 	}
