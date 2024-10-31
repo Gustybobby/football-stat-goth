@@ -1,48 +1,33 @@
-package repos
+package ranking
 
 import (
-	"football-stat-goth/models"
+	"context"
+	"football-stat-goth/queries"
 	"maps"
 	"slices"
 	"sort"
 )
 
-func FindClubsWithNameAsc(repo *Repository) ([]models.Club, error) {
-	var clubs []models.Club
-	results := repo.DB.Select("ClubID", "Name", "Logo").Order("name ASC").Find(&clubs)
-	if results.Error != nil {
-		return nil, results.Error
-	}
-	return clubs, nil
-}
-
-func FindClub(clubID string, repo *Repository) (*models.Club, error) {
-	var club models.Club
-	results := repo.DB.Where("club_id = ?", clubID).First(&club)
-	if results.Error != nil {
-		return nil, results.Error
-	}
-	return &club, nil
-}
-
-func FindClubStandings(repo *Repository) ([]ClubStanding, error) {
-	var clubs []models.Club
-	clubResults := repo.DB.Find(&clubs)
-	if clubResults.Error != nil {
-		return nil, clubResults.Error
+func FindClubStandings(db *queries.Queries, ctx context.Context) ([]ClubStanding, error) {
+	clubs, err := db.ListClubsOrderByNameAsc(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	var matches []models.Match
-	matchResults := repo.DB.Preload("HomeLineup").Preload("AwayLineup").Where(
-		"is_finished = true").Find(&matches)
-	if matchResults.Error != nil {
-		return nil, matchResults.Error
+	matches, err := db.ListMatchesWithClubsAndGoals(ctx, queries.ListMatchesWithClubsAndGoalsParams{
+		FilterClubID: false,
+		ClubID:       "",
+		IsFinished:   true,
+		Order:        "DESC",
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	var standingsMap = make(map[string]ClubStanding)
 	for _, club := range clubs {
-		standingsMap[club.ClubID] = ClubStanding{
-			ClubID: club.ClubID,
+		standingsMap[club.ID] = ClubStanding{
+			ClubID: club.ID,
 			Name:   club.Name,
 			Logo:   club.Logo,
 			Games:  0,
@@ -54,8 +39,8 @@ func FindClubStandings(repo *Repository) ([]ClubStanding, error) {
 		}
 	}
 	for _, match := range matches {
-		var homeID = match.HomeLineup.ClubID
-		var awayID = match.AwayLineup.ClubID
+		var homeID = match.HomeClubID
+		var awayID = match.AwayClubID
 
 		homeStanding, homeOK := standingsMap[homeID]
 		awayStanding, awayOK := standingsMap[awayID]

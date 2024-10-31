@@ -1,21 +1,19 @@
 package plauth
 
 import (
-	"football-stat-goth/models"
-	"football-stat-goth/repos"
+	"context"
+	"football-stat-goth/queries"
 )
 
-func CreateUser(username string, password string, firstName string, lastName string, repo *repos.Repository) (*models.User, error) {
+func CreateUser(username string, password string, firstName string, lastName string, db *queries.Queries, ctx context.Context) (*queries.User, error) {
 	passwordHash, err := HashPassword(password)
 	if err != nil {
 		return nil, err
 	}
 
-	var user = models.User{Username: username, PasswordHash: passwordHash, FirstName: firstName, LastName: lastName}
-
-	results := repo.DB.Create(&user)
-	if results.Error != nil {
-		return nil, results.Error
+	user, err := db.CreateUser(ctx, queries.CreateUserParams{Username: username, PasswordHash: passwordHash, Firstname: firstName, Lastname: lastName})
+	if err != nil {
+		return nil, err
 	}
 
 	return &user, nil

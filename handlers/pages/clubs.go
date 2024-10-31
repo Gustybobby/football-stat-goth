@@ -8,7 +8,13 @@ import (
 )
 
 func HandleClubsPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	clubs, err := repos.FindClubsWithNameAsc(repo)
+	db, conn, ctx, err := repo.Connect()
+	if err != nil {
+		return err
+	}
+	defer conn.Close(ctx)
+
+	clubs, err := db.ListClubsOrderByNameAsc(ctx)
 	if err != nil {
 		return err
 	}

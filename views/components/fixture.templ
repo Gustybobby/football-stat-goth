@@ -1,31 +1,31 @@
 package components 
 
 import (
-	"football-stat-goth/models"
+	"football-stat-goth/queries"
 	"strconv"
 )
 
-templ Fixture(matches []models.Match) {
+templ Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) {
 	if len(matches) > 0 {
 		<div class="p-2 bg-secondary flex items-center space-x-8 overflow-x-auto">
 			for _, match := range matches {
 				<a
-					href={ templ.SafeURL("/matches/" + strconv.Itoa(int(match.MatchID))) }
+					href={ templ.SafeURL("/matches/" + strconv.Itoa(int(match.ID))) }
 					class="flex flex-col items-center font-bold text-primary-background bg-secondary-background p-2 min-w-fit rounded-md shadow-lg hover:bg-secondary-foreground hover:cursor-pointer transition-colors"
 				>
 					<div class="flex items-center text-center">
-						<img src={ match.HomeLineup.Club.Logo } class="size-6 mr-1"/>
-						<h1>{ match.HomeLineup.ClubID }</h1>
+						<img src={ match.HomeClubLogo } class="size-6 mr-1"/>
+						<h1>{ match.HomeClubID }</h1>
 						&nbsp;
 						<p>vs</p>
 						&nbsp;
-						<img src={ match.AwayLineup.Club.Logo } class="size-6 mr-1"/>
-						<h1>{ match.AwayLineup.ClubID }</h1>
+						<img src={ match.AwayClubLogo } class="size-6 mr-1"/>
+						<h1>{ match.AwayClubID }</h1>
 					</div>
 					<span class="text-lg">
 						{ strconv.Itoa(int(match.HomeGoals)) } - { strconv.Itoa(int(match.AwayGoals)) }
 					</span>
-					<span>{ match.DateTime.Format("02/01/2006 15:04") }</span>
+					<span>{ match.StartAt.Time.Format("02/01/2006 15:04") }</span>
 				</a>
 			}
 		</div>

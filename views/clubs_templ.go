@@ -9,12 +9,12 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"football-stat-goth/models"
+	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 )
 
-func Clubs(clubs []models.Club) templ.Component {
+func Clubs(clubs []queries.Club) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -60,7 +60,7 @@ func Clubs(clubs []models.Club) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL("/clubs/" + club.ClubID)
+				var templ_7745c5c3_Var3 templ.SafeURL = templ.SafeURL("/clubs/" + club.ID)
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var3)))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err

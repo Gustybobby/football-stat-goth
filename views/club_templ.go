@@ -9,13 +9,13 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"football-stat-goth/models"
+	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 	"strconv"
 )
 
-func Club(club models.Club, fixtures []models.Match, results []models.Match) templ.Component {
+func Club(club queries.Club, fixtures []queries.ListMatchesWithClubsAndGoalsRow, results []queries.ListMatchesWithClubsAndGoalsRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -83,9 +83,9 @@ func Club(club models.Club, fixtures []models.Match, results []models.Match) tem
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(club.Established)))
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(club.Est)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/club.templ`, Line: 18, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/club.templ`, Line: 18, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -96,9 +96,9 @@ func Club(club models.Club, fixtures []models.Match, results []models.Match) tem
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(club.Stadium)
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(club.Stadium.String)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/club.templ`, Line: 19, Col: 48}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/club.templ`, Line: 19, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

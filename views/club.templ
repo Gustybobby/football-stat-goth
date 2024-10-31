@@ -1,13 +1,13 @@
 package views
 
 import (
-	"football-stat-goth/models"
+	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 	"strconv"
 )
 
-templ Club(club models.Club, fixtures []models.Match, results []models.Match) {
+templ Club(club queries.Club, fixtures []queries.ListMatchesWithClubsAndGoalsRow, results []queries.ListMatchesWithClubsAndGoalsRow) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
@@ -15,8 +15,8 @@ templ Club(club models.Club, fixtures []models.Match, results []models.Match) {
 				<img src={ club.Logo } class="size-36 mb-4 md:mr-4 md:mb-0"/>
 				<div class="space-y-2">
 					<h1 class="text-5xl font-extrabold">{ club.Name }</h1>
-					<p class="text-2xl font-bold">{ strconv.Itoa(int(club.Established)) }</p>
-					<p class="text-xl font-bold">{ club.Stadium }</p>
+					<p class="text-2xl font-bold">{ strconv.Itoa(int(club.Est)) }</p>
+					<p class="text-xl font-bold">{ club.Stadium.String }</p>
 				</div>
 			</div>
 			@components.ClubFixture(fixtures)

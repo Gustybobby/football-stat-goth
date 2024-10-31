@@ -1,13 +1,13 @@
 package views
 
 import (
-	"football-stat-goth/repos"
+	"football-stat-goth/services/ranking"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 	"strconv"
 )
 
-templ Standings(clubs []repos.ClubStanding) {
+templ Standings(clubs []ranking.ClubStanding) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">

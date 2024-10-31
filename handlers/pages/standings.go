@@ -3,12 +3,19 @@ package pages
 import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/repos"
+	"football-stat-goth/services/ranking"
 	"football-stat-goth/views"
 	"net/http"
 )
 
 func HandleStandingsPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	clubs, err := repos.FindClubStandings(repo)
+	db, conn, ctx, err := repo.Connect()
+	if err != nil {
+		return err
+	}
+	defer conn.Close(ctx)
+
+	clubs, err := ranking.FindClubStandings(db, ctx)
 	if err != nil {
 		return err
 	}

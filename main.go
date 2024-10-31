@@ -5,7 +5,6 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/handlers/api"
 	"football-stat-goth/handlers/pages"
-	"football-stat-goth/models"
 	"football-stat-goth/repos"
 	"log"
 	"log/slog"
@@ -47,20 +46,7 @@ func main() {
 		SSLMode:  os.Getenv("DB_SSLMODE"),
 	}
 
-	db, err := repos.NewConnection(config)
-	if err != nil {
-		log.Fatal("could not connect to database")
-	}
-
-	if os.Getenv("DB_AUTOMIGRATE") == "true" {
-		if err := models.MigrateSchema(db); err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	repo := &repos.Repository{
-		DB: db,
-	}
+	repo := repos.New(config)
 
 	SetupRoutes(router, repo)
 

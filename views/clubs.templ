@@ -1,19 +1,19 @@
 package views
 
 import (
-	"football-stat-goth/models"
+	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 )
 
-templ Clubs(clubs []models.Club) {
+templ Clubs(clubs []queries.Club) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
 			<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
 				for _, club := range clubs {
 					<a
-						href={ templ.SafeURL("/clubs/" + club.ClubID) }
+						href={ templ.SafeURL("/clubs/" + club.ID) }
 						class="p-4 border border-primary shadow-lg rounded-md bg-gradient-to-br from-primary-background to-primary-foreground flex flex-col items-center hover:cursor-pointer hover:scale-105 transition-all"
 					>
 						<img src={ club.Logo } class="size-32"/>

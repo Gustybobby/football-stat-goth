@@ -1,18 +1,18 @@
 package plauth
 
 import (
-	"football-stat-goth/models"
-	"football-stat-goth/repos"
+	"context"
+	"football-stat-goth/queries"
 	"net/http"
 )
 
-func Auth(r *http.Request, repo *repos.Repository) (*models.User, error) {
+func Auth(r *http.Request, db *queries.Queries, ctx context.Context) (*queries.User, error) {
 	token, err := GetSessionTokenFromCookie(r)
 	if err != nil {
 		return nil, err
 	}
 
-	session, err := ValidateSessionToken(token, repo)
+	session, err := ValidateSessionToken(token, db, ctx)
 	if err != nil {
 		return nil, err
 	}

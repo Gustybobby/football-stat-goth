@@ -1,41 +1,50 @@
 package plauth
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/base32"
 	"encoding/hex"
 	"errors"
-	"football-stat-goth/models"
-	"football-stat-goth/repos"
+	"football-stat-goth/queries"
 	"strings"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type ValidationResult struct {
-	Session models.Session
-	User    models.User
+	Session queries.Session
+	User    queries.User
 }
 
-func ValidateSessionToken(token string, repo *repos.Repository) (*ValidationResult, error) {
+func ValidateSessionToken(token string, db *queries.Queries, ctx context.Context) (*ValidationResult, error) {
 	encodedToken := encodeSessionToken(token)
 
-	var session = models.Session{Token: encodedToken}
-	if results := repo.DB.First(&session); results.Error != nil {
-		return nil, results.Error
+	session, err := db.FindSessionByToken(ctx, encodedToken)
+	if err != nil {
+		return nil, err
 	}
 
-	var user = models.User{Username: session.Username}
-	if results := repo.DB.First(&user); results.Error != nil {
-		return nil, results.Error
+	user, err := db.FindUserByUsername(ctx, session.Username)
+	if err != nil {
+		return nil, err
 	}
 
-	if time.Now().Compare(session.ExpiresAt) >= 0 {
+	if time.Now().UTC().Compare(session.ExpiresAt.Time) >= 0 {
 		return nil, errors.New("session expired")
 	}
 
-	if time.Now().Compare(session.ExpiresAt.AddDate(0, 0, -3)) >= 0 {
-		session.ExpiresAt = session.ExpiresAt.AddDate(0, 0, 7)
-		repo.DB.Save(&session)
+	if time.Now().UTC().Compare(session.ExpiresAt.Time.AddDate(0, 0, -3)) >= 0 {
+		var expiresAt = pgtype.Timestamp{Time: session.ExpiresAt.Time.AddDate(0, 0, 7), Valid: true}
+		session, err := db.UpdateSessionExpiresAt(ctx, queries.UpdateSessionExpiresAtParams{
+			Token:     encodedToken,
+			ExpiresAt: expiresAt,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return &ValidationResult{Session: session, User: user}, nil
 	}
 
 	return &ValidationResult{Session: session, User: user}, nil
@@ -60,17 +69,15 @@ func encodeSessionToken(token string) string {
 	return encodedToken
 }
 
-func CreateSession(token string, username string, repo *repos.Repository) (*models.Session, error) {
-	session := &models.Session{
+func CreateSession(token string, username string, db *queries.Queries, ctx context.Context) (*queries.Session, error) {
+	createdSession, err := db.CreateSession(ctx, queries.CreateSessionParams{
 		Token:     encodeSessionToken(token),
 		Username:  username,
-		ExpiresAt: time.Now().AddDate(0, 0, 7),
+		ExpiresAt: pgtype.Timestamp{Time: time.Now().AddDate(0, 0, 7), Valid: true},
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	results := repo.DB.Create(session)
-	if results.Error != nil {
-		return nil, results.Error
-	}
-
-	return session, nil
+	return &createdSession, nil
 }

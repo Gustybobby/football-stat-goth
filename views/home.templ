@@ -1,14 +1,14 @@
 package views
 
 import (
-	"football-stat-goth/models"
+	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 )
 
-templ Home(matches []models.Match) {
+templ Home(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 	@layouts.Base() {
-		@components.Fixture(matches)
+		@components.Fixture(fixtures)
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen">
 			<div class="my-8 w-full flex flex-col items-center">
