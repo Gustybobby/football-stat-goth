@@ -1,13 +1,13 @@
 package views
 
 import (
-	"football-stat-goth/services/ranking"
+	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 	"strconv"
 )
 
-templ Standings(clubs []ranking.ClubStanding) {
+templ Standings(clubs []queries.ListClubStandingsRow) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
@@ -32,19 +32,19 @@ templ Standings(clubs []ranking.ClubStanding) {
 						<tr class="border-b border-primary">
 							<td class="font-semibold px-4 py-2 text-secondary text-center">{ strconv.Itoa(idx+1) }</td>
 							<td class="px-4 py-2 text-secondary">
-								<a class="flex items-center space-x-4 hover:underline" href={ templ.SafeURL("/clubs/" + club.ClubID) }>
+								<a class="flex items-center space-x-4 hover:underline" href={ templ.SafeURL("/clubs/" + club.ID) }>
 									<img src={ club.Logo } class="size-10"/>
 									<p class="font-bold">{ club.Name }</p>
 								</a>
 							</td>
-							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Games) }</td>
-							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Won) }</td>
-							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Drawn) }</td>
-							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.Lost) }</td>
-							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GF) }</td>
-							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GA) }</td>
-							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(club.GF - club.GA) }</td>
-							<td class="px-4 py-2 text-secondary font-extrabold text-center">{ strconv.Itoa(club.Won*3 + club.Drawn*1 + club.Lost*0) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(int(club.Won + club.Drawn + club.Lost)) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(int(club.Won)) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(int(club.Drawn)) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(int(club.Lost)) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(int(club.Gf)) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(int(club.Ga)) }</td>
+							<td class="px-4 py-2 text-secondary text-center">{ strconv.Itoa(int(club.Gf - club.Ga)) }</td>
+							<td class="px-4 py-2 text-secondary font-extrabold text-center">{ strconv.Itoa(int(club.Won*3 + club.Drawn*1 + club.Lost*0)) }</td>
 						</tr>
 					}
 				</tbody>
