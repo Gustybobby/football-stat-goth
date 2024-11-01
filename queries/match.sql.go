@@ -31,11 +31,11 @@ SELECT
     "club".id,
     "club".Name,
     "club".Logo,
-    CAST(SUM("results".wins) AS INTEGER) AS won,
-    CAST(SUM("results".draws) AS INTEGER) AS drawn,
-    CAST(SUM("results".losses) AS INTEGER) AS lost,
-    CAST(SUM("results".goals) AS INTEGER) AS gf,
-    CAST(SUM("results".opp_goals) AS INTEGER) AS ga
+    SUM("results".wins) AS won,
+    SUM("results".draws) AS drawn,
+    SUM("results".losses) AS lost,
+    SUM("results".goals) AS gf,
+    SUM("results".opp_goals) AS ga
 FROM (
     SELECT
         "match_score".home_club_id AS club_id,
@@ -69,11 +69,11 @@ type ListClubStandingsRow struct {
 	ID    string
 	Name  string
 	Logo  string
-	Won   int32
-	Drawn int32
-	Lost  int32
-	Gf    int32
-	Ga    int32
+	Won   int64
+	Drawn int64
+	Lost  int64
+	Gf    int64
+	Ga    int64
 }
 
 func (q *Queries) ListClubStandings(ctx context.Context) ([]ListClubStandingsRow, error) {
