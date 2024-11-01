@@ -52,6 +52,14 @@ func main() {
 
 	serverAddr := os.Getenv("SERVER_ADDR")
 
-	slog.Info("Server started", "serverAddr", serverAddr)
+	slog.Info(`
+	 ___  _                          _             
+	| . \| |   ___  _ _  _ _ _  ___ | |__ ___  _ _ 
+	|  _/| |_ [_] || | || ' ' |[_] || / // ._]| '_]
+	|_|  |___|[___| \  ||_|_|_|[___||_\_\\___.|_|  
+	                [__/                           
+	`)
+	slog.Info("Server started at http://" + serverAddr)
+
 	http.ListenAndServe(serverAddr, router)
 }
