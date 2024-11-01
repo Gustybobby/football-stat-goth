@@ -75,9 +75,6 @@ FROM (
 INNER JOIN "club"
 ON "results".club_id = club.id
 GROUP BY "club".id
-ORDER BY CAST(
-    CAST(SUM("results".wins) AS INTEGER) * 3 +
-    CAST(SUM("results".draws) AS INTEGER) * 1 +
-    CAST(SUM("results".losses) AS INTEGER) * 0
-    AS INTEGER
-) DESC;
+ORDER BY
+    SUM("results".wins) * 3 + SUM("results".draws) * 1 + SUM("results".losses) * 0 DESC,
+    SUM("results".goals) - SUM("results".opp_goals) DESC;

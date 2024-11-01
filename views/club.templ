@@ -7,7 +7,13 @@ import (
 	"strconv"
 )
 
-templ Club(club queries.Club, fixtures []queries.ListMatchesWithClubsAndGoalsRow, results []queries.ListMatchesWithClubsAndGoalsRow) {
+templ Club(
+	club queries.Club,
+	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
+	results []queries.ListMatchesWithClubsAndGoalsRow,
+	standing queries.ListClubStandingsRow,
+	position int,
+) {
 	@layouts.Base() {
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
@@ -22,6 +28,49 @@ templ Club(club queries.Club, fixtures []queries.ListMatchesWithClubsAndGoalsRow
 				</section>
 				<section class="grid grid-cols-4 gap-4 px-2 py-4">
 					@components.ClubFixture(fixtures)
+					<section class="rounded-lg border border-primary shadow-lg col-span-3 w-full">
+						<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
+							Premier League
+						</h1>
+						<div class="py-2 px-4 flex items-center justify-center space-x-6 font-extrabold text-center">
+							<div>
+								<h2 class="text-xl">Position</h2>
+								<span class="text-2xl">#{ strconv.Itoa(position) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">Games</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Won+standing.Drawn+standing.Lost)) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">Won</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Won)) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">Drawn</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Drawn)) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">Lost</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Lost)) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">GF</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Gf)) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">GA</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Ga)) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">GD</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Gf - standing.Ga)) }</span>
+							</div>
+							<div>
+								<h2 class="text-xl">Points</h2>
+								<span class="text-2xl">{ strconv.Itoa(int(standing.Won*3+standing.Drawn*1+standing.Lost*0)) }</span>
+							</div>
+						</div>
+					</section>
 					<div class="row-start-2">
 						@components.ClubResult(results)
 					</div>
