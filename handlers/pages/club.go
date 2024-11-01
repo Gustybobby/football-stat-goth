@@ -6,6 +6,7 @@ import (
 	"football-stat-goth/repos"
 	"football-stat-goth/views"
 	"net/http"
+	"slices"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -44,5 +45,13 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	return handlers.Render(w, r, views.Club(club, fixtures, matches))
+	standings, err := db.ListClubStandings(ctx)
+	if err != nil {
+		return err
+	}
+	idx := slices.IndexFunc(standings, func(club queries.ListClubStandingsRow) bool {
+		return club.ID == clubID
+	})
+
+	return handlers.Render(w, r, views.Club(club, fixtures, matches, standings[idx], idx+1))
 }
