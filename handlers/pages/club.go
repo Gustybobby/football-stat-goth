@@ -53,5 +53,10 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return club.ID == clubID
 	})
 
-	return handlers.Render(w, r, views.Club(club, fixtures, matches, standings[idx], idx+1))
+	averageStats, err := db.ClubAverageStatistics(ctx, clubID)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Club(club, fixtures, matches, standings[idx], idx+1, averageStats))
 }
