@@ -52,7 +52,7 @@ func Standings(clubs []queries.ListClubStandingsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <main class=\"w-full p-4 bg-primary-background min-h-screen flex flex-col items-center\"><h1 class=\"text-center font-bold text-4xl my-8\">Premier League Standings</h1><table><thead><tr class=\"bg-primary-foreground border-b border-primary\"><th class=\"px-4 py-2 text-left\">Position</th><th class=\"px-4 py-2 text-left\">Club</th><th class=\"px-4 py-2 text-left\">Games</th><th class=\"px-4 py-2 text-left\">Won</th><th class=\"px-4 py-2 text-left\">Drawn</th><th class=\"px-4 py-2 text-left\">Lost</th><th class=\"px-4 py-2 text-left\">GF</th><th class=\"px-4 py-2 text-left\">GA</th><th class=\"px-4 py-2 text-left\">GD</th><th class=\"px-4 py-2 text-left\">Points</th></tr></thead> <tbody>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" <main class=\"w-full p-4 bg-primary-background min-h-screen flex flex-col items-center\"><h1 class=\"text-center font-bold text-4xl my-8\">Premier League Standings</h1><table class=\"mb-16\"><thead><tr class=\"bg-primary-foreground border-b border-primary\"><th class=\"px-4 py-2 text-left\">Position</th><th class=\"px-4 py-2 text-left\">Club</th><th class=\"px-4 py-2 text-left\">Games</th><th class=\"px-4 py-2 text-left\">Won</th><th class=\"px-4 py-2 text-left\">Drawn</th><th class=\"px-4 py-2 text-left\">Lost</th><th class=\"px-4 py-2 text-left\">GF</th><th class=\"px-4 py-2 text-left\">GA</th><th class=\"px-4 py-2 text-left\">GD</th><th class=\"px-4 py-2 text-left\">Points</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
