@@ -1,0 +1,52 @@
+package club_components
+
+import (
+	"football-stat-goth/queries"
+	"strconv"
+)
+
+templ ClubStanding(standing queries.ListClubStandingsRow, position int) {
+	<section class="rounded-lg border border-primary shadow-lg w-full">
+		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
+			Premier League
+		</h1>
+		<div class="py-2 px-4 flex items-center justify-center space-x-6 font-extrabold text-center">
+			<div>
+				<h2 class="text-xl text-secondary">Position</h2>
+				<span class="text-2xl">#{ strconv.Itoa(position) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">Games</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Won+standing.Drawn+standing.Lost)) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">Won</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Won)) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">Drawn</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Drawn)) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">Lost</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Lost)) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">GF</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Gf)) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">GA</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Ga)) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">GD</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Gf - standing.Ga)) }</span>
+			</div>
+			<div>
+				<h2 class="text-xl text-secondary">Points</h2>
+				<span class="text-2xl">{ strconv.Itoa(int(standing.Won*3+standing.Drawn*1+standing.Lost*0)) }</span>
+			</div>
+		</div>
+	</section>
+}

@@ -3,8 +3,9 @@ package views
 import (
 	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
+	"football-stat-goth/views/components/club_components"
+	"football-stat-goth/views/components/table_components"
 	"football-stat-goth/views/layouts"
-	"strconv"
 )
 
 templ Club(
@@ -19,130 +20,15 @@ templ Club(
 		@components.Nav()
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
 			<div class="max-w-5xl">
-				<section class="flex flex-col items-center w-full py-12 border-b border-primary md:flex-row">
-					<img src={ club.Logo } class="size-36 mb-4 md:mr-4 md:mb-0"/>
-					<div class="space-y-2">
-						<h1 class="text-5xl font-extrabold">{ club.Name }</h1>
-						<p class="text-2xl font-bold">{ strconv.Itoa(int(club.Est)) }</p>
-						<p class="text-xl font-bold">{ club.Stadium.String }</p>
-					</div>
-				</section>
+				@club_components.ClubProfile(club)
 				<section class="grid grid-cols-4 gap-4 px-2 py-8">
-					<div class="space-y-8">
-						@components.ClubFixture(fixtures)
-						@components.ClubResult(results)
+					<div class="space-y-4">
+						@table_components.FixtureTable(fixtures)
+						@table_components.ResultTable(results)
 					</div>
-					<div class="col-span-3 space-y-8">
-						<section class="rounded-lg border border-primary shadow-lg w-full">
-							<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
-								Premier League
-							</h1>
-							<div class="py-2 px-4 flex items-center justify-center space-x-6 font-extrabold text-center">
-								<div>
-									<h2 class="text-xl text-secondary">Position</h2>
-									<span class="text-2xl">#{ strconv.Itoa(position) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">Games</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Won+standing.Drawn+standing.Lost)) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">Won</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Won)) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">Drawn</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Drawn)) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">Lost</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Lost)) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">GF</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Gf)) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">GA</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Ga)) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">GD</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Gf - standing.Ga)) }</span>
-								</div>
-								<div>
-									<h2 class="text-xl text-secondary">Points</h2>
-									<span class="text-2xl">{ strconv.Itoa(int(standing.Won*3+standing.Drawn*1+standing.Lost*0)) }</span>
-								</div>
-							</div>
-						</section>
-						<section class="rounded-lg border border-primary shadow-lg w-full">
-							<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
-								Average Statistics
-							</h1>
-							<div class="grid grid-cols-5 p-2 text-center gap-2">
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Possession</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgPossession,'f', 2, 32) }%
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Shots on Target</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgShotsOnTarget,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Shots</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgShots,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Touches</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgTouches,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Passes</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgPasses,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Tackles</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgTackles,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Clearances</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgClearances,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Corners</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgCorners,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Offsides</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgOffsides,'f', 2, 32) }
-									</p>
-								</div>
-								<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-									<h2 class="text-xl text-secondary h-12">Fouls Conceded</h2>
-									<p class="text-2xl py-2">
-										{ strconv.FormatFloat(averageStats.AvgFoulsConceded,'f', 2, 32) }
-									</p>
-								</div>
-							</div>
-						</section>
+					<div class="col-span-3 space-y-4">
+						@club_components.ClubStanding(standing, position)
+						@club_components.ClubStatistics(averageStats)
 					</div>
 				</section>
 			</div>
