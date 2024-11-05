@@ -49,9 +49,9 @@ func FixtureTable(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Comp
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var2 string
-				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(match.StartAt.Time.Local().Format("02/01/2006 15:04"))
+				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(match.StartAt.Time.Local().Format("02 Jan 2006 15:04"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/table_components/fixture_table.templ`, Line: 17, Col: 97}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/table_components/fixture_table.templ`, Line: 17, Col: 98}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
