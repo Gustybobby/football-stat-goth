@@ -1,0 +1,31 @@
+package admin_views
+
+import "football-stat-goth/views/layouts"
+
+templ Players() {
+	@layouts.Base() {
+		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col justify-center items-center">
+			<h1 class="font-bold text-3xl text-center mb-4">Add New Player</h1>
+			<form class="flex flex-col items-center space-y-2 w-56" hx-post="/api/players">
+				<input name="club_id" type="text" required class="p-1 rounded-md border border-primary w-full" placeholder="Club ID"/>
+				<input name="no" type="number" required class="p-1 rounded-md border border-primary w-full" placeholder="No."/>
+				<input name="firstname" type="text" required class="p-1 rounded-md border border-primary w-full" placeholder="First Name"/>
+				<input name="lastname" type="text" required class="p-1 rounded-md border border-primary w-full" placeholder="Last Name"/>
+				<label for="dob">Date of Birth</label>
+				<input name="dob" type="date" required class="p-1 rounded-md border border-primary w-full"/>
+				<input name="height" type="number" required class="p-1 rounded-md border border-primary w-full" placeholder="Height"/>
+				<input name="nationality" type="text" required class="p-1 rounded-md border border-primary w-full" placeholder="Nationality"/>
+				<label for="position">Position</label>
+				<select name="position" required class="p-1 rounded-md border border-primary w-full">
+					<option>GK</option>
+					<option>DEF</option>
+					<option>MFD</option>
+					<option>FWD</option>
+					<option>SUB</option>
+				</select>
+				<input name="image" type="text" required class="p-1 rounded-md border border-primary w-full" placeholder="Image URL"/>
+				<input type="submit" value="Submit" class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors"/>
+			</form>
+		</main>
+	}
+}
