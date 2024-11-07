@@ -30,7 +30,7 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Get("/signup", handlers.Make(pages.HandleSignupPage, repo))
 
 	router.Route("/admin", func(r chi.Router) {
-		r.Get("/players", handlers.Make(admin_pages.HandleAdminPlayersPage, repo))
+		r.Get("/players/create", handlers.Make(admin_pages.HandleAdminCreatePlayersPage, repo))
 	})
 
 	router.Route("/api", func(r chi.Router) {

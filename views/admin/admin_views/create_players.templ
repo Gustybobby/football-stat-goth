@@ -1,9 +1,13 @@
 package admin_views
 
-import "football-stat-goth/views/layouts"
+import (
+	"football-stat-goth/views/admin/admin_components"
+	"football-stat-goth/views/layouts"
+)
 
-templ Players() {
+templ CreatePlayers() {
 	@layouts.Base() {
+		@admin_components.AdminNav()
 		<script>
 			function onChangeImage(imageUrl) {
 				document.getElementById("image_preview").src = imageUrl
@@ -11,7 +15,7 @@ templ Players() {
 		</script>
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col">
 			<h1 class="font-bold text-3xl mb-4">Add New Player</h1>
-			<form id="add_player_form" class="grid grid-cols-2 gap-4 w-1/2" hx-post="/api/players">
+			<form id="add_player_form" class="grid grid-cols-2 gap-4 md:w-1/2" hx-post="/api/players">
 				<div>
 					<span>Club ID</span>
 					<input
