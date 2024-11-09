@@ -5,6 +5,7 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/handlers/api"
 	"football-stat-goth/handlers/pages"
+	"football-stat-goth/handlers/pages/admin_pages"
 	"football-stat-goth/repos"
 	"log"
 	"log/slog"
@@ -12,6 +13,7 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 )
 
@@ -28,7 +30,14 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Get("/clubs/{clubID}", handlers.Make(pages.HandleClubPage, repo))
 	router.Get("/signup", handlers.Make(pages.HandleSignupPage, repo))
 
-	router.Post("/api/signup", handlers.Make(api.HandleSignup, repo))
+	router.Route("/admin", func(r chi.Router) {
+		r.Get("/players/create", handlers.Make(admin_pages.HandleAdminCreatePlayersPage, repo))
+	})
+
+	router.Route("/api", func(r chi.Router) {
+		r.Post("/signup", handlers.Make(api.HandleSignup, repo))
+		r.Post("/players", handlers.Make(api.HandleCreatePlayer, repo))
+	})
 }
 
 func main() {
@@ -37,6 +46,7 @@ func main() {
 	}
 
 	router := chi.NewMux()
+	router.Use(middleware.Logger)
 
 	config := &repos.Config{
 		Host:     os.Getenv("DB_HOST"),
