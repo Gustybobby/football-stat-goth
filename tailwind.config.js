@@ -18,6 +18,9 @@ module.exports = {
           foreground: "#6366f1",
         },
       },
+      backgroundImage: {
+        'footballField': "url('/public/football-field-design-vector.jpg')"
+      },
     },
   },
 };
