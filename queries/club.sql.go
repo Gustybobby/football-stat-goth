@@ -18,7 +18,7 @@ SELECT
     AVG("lineup".passes) AS avg_passes,
     AVG("lineup".tackles) AS avg_tackles,
     AVG("lineup".clearances) AS avg_clearances,
-    AVG("lineup".corners) AS avg_corners,
+     AVG("lineup".corners) AS avg_corners,
     AVG("lineup".offsides) AS avg_offsides,
     AVG("lineup".fouls_conceded) AS avg_fouls_conceded
 FROM "lineup"

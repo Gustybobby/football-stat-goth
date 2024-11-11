@@ -1,16 +1,32 @@
 package views
 
 import (
+	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 )
 
-templ Fantasy() {
-    @layouts.Base() {
-        @components.Nav()
-        <main>
-            <div class="width:40% margin-top:40px padding:5px 10px background-color:#17191F  border-radius:5px">
-            </div>
-        </main>
-    }
+templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
+	@layouts.Base() {
+		@components.Fixture(fixtures)
+		@components.Nav()
+		<main class="w-full p-4 bg-primary-background min-h-screen items-center flex flex-initial">
+			<div class="w-full flex flex-col">
+				<section class="grid grid-cols-3 gap-4 px-2 py-8">
+					<div
+						class="w-full h-3/4 col-span-2 overflow-hidden"
+					>
+						<img
+							class="w-full h-full"
+							src="/public/1-1-football-pitch.png"
+						/>
+					</div>
+					<div class="col-span-1 w-full flex flex-col transition-all">
+						GO
+					</div>
+					<div class=" bg-fo"></div>
+				</section>
+			</div>
+		</main>
+	}
 }
