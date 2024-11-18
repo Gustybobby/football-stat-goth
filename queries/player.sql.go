@@ -75,3 +75,24 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Pla
 	)
 	return i, err
 }
+
+const findPlayerIDByClubAndNo = `-- name: FindPlayerIDByClubAndNo :one
+SELECT
+    "player".id
+FROM "player"
+WHERE
+    "player".club_id = $1 AND
+    "player".no = $2
+`
+
+type FindPlayerIDByClubAndNoParams struct {
+	ClubID pgtype.Text
+	No     int16
+}
+
+func (q *Queries) FindPlayerIDByClubAndNo(ctx context.Context, arg FindPlayerIDByClubAndNoParams) (int32, error) {
+	row := q.db.QueryRow(ctx, findPlayerIDByClubAndNo, arg.ClubID, arg.No)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
