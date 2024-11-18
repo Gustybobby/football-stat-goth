@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"football-stat-goth/queries"
+	"football-stat-goth/services/plformat"
 	"strconv"
 )
 
@@ -49,9 +50,9 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var2 string
-				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(match.StartAt.Time.Local().Format("02/01/2006 15:04"))
+				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(plformat.FormatTimestamp(match.StartAt.Time.Local()))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 17, Col: 97}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 18, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -73,7 +74,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(match.HomeClubID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 22, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 23, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -86,7 +87,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(match.HomeClubLogo)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 23, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 24, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -104,7 +105,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 					var templ_7745c5c3_Var6 string
 					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.HomeGoals)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 26, Col: 93}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 27, Col: 93}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 					if templ_7745c5c3_Err != nil {
@@ -122,7 +123,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.HomeGoals)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 28, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 29, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -145,7 +146,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 					var templ_7745c5c3_Var8 string
 					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.AwayGoals)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 32, Col: 93}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 33, Col: 93}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 					if templ_7745c5c3_Err != nil {
@@ -163,7 +164,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.AwayGoals)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 34, Col: 63}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 35, Col: 63}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {
@@ -181,7 +182,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(match.AwayClubLogo)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 37, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 38, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -194,7 +195,7 @@ func ClubFixture(fixtures []queries.ListMatchesWithClubsAndGoalsRow) templ.Compo
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(match.AwayClubID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 38, Col: 31}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/club_fixture.templ`, Line: 39, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {

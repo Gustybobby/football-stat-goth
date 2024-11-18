@@ -15,7 +15,7 @@ templ Match(fixtures []queries.ListMatchesWithClubsAndGoalsRow, match queries.Fi
 		<main class="w-full p-4 bg-primary-background grid xl:grid-cols-2 grid-cols-1 gap-4">
 			<section class="rounded-lg border border-primary shadow-lg w-full p-4">
 				<div class="text-lg text-center w-full font-semibold text-secondary mb-2">
-					{ match.StartAt.Time.Local().Format("02 Jan 2006 15:04") } • { match.Location }
+					{ plformat.FormatTimestamp(match.StartAt.Time.Local()) } • { match.Location }
 				</div>
 				<div class="grid grid-cols-1 md:grid-cols-5 place-items-center w-full">
 					<div class="flex items-center space-x-4 col-span-2 justify-start w-full">
