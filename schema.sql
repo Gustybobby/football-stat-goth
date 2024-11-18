@@ -4,6 +4,7 @@ CREATE TYPE "player_position" AS ENUM ('GK','DEF','MFD','FWD','SUB');
 CREATE TABLE "club" (
     id        CHAR(3) PRIMARY KEY,
     name      VARCHAR(64) NOT NULL,
+    short_name VARCHAR(32) NOT NULL,
     stadium   VARCHAR(64),
     logo      VARCHAR(255) NOT NULL,
     est       INT4 NOT NULL

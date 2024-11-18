@@ -59,7 +59,7 @@ func (q *Queries) ClubAverageStatistics(ctx context.Context, clubID string) (Clu
 }
 
 const findClubByID = `-- name: FindClubByID :one
-SELECT id, name, stadium, logo, est
+SELECT id, name, short_name, stadium, logo, est
 FROM "club"
 WHERE "club".id = $1
 LIMIT 1
@@ -71,6 +71,7 @@ func (q *Queries) FindClubByID(ctx context.Context, id string) (Club, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.ShortName,
 		&i.Stadium,
 		&i.Logo,
 		&i.Est,
@@ -79,7 +80,7 @@ func (q *Queries) FindClubByID(ctx context.Context, id string) (Club, error) {
 }
 
 const listClubsOrderByNameAsc = `-- name: ListClubsOrderByNameAsc :many
-SELECT id, name, stadium, logo, est
+SELECT id, name, short_name, stadium, logo, est
 FROM "club"
 ORDER BY "club".name ASC
 `
@@ -96,6 +97,7 @@ func (q *Queries) ListClubsOrderByNameAsc(ctx context.Context) ([]Club, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.ShortName,
 			&i.Stadium,
 			&i.Logo,
 			&i.Est,
