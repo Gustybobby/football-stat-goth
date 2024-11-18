@@ -127,6 +127,7 @@ type LineupPlayer struct {
 	LineupID    int32
 	PlayerID    int32
 	PositionNo  int16
+	Position    PlayerPosition
 	Goals       int16
 	YellowCards int16
 	RedCards    int16
