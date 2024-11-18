@@ -70,6 +70,7 @@ func EditLineups(match queries.FindMatchByIDRow, homeLineupPlayers []queries.Lis
 				ClubName:      match.HomeClubName,
 				LineupID:      match.HomeLineupID,
 				LineupPlayers: homeLineupPlayers,
+				Mirror:        false,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -79,6 +80,7 @@ func EditLineups(match queries.FindMatchByIDRow, homeLineupPlayers []queries.Lis
 				ClubName:      match.AwayClubName,
 				LineupID:      match.AwayLineupID,
 				LineupPlayers: awayLineupPlayers,
+				Mirror:        true,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

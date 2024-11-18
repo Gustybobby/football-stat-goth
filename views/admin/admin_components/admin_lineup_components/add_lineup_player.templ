@@ -10,6 +10,7 @@ type AddLineupPlayerParams struct {
 	ClubName      string
 	LineupID      int32
 	LineupPlayers []queries.ListLineupPlayersByLineupIDRow
+	Mirror        bool
 }
 
 templ AddLineupPlayer(params AddLineupPlayerParams) {
@@ -20,13 +21,13 @@ templ AddLineupPlayer(params AddLineupPlayerParams) {
 			<div class="flex flex-col space-y-4">
 				for i := range(5) {
 					<div class="flex items-center space-x-4 justify-center">
-						if i == 0 {
+						if (!params.Mirror && i == 0) || (params.Mirror && i == 4) {
 							if isPositionNoExist(0, params.LineupPlayers) {
 								<button
 									class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
 									disabled
 								>
-									E
+									{ strconv.Itoa(int(FindLineupPlayerByPositionNo(0, params.LineupPlayers).No)) }
 								</button>
 							} else {
 								<button
@@ -39,20 +40,22 @@ templ AddLineupPlayer(params AddLineupPlayerParams) {
 							}
 						} else {
 							for j := range(5) {
-								if isPositionNoExist(i*10 + j, params.LineupPlayers) {
+								if isPositionNoExist(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers) {
 									<button
 										class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
 										disabled
 									>
-										E
+										{ strconv.Itoa(int(FindLineupPlayerByPositionNo(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers).No)) }
 									</button>
 								} else {
 									<button
 										class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
-										hx-get={ "/cmps/lineup-players/add-form?lineup_id=" + strconv.Itoa(int(params.LineupID)) + "&position_no=" + strconv.Itoa(i*10+j) + "&club_id=" + params.ClubID }
+										hx-get={ "/cmps/lineup-players/add-form?lineup_id=" +
+											strconv.Itoa(int(params.LineupID)) + "&position_no=" +
+											strconv.Itoa(FindPositionNoFromIndex(i, j, params.Mirror)) + "&club_id=" + params.ClubID }
 										hx-swap="none"
 									>
-										+{ strconv.Itoa(i*10+j) }
+										+{ strconv.Itoa(FindPositionNoFromIndex(i, j, params.Mirror)) }
 									</button>
 								}
 							}
@@ -71,4 +74,20 @@ func isPositionNoExist(positionNo int, lineupPlayers []queries.ListLineupPlayers
 		}
 	}
 	return false
+}
+
+func FindLineupPlayerByPositionNo(positionNo int, lineupPlayers []queries.ListLineupPlayersByLineupIDRow) *queries.ListLineupPlayersByLineupIDRow {
+	for _, lineupPlayer := range lineupPlayers {
+		if lineupPlayer.PositionNo == int16(positionNo) {
+			return &lineupPlayer
+		}
+	}
+	return nil
+}
+
+func FindPositionNoFromIndex(i int, j int, mirror bool) int {
+	if mirror {
+		return (4-i)*10 + (4 - j)
+	}
+	return i*10 + j
 }

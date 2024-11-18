@@ -20,12 +20,14 @@ templ EditLineups(match queries.FindMatchByIDRow, homeLineupPlayers []queries.Li
 				ClubName:      match.HomeClubName,
 				LineupID:      match.HomeLineupID,
 				LineupPlayers: homeLineupPlayers,
+				Mirror:        false,
 			})
 			@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
 				ClubID:        match.AwayClubID,
 				ClubName:      match.AwayClubName,
 				LineupID:      match.AwayLineupID,
 				LineupPlayers: awayLineupPlayers,
+				Mirror:        true,
 			})
 		</main>
 	}
