@@ -4,6 +4,7 @@ import (
 	"embed"
 	"football-stat-goth/handlers"
 	"football-stat-goth/handlers/api"
+	"football-stat-goth/handlers/cmps"
 	"football-stat-goth/handlers/pages"
 	"football-stat-goth/handlers/pages/admin_pages"
 	"football-stat-goth/repos"
@@ -33,11 +34,19 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 
 	router.Route("/admin", func(r chi.Router) {
 		r.Get("/players/create", handlers.Make(admin_pages.HandleAdminCreatePlayersPage, repo))
+
+		r.Get("/matches/{matchID}/lineups", handlers.Make(admin_pages.HandleAdminEditLineupsPage, repo))
 	})
 
 	router.Route("/api", func(r chi.Router) {
 		r.Post("/signup", handlers.Make(api.HandleSignup, repo))
 		r.Post("/players", handlers.Make(api.HandleCreatePlayer, repo))
+
+		r.Post("/lineups/{lineupID}/lineup_players", handlers.Make(api.HandleCreateLineupPlayer, repo))
+	})
+
+	router.Route("/cmps", func(r chi.Router) {
+		r.Get("/lineup-players/add-form", handlers.Make(cmps.HandleAddLineupPlayerForm, repo))
 	})
 }
 
