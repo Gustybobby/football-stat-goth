@@ -1,0 +1,90 @@
+package views
+
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/services/plformat"
+	"football-stat-goth/views/components"
+	"football-stat-goth/views/layouts"
+	"strconv"
+)
+
+templ Match(fixtures []queries.ListMatchesWithClubsAndGoalsRow, match queries.FindMatchByIDRow) {
+	@layouts.Base() {
+		@components.Fixture(fixtures)
+		@components.Nav()
+		<main class="w-full p-4 bg-primary-background grid xl:grid-cols-2 grid-cols-1 gap-4">
+			<section class="rounded-lg border border-primary shadow-lg w-full p-4">
+				<div class="text-lg text-center w-full font-semibold text-secondary mb-2">
+					{ match.StartAt.Time.Local().Format("02 Jan 2006 15:04") } • { match.Location }
+				</div>
+				<div class="grid grid-cols-1 md:grid-cols-5 place-items-center w-full">
+					<div class="flex items-center space-x-4 col-span-2 justify-start w-full">
+						<img src={ match.HomeClubLogo } class="size-20"/>
+						<span class="font-bold text-2xl text-left w-full border-b-4 border-secondary-background">
+							{ match.HomeClubName }
+						</span>
+					</div>
+					<div class="w-full text-4xl text-center font-bold py-4 px-6 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-lg">
+						{ strconv.Itoa(int(match.HomeGoals)) } - { strconv.Itoa(int(match.AwayGoals)) }
+					</div>
+					<div class="flex items-center space-x-4 col-span-2 justify-end w-full">
+						<span class="font-bold text-2xl text-right w-full border-b-4 border-secondary-background">
+							{ match.AwayClubName }
+						</span>
+						<img src={ match.AwayClubLogo } class="size-20"/>
+					</div>
+				</div>
+				<div class="text-xl text-center w-full font-bold text-secondary mt-4">
+					{ match.Season }
+				</div>
+				<div class="text-2xl text-center w-full font-bold text-secondary">
+					Matchweek { strconv.Itoa(int(match.Week)) }
+				</div>
+				if match.IsFinished {
+					<div class="grid grid-cols-3 my-4 text-lg">
+						<ul class="text-center space-y-4">
+							<li>{ plformat.FormatPgTypeNumeric(match.HomePossession) }</li>
+							<li>{ strconv.Itoa(int(match.HomeShotsOnTarget)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeShots)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeTouches)) }</li>
+							<li>{ strconv.Itoa(int(match.HomePasses)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeTackles)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeClearances)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeCorners)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeOffsides)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeYellowCards)) }</li>
+							<li>{ strconv.Itoa(int(match.HomeFoulsConceded)) }</li>
+						</ul>
+						<ul class="text-center space-y-4 font-semibold">
+							<li>Possession %</li>
+							<li>Shots on target</li>
+							<li>Shots</li>
+							<li>Touches</li>
+							<li>Passes</li>
+							<li>Tackles</li>
+							<li>Clearances</li>
+							<li>Corners</li>
+							<li>Offsides</li>
+							<li>Yellow cards</li>
+							<li>Fouls conceded</li>
+						</ul>
+						<ul class="text-center space-y-4">
+							<li>{ plformat.FormatPgTypeNumeric(match.AwayPossession) }</li>
+							<li>{ strconv.Itoa(int(match.AwayShotsOnTarget)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayShots)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayTouches)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayPasses)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayTackles)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayClearances)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayCorners)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayOffsides)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayYellowCards)) }</li>
+							<li>{ strconv.Itoa(int(match.AwayFoulsConceded)) }</li>
+						</ul>
+					</div>
+				}
+			</section>
+			<section class="rounded-lg border border-primary shadow-lg w-full p-4"></section>
+		</main>
+	}
+}

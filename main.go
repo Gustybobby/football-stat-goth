@@ -28,6 +28,7 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Get("/clubs", handlers.Make(pages.HandleClubsPage, repo))
 	router.Get("/fantasy", handlers.Make(pages.HandleFantasyPage, repo))
 	router.Get("/clubs/{clubID}", handlers.Make(pages.HandleClubPage, repo))
+	router.Get("/matches/{matchID}", handlers.Make(pages.HandleMatchPage, repo))
 	router.Get("/signup", handlers.Make(pages.HandleSignupPage, repo))
 
 	router.Route("/admin", func(r chi.Router) {
