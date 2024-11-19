@@ -9,6 +9,8 @@
 /* Tooltip text */
 .tooltip .tooltiptext {
   visibility: hidden;
+  opacity: 0;
+  transition: 0.15s;
   text-align: center;
   position: absolute;
   z-index: 1;
@@ -17,4 +19,5 @@
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
+  opacity: 1;
 }
