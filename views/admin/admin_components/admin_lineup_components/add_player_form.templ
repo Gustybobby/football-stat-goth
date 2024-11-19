@@ -1,18 +1,33 @@
 package admin_lineup_components
 
-import "strconv"
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/views/components/match_components"
+	"strconv"
+)
 
-templ AddPlayerForm(lineupID int, positionNo string, clubID string) {
+type AddPlayerFormParams struct {
+	LineupID   int
+	PositionNo string
+	ClubID     string
+	Mirror     string
+}
+
+templ AddPlayerForm(params AddPlayerFormParams) {
 	<div>
-		<div hx-swap-oob={ "beforeend:#add_player_" + clubID }>
-			<form hx-post={ "/api/lineups/" + strconv.Itoa(lineupID) + "/lineup_players" }>
-				<h1 class="font-semibold text-lg">Add { clubID } Player at Position No. { positionNo }</h1>
+		<div hx-swap-oob={ "beforeend:#add_player_" + params.ClubID }>
+			<form
+				class="motion-preset-expand motion-duration-150"
+				hx-post={ "/api/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
+			>
+				<h1 class="font-semibold text-lg">Add { params.ClubID } Player at Position No. { params.PositionNo }</h1>
 				<span>No.</span>
 				<input
 					type="text"
 					name="no"
 					class="p-1 rounded-md border border-primary w-full"
 					required
+					autocomplete="off"
 				/>
 				<span>Position</span>
 				<select
@@ -26,8 +41,9 @@ templ AddPlayerForm(lineupID int, positionNo string, clubID string) {
 					<option>FWD</option>
 					<option>SUB</option>
 				</select>
-				<input hidden name="position_no" value={ positionNo }/>
-				<input hidden name="club_id" value={ clubID }/>
+				<input hidden name="position_no" value={ params.PositionNo }/>
+				<input hidden name="club_id" value={ params.ClubID }/>
+				<input hidden name="mirror" value={ params.Mirror }/>
 				<button
 					type="submit"
 					class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
@@ -36,5 +52,17 @@ templ AddPlayerForm(lineupID int, positionNo string, clubID string) {
 				</button>
 			</form>
 		</div>
+	</div>
+}
+
+templ AddLineupPlayerFormResponse(
+	params AddLineupPlayerParams,
+	match queries.FindMatchByIDRow,
+	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+) {
+	<div>
+		@PositionButtonGroup(params)
+		@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
 	</div>
 }

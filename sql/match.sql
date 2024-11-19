@@ -81,6 +81,15 @@ ON "away_lineup".club_id = "away_club".id
 WHERE "match".id = $1
 LIMIT 1;
 
+-- name: FindMatchIDFromLineupID :one
+SELECT
+    "match".id
+FROM "match"
+WHERE
+    "match".home_lineup_id = sqlc.arg('lineup_id')::integer OR
+    "match".away_lineup_id = sqlc.arg('lineup_id')::integer
+LIMIT 1;
+
 -- name: ListClubStandings :many
 WITH "match_score" AS (
     SELECT

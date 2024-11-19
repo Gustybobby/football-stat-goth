@@ -154,6 +154,23 @@ func (q *Queries) FindMatchByID(ctx context.Context, id int32) (FindMatchByIDRow
 	return i, err
 }
 
+const findMatchIDFromLineupID = `-- name: FindMatchIDFromLineupID :one
+SELECT
+    "match".id
+FROM "match"
+WHERE
+    "match".home_lineup_id = $1::integer OR
+    "match".away_lineup_id = $1::integer
+LIMIT 1
+`
+
+func (q *Queries) FindMatchIDFromLineupID(ctx context.Context, lineupID int32) (int32, error) {
+	row := q.db.QueryRow(ctx, findMatchIDFromLineupID, lineupID)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
+}
+
 const listClubStandings = `-- name: ListClubStandings :many
 WITH "match_score" AS (
     SELECT

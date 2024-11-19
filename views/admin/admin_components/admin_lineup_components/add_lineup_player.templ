@@ -18,53 +18,67 @@ templ AddLineupPlayer(params AddLineupPlayerParams) {
 		<h1 class="text-2xl font-bold mb-4">{ params.ClubName }</h1>
 		<div class="grid grid-cols-2 gap-4">
 			<div class="space-y-4" id={ "add_player_" + params.ClubID }></div>
-			<div class="flex flex-col space-y-4">
-				for i := range(5) {
-					<div class="flex items-center space-x-4 justify-center">
-						if (!params.Mirror && i == 0) || (params.Mirror && i == 4) {
-							if isPositionNoExist(0, params.LineupPlayers) {
-								<button
-									class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
-									disabled
-								>
-									{ strconv.Itoa(int(FindLineupPlayerByPositionNo(0, params.LineupPlayers).No)) }
-								</button>
-							} else {
-								<button
-									class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
-									hx-get={ "/cmps/lineup-players/add-form?lineup_id=" + strconv.Itoa(int(params.LineupID)) + "&position_no=" + strconv.Itoa(0) + "&club_id=" + params.ClubID }
-									hx-swap="none"
-								>
-									+0
-								</button>
-							}
-						} else {
-							for j := range(5) {
-								if isPositionNoExist(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers) {
-									<button
-										class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
-										disabled
-									>
-										{ strconv.Itoa(int(FindLineupPlayerByPositionNo(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers).No)) }
-									</button>
-								} else {
-									<button
-										class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
-										hx-get={ "/cmps/lineup-players/add-form?lineup_id=" +
-											strconv.Itoa(int(params.LineupID)) + "&position_no=" +
-											strconv.Itoa(FindPositionNoFromIndex(i, j, params.Mirror)) + "&club_id=" + params.ClubID }
-										hx-swap="none"
-									>
-										+{ strconv.Itoa(FindPositionNoFromIndex(i, j, params.Mirror)) }
-									</button>
-								}
-							}
-						}
-					</div>
-				}
-			</div>
+			@PositionButtonGroup(params)
 		</div>
 	</section>
+}
+
+templ PositionButtonGroup(params AddLineupPlayerParams) {
+	<div
+		class="flex flex-col space-y-4"
+		id={ "position_button_group_" + params.ClubID }
+		hx-swap-oob={ "#" + "position_button_group_" + params.ClubID }
+	>
+		for i := range(5) {
+			<div class="flex items-center space-x-4 justify-center">
+				if (!params.Mirror && i == 0) || (params.Mirror && i == 4) {
+					if isPositionNoExist(0, params.LineupPlayers) {
+						<button
+							class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
+							disabled
+						>
+							{ strconv.Itoa(int(FindLineupPlayerByPositionNo(0, params.LineupPlayers).No)) }
+						</button>
+					} else {
+						<button
+							class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
+							hx-get={ buttonHxGet(0, params) }
+							hx-swap="none"
+						>
+							+0
+						</button>
+					}
+				} else {
+					for j := range(5) {
+						if isPositionNoExist(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers) {
+							<button
+								class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
+								disabled
+							>
+								{ strconv.Itoa(int(FindLineupPlayerByPositionNo(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers).No)) }
+							</button>
+						} else {
+							<button
+								class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
+								hx-get={ buttonHxGet(FindPositionNoFromIndex(i, j, params.Mirror), params) }
+								hx-swap="none"
+							>
+								+{ strconv.Itoa(FindPositionNoFromIndex(i, j, params.Mirror)) }
+							</button>
+						}
+					}
+				}
+			</div>
+		}
+	</div>
+}
+
+func buttonHxGet(positionNo int, params AddLineupPlayerParams) string {
+	return "/cmps/lineup-players/add-form?lineup_id=" +
+		strconv.Itoa(int(params.LineupID)) +
+		"&position_no=" + strconv.Itoa(positionNo) +
+		"&club_id=" + params.ClubID +
+		"&mirror=" + strconv.FormatBool(params.Mirror)
 }
 
 func isPositionNoExist(positionNo int, lineupPlayers []queries.ListLineupPlayersByLineupIDRow) bool {

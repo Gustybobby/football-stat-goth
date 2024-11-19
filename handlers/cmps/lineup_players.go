@@ -14,5 +14,10 @@ func HandleAddLineupPlayerForm(w http.ResponseWriter, r *http.Request, repo *rep
 		return err
 	}
 
-	return handlers.Render(w, r, admin_lineup_components.AddPlayerForm(lineup_id, r.URL.Query().Get("position_no"), r.URL.Query().Get("club_id")))
+	return handlers.Render(w, r, admin_lineup_components.AddPlayerForm(admin_lineup_components.AddPlayerFormParams{
+		LineupID:   lineup_id,
+		PositionNo: r.URL.Query().Get("position_no"),
+		ClubID:     r.URL.Query().Get("club_id"),
+		Mirror:     r.URL.Query().Get("mirror"),
+	}))
 }
