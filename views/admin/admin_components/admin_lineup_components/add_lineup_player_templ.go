@@ -102,7 +102,7 @@ func AddLineupPlayer(params AddLineupPlayerParams) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var5 string
-					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/cmps/lineup-players/add-form?lineup_id=" + strconv.Itoa(int(params.LineupID)) + "&position_no=" + strconv.Itoa(i) + "&club_id=" + params.ClubID)
+					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("/cmps/lineup-players/add-form?lineup_id=" + strconv.Itoa(int(params.LineupID)) + "&position_no=" + strconv.Itoa(0) + "&club_id=" + params.ClubID)
 					if templ_7745c5c3_Err != nil {
 						return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/admin/admin_components/admin_lineup_components/add_lineup_player.templ`, Line: 35, Col: 163}
 					}
