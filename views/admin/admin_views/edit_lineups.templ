@@ -8,7 +8,11 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ EditLineups(match queries.FindMatchByIDRow, homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow, awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow) {
+templ EditLineups(
+	match queries.FindMatchByIDRow,
+	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+) {
 	@layouts.Base() {
 		@admin_components.AdminNav()
 		<main class="w-full p-4 bg-primary-background flex flex-col items-center space-y-4">
