@@ -11,6 +11,149 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const findMatchByID = `-- name: FindMatchByID :one
+SELECT
+    match.id, match.home_lineup_id, match.away_lineup_id, match.season, match.week, match.location, match.start_at, match.is_finished,
+    "home_club".id AS home_club_id,
+    "home_club".short_name AS home_club_name,
+    "home_club".logo AS home_club_logo,
+    "home_lineup".goals AS home_goals,
+    "home_lineup".possession AS home_possession,
+    "home_lineup".shots_on_target AS home_shots_on_target,
+    "home_lineup".shots AS home_shots,
+    "home_lineup".touches AS home_touches,
+    "home_lineup".passes AS home_passes,
+    "home_lineup".tackles AS home_tackles,
+    "home_lineup".clearances AS home_clearances,
+    "home_lineup".corners AS home_corners,
+    "home_lineup".offsides AS home_offsides,
+    (
+        SELECT
+            CAST(COALESCE(SUM("lineup_player".yellow_cards), 0) AS INTEGER)
+        FROM "lineup_player"
+        WHERE "lineup_player".lineup_id = "home_lineup".id
+    ) AS home_yellow_cards,
+    "home_lineup".fouls_conceded AS home_fouls_conceded,
+    "away_club".id AS away_club_id,
+    "away_club".short_name AS away_club_name,
+    "away_club".logo AS away_club_logo,
+    "away_lineup".goals AS away_goals,
+    "away_lineup".possession AS away_possession,
+    "away_lineup".shots_on_target AS away_shots_on_target,
+    "away_lineup".shots AS away_shots,
+    "away_lineup".touches AS away_touches,
+    "away_lineup".passes AS away_passes,
+    "away_lineup".tackles AS away_tackles,
+    "away_lineup".clearances AS away_clearances,
+    "away_lineup".corners AS away_corners,
+    "away_lineup".offsides AS away_offsides,
+    (
+        SELECT
+            CAST(COALESCE(SUM("lineup_player".yellow_cards), 0) AS INTEGER)
+        FROM "lineup_player"
+        WHERE "lineup_player".lineup_id = "away_lineup".id
+    ) AS away_yellow_cards,
+    "away_lineup".fouls_conceded AS away_fouls_conceded
+FROM "match"
+INNER JOIN "lineup" as "home_lineup"
+ON "match".home_lineup_id = "home_lineup".id
+INNER JOIN "club" as "home_club"
+ON "home_lineup".club_id = "home_club".id
+INNER JOIN "lineup" as "away_lineup"
+ON "match".away_lineup_id = "away_lineup".id
+INNER JOIN "club" as "away_club"
+ON "away_lineup".club_id = "away_club".id
+WHERE "match".id = $1
+LIMIT 1
+`
+
+type FindMatchByIDRow struct {
+	ID                int32
+	HomeLineupID      int32
+	AwayLineupID      int32
+	Season            string
+	Week              int16
+	Location          string
+	StartAt           pgtype.Timestamp
+	IsFinished        bool
+	HomeClubID        string
+	HomeClubName      string
+	HomeClubLogo      string
+	HomeGoals         int16
+	HomePossession    pgtype.Numeric
+	HomeShotsOnTarget int16
+	HomeShots         int16
+	HomeTouches       int16
+	HomePasses        int16
+	HomeTackles       int16
+	HomeClearances    int16
+	HomeCorners       int16
+	HomeOffsides      int16
+	HomeYellowCards   int32
+	HomeFoulsConceded int16
+	AwayClubID        string
+	AwayClubName      string
+	AwayClubLogo      string
+	AwayGoals         int16
+	AwayPossession    pgtype.Numeric
+	AwayShotsOnTarget int16
+	AwayShots         int16
+	AwayTouches       int16
+	AwayPasses        int16
+	AwayTackles       int16
+	AwayClearances    int16
+	AwayCorners       int16
+	AwayOffsides      int16
+	AwayYellowCards   int32
+	AwayFoulsConceded int16
+}
+
+func (q *Queries) FindMatchByID(ctx context.Context, id int32) (FindMatchByIDRow, error) {
+	row := q.db.QueryRow(ctx, findMatchByID, id)
+	var i FindMatchByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.HomeLineupID,
+		&i.AwayLineupID,
+		&i.Season,
+		&i.Week,
+		&i.Location,
+		&i.StartAt,
+		&i.IsFinished,
+		&i.HomeClubID,
+		&i.HomeClubName,
+		&i.HomeClubLogo,
+		&i.HomeGoals,
+		&i.HomePossession,
+		&i.HomeShotsOnTarget,
+		&i.HomeShots,
+		&i.HomeTouches,
+		&i.HomePasses,
+		&i.HomeTackles,
+		&i.HomeClearances,
+		&i.HomeCorners,
+		&i.HomeOffsides,
+		&i.HomeYellowCards,
+		&i.HomeFoulsConceded,
+		&i.AwayClubID,
+		&i.AwayClubName,
+		&i.AwayClubLogo,
+		&i.AwayGoals,
+		&i.AwayPossession,
+		&i.AwayShotsOnTarget,
+		&i.AwayShots,
+		&i.AwayTouches,
+		&i.AwayPasses,
+		&i.AwayTackles,
+		&i.AwayClearances,
+		&i.AwayCorners,
+		&i.AwayOffsides,
+		&i.AwayYellowCards,
+		&i.AwayFoulsConceded,
+	)
+	return i, err
+}
+
 const listClubStandings = `-- name: ListClubStandings :many
 WITH "match_score" AS (
     SELECT

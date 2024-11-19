@@ -99,11 +99,12 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 }
 
 type Club struct {
-	ID      string
-	Name    string
-	Stadium pgtype.Text
-	Logo    string
-	Est     int32
+	ID        string
+	Name      string
+	ShortName string
+	Stadium   pgtype.Text
+	Logo      string
+	Est       int32
 }
 
 type Lineup struct {
@@ -126,6 +127,7 @@ type LineupPlayer struct {
 	LineupID    int32
 	PlayerID    int32
 	PositionNo  int16
+	Position    PlayerPosition
 	Goals       int16
 	YellowCards int16
 	RedCards    int16

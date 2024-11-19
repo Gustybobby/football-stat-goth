@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"football-stat-goth/queries"
+	"football-stat-goth/services/plformat"
 	"strconv"
 )
 
@@ -56,7 +57,7 @@ func Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) templ.Component 
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(match.HomeClubID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 17, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 18, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -69,7 +70,7 @@ func Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) templ.Component 
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(match.HomeClubLogo)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 18, Col: 35}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 19, Col: 35}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -82,7 +83,7 @@ func Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) templ.Component 
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(match.AwayClubLogo)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 20, Col: 35}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 21, Col: 35}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -95,7 +96,7 @@ func Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) templ.Component 
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(match.AwayClubID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 21, Col: 28}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 22, Col: 28}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -108,7 +109,7 @@ func Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) templ.Component 
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.HomeGoals)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 24, Col: 42}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 25, Col: 42}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -121,7 +122,7 @@ func Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) templ.Component 
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(int(match.AwayGoals)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 24, Col: 83}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 25, Col: 83}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -132,9 +133,9 @@ func Fixture(matches []queries.ListMatchesWithClubsAndGoalsRow) templ.Component 
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var9 string
-				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(match.StartAt.Time.Local().Format("02 Jan 2006 15:04"))
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(plformat.FormatTimestamp(match.StartAt.Time.Local()))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 26, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/fixture.templ`, Line: 27, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {

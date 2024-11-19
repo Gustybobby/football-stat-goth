@@ -1,3 +1,11 @@
+-- name: FindPlayerIDByClubAndNo :one
+SELECT
+    "player".id
+FROM "player"
+WHERE
+    "player".club_id = $1 AND
+    "player".no = $2;
+
 -- name: CreatePlayer :one
 INSERT INTO "player" (
     club_id,

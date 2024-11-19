@@ -1,0 +1,34 @@
+package admin_views
+
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/views/admin/admin_components"
+	"football-stat-goth/views/admin/admin_components/admin_lineup_components"
+	"football-stat-goth/views/components/match_components"
+	"football-stat-goth/views/layouts"
+)
+
+templ EditLineups(match queries.FindMatchByIDRow, homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow, awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow) {
+	@layouts.Base() {
+		@admin_components.AdminNav()
+		<main class="w-full p-4 bg-primary-background flex flex-col items-center space-y-4">
+			<div class="w-full max-w-7xl">
+				@match_components.MatchResult(match)
+			</div>
+			@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
+				ClubID:        match.HomeClubID,
+				ClubName:      match.HomeClubName,
+				LineupID:      match.HomeLineupID,
+				LineupPlayers: homeLineupPlayers,
+				Mirror:        false,
+			})
+			@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
+				ClubID:        match.AwayClubID,
+				ClubName:      match.AwayClubName,
+				LineupID:      match.AwayLineupID,
+				LineupPlayers: awayLineupPlayers,
+				Mirror:        true,
+			})
+		</main>
+	}
+}

@@ -18,14 +18,14 @@ templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 							Your Team
 						</h1>
 						<div
-							class="relative w-full h-3/5 rounded-b-lg border items-center border-primary shadow-lg bg-gradient-to-tr from-secondary-foreground from-20% via-sky-500 via-50% to-emerald-500 to-90%"
+							class="relative w-full h-[750px] rounded-b-lg border items-center border-primary shadow-lg bg-gradient-to-tr from-secondary-foreground from-20% via-sky-500 via-50% to-emerald-500 to-90%"
 						>
 							<img
 								class="w-full h-full"
 								src="/public/1-1-football-pitch.png"
 							/>
 							// make 3 section for each row instead, then make section within thos.
-							<div class="absolute inset-0 flex items-center px-14">
+							<div class="absolute inset-0 flex items-center px-14 -translate-y-11">
 								<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11">
 									<div class="flex h-full justify-center">
 										@components.PlayerCard()
@@ -57,9 +57,9 @@ templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 							>
 								Players
 							</h1>
-							<ul class=" px-4 ">
+							<ul class="px-4">
 								for range(8) {
-									<a href="" class="h-full flex justify-center">
+									<a href="" class="h-full flex justify-center py-6">
 										<div class="flip-card w-32 h-40">
 											<div class="flip-card-inner">
 												<div class="flip-card-front">

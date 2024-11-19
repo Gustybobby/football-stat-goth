@@ -2,6 +2,7 @@ package components
 
 import (
 	"football-stat-goth/queries"
+	"football-stat-goth/services/plformat"
 	"strconv"
 )
 
@@ -14,7 +15,7 @@ templ ClubResult(results []queries.ListMatchesWithClubsAndGoalsRow) {
 			<ul>
 				for _, match := range results {
 					<li class="border-b border-primary">
-						<div class="w-full text-center p-2">{ match.StartAt.Time.Local().Format("02/01/2006 15:04") }</div>
+						<div class="w-full text-center p-2">{ plformat.FormatTimestamp(match.StartAt.Time.Local()) }</div>
 						<a
 							class="grid grid-cols-5 text-secondary-background font-bold gap-2 place-items-center p-2 hover:bg-primary-foreground"
 							href={ templ.SafeURL("/matches/" + strconv.Itoa(int(match.ID))) }
