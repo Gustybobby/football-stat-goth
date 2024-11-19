@@ -6,9 +6,7 @@
     "compose:build": "npm run build && docker compose up --build"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.13"
-  },
-  "dependencies": {
-    "tailwindcss-motion": "^0.4.1-beta"
+    "tailwindcss": "^3.4.13",
+    "tailwindcss-motion": "^0.4.3-beta"
   }
 }
