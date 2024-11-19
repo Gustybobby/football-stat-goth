@@ -11,7 +11,7 @@ templ PositionPin(
 	light bool,
 ) {
 	<div
-		class={ "size-10 text-white font-bold rounded-full flex items-center justify-center text-center shadow-lg tooltip hover:scale-110 transition-transform " + pinVariant(light) }
+		class={ "size-10 text-white font-bold rounded-full flex items-center justify-center text-center shadow-lg tooltip hover:scale-110 transition-transform cursor-pointer " + pinVariant(light) }
 	>
 		{ strconv.Itoa(no) }
 		<div class="tooltiptext -top-[6.5rem] bg-white text-black p-2 rounded-lg border border-primary shadow-lg w-56 h-24 flex items-center space-x-2 text-sm">
