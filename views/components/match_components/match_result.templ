@@ -12,21 +12,27 @@ templ MatchResult(match queries.FindMatchByIDRow) {
 			{ plformat.FormatTimestamp(match.StartAt.Time.Local()) } • { match.Location }
 		</div>
 		<div class="grid grid-cols-1 md:grid-cols-5 place-items-center w-full">
-			<div class="flex items-center space-x-4 col-span-2 justify-start w-full">
+			<a
+				href={ templ.SafeURL("/clubs/" + match.HomeClubID) }
+				class="flex items-center space-x-4 col-span-2 justify-start w-full hover:underline"
+			>
 				<img src={ match.HomeClubLogo } class="size-20"/>
 				<span class="font-bold text-2xl text-left w-full border-b-4 border-secondary-background">
 					{ match.HomeClubName }
 				</span>
-			</div>
+			</a>
 			<div class="w-full text-4xl text-center font-bold py-4 px-6 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-lg">
 				{ strconv.Itoa(int(match.HomeGoals)) } - { strconv.Itoa(int(match.AwayGoals)) }
 			</div>
-			<div class="flex items-center space-x-4 col-span-2 justify-end w-full">
+			<a
+				href={ templ.SafeURL("/clubs/" + match.AwayClubID) }
+				class="flex items-center space-x-4 col-span-2 justify-end w-full hover:underline"
+			>
 				<span class="font-bold text-2xl text-right w-full border-b-4 border-secondary-background">
 					{ match.AwayClubName }
 				</span>
 				<img src={ match.AwayClubLogo } class="size-20"/>
-			</div>
+			</a>
 		</div>
 		<div class="text-xl text-center w-full font-bold text-secondary mt-4">
 			{ match.Season }
