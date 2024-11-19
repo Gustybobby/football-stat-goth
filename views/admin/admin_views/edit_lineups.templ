@@ -15,24 +15,29 @@ templ EditLineups(
 ) {
 	@layouts.Base() {
 		@admin_components.AdminNav()
-		<main class="w-full p-4 bg-primary-background flex flex-col items-center space-y-4">
-			<div class="w-full max-w-7xl">
+		<main class="w-full p-4 bg-primary-background grid 2xl:grid-cols-5 grid-cols-1 gap-4">
+			<div class="2xl:col-span-3">
 				@match_components.MatchResult(match)
 			</div>
-			@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
-				ClubID:        match.HomeClubID,
-				ClubName:      match.HomeClubName,
-				LineupID:      match.HomeLineupID,
-				LineupPlayers: homeLineupPlayers,
-				Mirror:        false,
-			})
-			@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
-				ClubID:        match.AwayClubID,
-				ClubName:      match.AwayClubName,
-				LineupID:      match.AwayLineupID,
-				LineupPlayers: awayLineupPlayers,
-				Mirror:        true,
-			})
+			<div class="2xl:col-span-2">
+				@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
+			</div>
+			<div class="col-span-full space-y-4">
+				@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
+					ClubID:        match.HomeClubID,
+					ClubName:      match.HomeClubName,
+					LineupID:      match.HomeLineupID,
+					LineupPlayers: homeLineupPlayers,
+					Mirror:        false,
+				})
+				@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
+					ClubID:        match.AwayClubID,
+					ClubName:      match.AwayClubName,
+					LineupID:      match.AwayLineupID,
+					LineupPlayers: awayLineupPlayers,
+					Mirror:        true,
+				})
+			</div>
 		</main>
 	}
 }

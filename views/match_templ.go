@@ -73,73 +73,15 @@ func Match(
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><section class=\"2xl:col-span-2 rounded-lg border border-primary shadow-lg w-full\"><h1 class=\"text-center pt-4 font-bold text-xl\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"2xl:col-span-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(match.HomeClubName)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/match.templ`, Line: 24, Col: 71}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			templ_7745c5c3_Err = match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1><div class=\"w-full relative h-[726px]\"><img src=\"/public/1-1-football-pitch.png\" class=\"absolute w-full h-full\"><div class=\"p-4 relative z-20 h-full flex flex-col items-center w-full\"><div class=\"flex flex-col items-center h-[230px] w-full justify-around mt-10\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			for _, posLineupPlayers := range listLineupPlayersByPositionNo(homeLineupPlayers, false) {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex items-center justify-center space-x-12\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				for _, lineupPlayer := range posLineupPlayers {
-					templ_7745c5c3_Err = match_components.PositionPin(int(lineupPlayer.No), lineupPlayer.Firstname, lineupPlayer.Lastname, string(lineupPlayer.Position), lineupPlayer.Image.String, false).Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"flex flex-col items-center h-[352px] w-full justify-around\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			for _, posLineupPlayers := range listLineupPlayersByPositionNo(awayLineupPlayers, true) {
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex items-center justify-center space-x-12\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				for _, lineupPlayer := range posLineupPlayers {
-					templ_7745c5c3_Err = match_components.PositionPin(int(lineupPlayer.No), lineupPlayer.Firstname, lineupPlayer.Lastname, string(lineupPlayer.Position), lineupPlayer.Image.String, true).Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><h1 class=\"text-center pb-4 font-bold text-xl\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(match.AwayClubName)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/match.templ`, Line: 48, Col: 71}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h1></section></main>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -151,42 +93,6 @@ func Match(
 		}
 		return templ_7745c5c3_Err
 	})
-}
-
-func listLineupPlayersByPositionNo(
-	lineupPlayers []queries.ListLineupPlayersByLineupIDRow,
-	mirror bool,
-) [][]queries.ListLineupPlayersByLineupIDRow {
-	var lineupPlayersArr [][]queries.ListLineupPlayersByLineupIDRow
-	for i := range 5 {
-		var players []queries.ListLineupPlayersByLineupIDRow
-		for j := range 5 {
-			for _, lineupPlayer := range lineupPlayers {
-				if lineupPlayer.PositionNo == int16(findPositionNoFromIndex(i, j, mirror)) {
-					players = append(players, lineupPlayer)
-					break
-				}
-			}
-		}
-		lineupPlayersArr = append(lineupPlayersArr, players)
-	}
-	return lineupPlayersArr
-}
-
-func findLineupPlayerByPositionNo(positionNo int, lineupPlayers []queries.ListLineupPlayersByLineupIDRow) *queries.ListLineupPlayersByLineupIDRow {
-	for _, lineupPlayer := range lineupPlayers {
-		if lineupPlayer.PositionNo == int16(positionNo) {
-			return &lineupPlayer
-		}
-	}
-	return nil
-}
-
-func findPositionNoFromIndex(i int, j int, mirror bool) int {
-	if mirror {
-		return (4-i)*10 + (4 - j)
-	}
-	return i*10 + j
 }
 
 var _ = templruntime.GeneratedTemplate

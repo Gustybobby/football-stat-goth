@@ -29,7 +29,7 @@ func AdminNav() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"h-16 w-full flex justify-between items-center px-4 sticky top-0 bg-secondary-background text-white border-b-4 border-secondary\"><a class=\"flex items-center space-x-2\" href=\"/admin\"><h1 class=\"font-bold text-3xl\">PLaymaker Dashboard</h1></a><nav class=\"space-x-4 font-semibold hidden sm:flex\"><a href=\"/admin\" class=\"hover:underline\">Home</a> <a href=\"/admin/players\" class=\"hover:underline\">Players</a></nav></header>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<header class=\"h-16 w-full flex justify-between items-center px-4 sticky top-0 bg-secondary-background text-white border-b-4 border-secondary z-50\"><a class=\"flex items-center space-x-2\" href=\"/admin\"><h1 class=\"font-bold text-3xl\">PLaymaker Dashboard</h1></a><nav class=\"space-x-4 font-semibold hidden sm:flex\"><a href=\"/admin\" class=\"hover:underline\">Home</a> <a href=\"/admin/players\" class=\"hover:underline\">Players</a></nav></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

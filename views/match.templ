@@ -20,69 +20,9 @@ templ Match(
 			<div class="2xl:col-span-3">
 				@match_components.MatchResult(match)
 			</div>
-			<section class="2xl:col-span-2 rounded-lg border border-primary shadow-lg w-full">
-				<h1 class="text-center pt-4 font-bold text-xl">{ match.HomeClubName }</h1>
-				<div class="w-full relative h-[726px]">
-					<img src="/public/1-1-football-pitch.png" class="absolute w-full h-full"/>
-					<div class="p-4 relative z-20 h-full flex flex-col items-center w-full">
-						<div class="flex flex-col items-center h-[230px] w-full justify-around mt-10">
-							for _, posLineupPlayers := range(listLineupPlayersByPositionNo(homeLineupPlayers, false)) {
-								<div class="flex items-center justify-center space-x-12">
-									for _, lineupPlayer := range(posLineupPlayers) {
-										@match_components.PositionPin(int(lineupPlayer.No), lineupPlayer.Firstname, lineupPlayer.Lastname, string(lineupPlayer.Position), lineupPlayer.Image.String, false)
-									}
-								</div>
-							}
-						</div>
-						<div class="flex flex-col items-center h-[352px] w-full justify-around">
-							for _, posLineupPlayers := range(listLineupPlayersByPositionNo(awayLineupPlayers, true)) {
-								<div class="flex items-center justify-center space-x-12">
-									for _, lineupPlayer := range(posLineupPlayers) {
-										@match_components.PositionPin(int(lineupPlayer.No), lineupPlayer.Firstname, lineupPlayer.Lastname, string(lineupPlayer.Position), lineupPlayer.Image.String, true)
-									}
-								</div>
-							}
-						</div>
-					</div>
-				</div>
-				<h1 class="text-center pb-4 font-bold text-xl">{ match.AwayClubName }</h1>
-			</section>
+			<div class="2xl:col-span-2">
+				@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
+			</div>
 		</main>
 	}
-}
-
-func listLineupPlayersByPositionNo(
-	lineupPlayers []queries.ListLineupPlayersByLineupIDRow,
-	mirror bool,
-) [][]queries.ListLineupPlayersByLineupIDRow {
-	var lineupPlayersArr [][]queries.ListLineupPlayersByLineupIDRow
-	for i := range 5 {
-		var players []queries.ListLineupPlayersByLineupIDRow
-		for j := range 5 {
-			for _, lineupPlayer := range lineupPlayers {
-				if lineupPlayer.PositionNo == int16(findPositionNoFromIndex(i, j, mirror)) {
-					players = append(players, lineupPlayer)
-					break
-				}
-			}
-		}
-		lineupPlayersArr = append(lineupPlayersArr, players)
-	}
-	return lineupPlayersArr
-}
-
-func findLineupPlayerByPositionNo(positionNo int, lineupPlayers []queries.ListLineupPlayersByLineupIDRow) *queries.ListLineupPlayersByLineupIDRow {
-	for _, lineupPlayer := range lineupPlayers {
-		if lineupPlayer.PositionNo == int16(positionNo) {
-			return &lineupPlayer
-		}
-	}
-	return nil
-}
-
-func findPositionNoFromIndex(i int, j int, mirror bool) int {
-	if mirror {
-		return (4-i)*10 + (4 - j)
-	}
-	return i*10 + j
 }
