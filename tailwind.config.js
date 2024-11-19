@@ -19,8 +19,10 @@ module.exports = {
         },
       },
       backgroundImage: {
-        'footballField': "url('/public/football-field-design-vector.jpg')"
+        'footballField': "url('/public/football-field-design-vector.jpg')",
+        'player_card': "url('/public/playerCard.png')"
       },
     },
   },
+  plugins: [require('tailwindcss-motion')], 
 };
