@@ -2,17 +2,43 @@ package match_components
 
 import "strconv"
 
-templ PositionPin(playerNo int) {
-	<div class="size-10 bg-secondary-background text-white font-bold rounded-full flex items-center justify-center text-center shadow-lg tooltip">
-		{ strconv.Itoa(playerNo) }
-		<div class="tooltiptext -top-20 bg-white text-black p-2 rounded-lg border border-primary shadow-lg w-64 h-24 flex items-center space-x-2">
-			<img src="https://uoolwtgtvthckgjejnjr.supabase.co/storage/v1/object/public/players/erling_haaland.webp" class="size-16"/>
+templ PositionPin(
+	no int,
+	firstname string,
+	lastname string,
+	position string,
+	image string,
+	light bool,
+) {
+	<div
+		class={ "size-10 text-white font-bold rounded-full flex items-center justify-center text-center shadow-lg tooltip " + pinVariant(light) }
+	>
+		{ strconv.Itoa(no) }
+		<div class="tooltiptext -top-20 bg-white text-black p-2 rounded-lg border border-primary shadow-lg w-72 h-24 flex items-center space-x-2">
+			<img src={ image } class="size-16"/>
 			<div class="flex flex-col items-start">
 				<a href="#" class="hover:underline">
-					<span>Erling Haaland ({ strconv.Itoa(playerNo) })</span>
+					<span>{ firstname } { lastname } ({ strconv.Itoa(no) })</span>
 				</a>
-				<span>Forward</span>
+				<span>
+					if position == "GK" {
+						GoalKeeper
+					} else if position == "DEF" {
+						Defender
+					} else if position == "MFD" {
+						Midfielder
+					} else if position == "FWD" {
+						Forward
+					}
+				</span>
 			</div>
 		</div>
 	</div>
+}
+
+func pinVariant(light bool) string {
+	if light {
+		return "bg-secondary-foreground"
+	}
+	return "bg-secondary-background"
 }

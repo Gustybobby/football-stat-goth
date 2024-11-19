@@ -7,63 +7,82 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ Match(fixtures []queries.ListMatchesWithClubsAndGoalsRow, match queries.FindMatchByIDRow) {
+templ Match(
+	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
+	match queries.FindMatchByIDRow,
+	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
 		@components.Nav()
-		<main class="w-full p-4 bg-primary-background grid xl:grid-cols-2 grid-cols-1 gap-4">
-			@match_components.MatchResult(match)
-			<section class="rounded-lg border border-primary shadow-lg w-full relative h-[1000px]">
-				<img src="/public/1-1-football-pitch.png" class="absolute w-full h-full"/>
-				<div class="p-4 relative z-20 h-full grid grid-rows-2">
-					<div class="flex flex-col items-center">
-						<div class="mt-20">
-							@match_components.PositionPin(30)
+		<main class="w-full p-4 bg-primary-background grid 2xl:grid-cols-5 grid-cols-1 gap-4">
+			<div class="2xl:col-span-3">
+				@match_components.MatchResult(match)
+			</div>
+			<section class="2xl:col-span-2 rounded-lg border border-primary shadow-lg w-full">
+				<h1 class="text-center pt-4 font-bold text-xl">{ match.HomeClubName }</h1>
+				<div class="w-full relative h-[726px]">
+					<img src="/public/1-1-football-pitch.png" class="absolute w-full h-full"/>
+					<div class="p-4 relative z-20 h-full flex flex-col items-center w-full">
+						<div class="flex flex-col items-center h-[230px] w-full justify-around mt-10">
+							for _, posLineupPlayers := range(listLineupPlayersByPositionNo(homeLineupPlayers, false)) {
+								<div class="flex items-center justify-center space-x-12">
+									for _, lineupPlayer := range(posLineupPlayers) {
+										@match_components.PositionPin(int(lineupPlayer.No), lineupPlayer.Firstname, lineupPlayer.Lastname, string(lineupPlayer.Position), lineupPlayer.Image.String, false)
+									}
+								</div>
+							}
 						</div>
-						<div class="mt-2 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(1)
-							@match_components.PositionPin(2)
-							@match_components.PositionPin(3)
-							@match_components.PositionPin(4)
-						</div>
-						<div class="mt-4 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(5)
-						</div>
-						<div class="mt-4 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(1)
-							@match_components.PositionPin(2)
-							@match_components.PositionPin(3)
-						</div>
-						<div class="mt-6 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(1)
-							@match_components.PositionPin(2)
-						</div>
-					</div>
-					<div class="flex flex-col-reverse items-center justify-start">
-						<div class="mb-40">
-							@match_components.PositionPin(30)
-						</div>
-						<div class="mb-16 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(1)
-							@match_components.PositionPin(2)
-							@match_components.PositionPin(3)
-							@match_components.PositionPin(4)
-						</div>
-						<div class="mb-16 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(5)
-						</div>
-						<div class="mb-12 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(1)
-							@match_components.PositionPin(2)
-							@match_components.PositionPin(3)
-						</div>
-						<div class="mb-8 flex items-center justify-center space-x-20">
-							@match_components.PositionPin(1)
-							@match_components.PositionPin(2)
+						<div class="flex flex-col items-center h-[352px] w-full justify-around">
+							for _, posLineupPlayers := range(listLineupPlayersByPositionNo(awayLineupPlayers, true)) {
+								<div class="flex items-center justify-center space-x-12">
+									for _, lineupPlayer := range(posLineupPlayers) {
+										@match_components.PositionPin(int(lineupPlayer.No), lineupPlayer.Firstname, lineupPlayer.Lastname, string(lineupPlayer.Position), lineupPlayer.Image.String, true)
+									}
+								</div>
+							}
 						</div>
 					</div>
 				</div>
+				<h1 class="text-center pb-4 font-bold text-xl">{ match.AwayClubName }</h1>
 			</section>
 		</main>
 	}
+}
+
+func listLineupPlayersByPositionNo(
+	lineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+	mirror bool,
+) [][]queries.ListLineupPlayersByLineupIDRow {
+	var lineupPlayersArr [][]queries.ListLineupPlayersByLineupIDRow
+	for i := range 5 {
+		var players []queries.ListLineupPlayersByLineupIDRow
+		for j := range 5 {
+			for _, lineupPlayer := range lineupPlayers {
+				if lineupPlayer.PositionNo == int16(findPositionNoFromIndex(i, j, mirror)) {
+					players = append(players, lineupPlayer)
+					break
+				}
+			}
+		}
+		lineupPlayersArr = append(lineupPlayersArr, players)
+	}
+	return lineupPlayersArr
+}
+
+func findLineupPlayerByPositionNo(positionNo int, lineupPlayers []queries.ListLineupPlayersByLineupIDRow) *queries.ListLineupPlayersByLineupIDRow {
+	for _, lineupPlayer := range lineupPlayers {
+		if lineupPlayer.PositionNo == int16(positionNo) {
+			return &lineupPlayer
+		}
+	}
+	return nil
+}
+
+func findPositionNoFromIndex(i int, j int, mirror bool) int {
+	if mirror {
+		return (4-i)*10 + (4 - j)
+	}
+	return i*10 + j
 }

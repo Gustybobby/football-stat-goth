@@ -38,5 +38,15 @@ func HandleMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposit
 		return err
 	}
 
-	return handlers.Render(w, r, views.Match(fixtures, match))
+	homeLineupPlayers, err := db.ListLineupPlayersByLineupID(ctx, match.HomeLineupID)
+	if err != nil {
+		return err
+	}
+
+	awayLineupPlayers, err := db.ListLineupPlayersByLineupID(ctx, match.AwayLineupID)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Match(fixtures, match, homeLineupPlayers, awayLineupPlayers))
 }
