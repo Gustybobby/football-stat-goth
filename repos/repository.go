@@ -9,21 +9,23 @@ import (
 )
 
 type Repository struct {
-	config *Config
-	dsn    string
+	Queries *queries.Queries
+	Conn    *pgx.Conn
+	Ctx     context.Context
+	dsn     string
 }
 
-func (repo *Repository) Connect() (*queries.Queries, *pgx.Conn, context.Context, error) {
+func DbConnect(dsn string) (*Repository, error) {
 	ctx := context.Background()
-	config, err := pgx.ParseConfig(repo.dsn)
+	config, err := pgx.ParseConfig(dsn)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 	config.Tracer = NewMultiQueryTracer(NewLoggingQueryTracer(slog.Default()))
 	conn, err := pgx.ConnectConfig(ctx, config)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 	queries := queries.New(conn)
-	return queries, conn, ctx, nil
+	return &Repository{Queries: queries, Conn: conn, Ctx: ctx, dsn: dsn}, nil
 }

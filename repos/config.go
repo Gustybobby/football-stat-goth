@@ -11,10 +11,10 @@ type Config struct {
 	SSLMode  string
 }
 
-func New(config *Config) *Repository {
+func Dsn(config *Config) string {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s password=%s user=%s dbname=%s sslmode=%s",
 		config.Host, config.Port, config.Password, config.User, config.DBName, config.SSLMode,
 	)
-	return &Repository{config: config, dsn: dsn}
+	return dsn
 }

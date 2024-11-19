@@ -8,13 +8,7 @@ import (
 )
 
 func HandleSignup(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	db, conn, ctx, err := repo.Connect()
-	if err != nil {
-		return err
-	}
-	defer conn.Close(ctx)
-
-	user, err := plauth.CreateUser(r.FormValue("username"), r.FormValue("password"), r.FormValue("first_name"), r.FormValue("last_name"), db, ctx)
+	user, err := plauth.CreateUser(r.FormValue("username"), r.FormValue("password"), r.FormValue("first_name"), r.FormValue("last_name"), repo.Queries, repo.Ctx)
 	if err != nil {
 		return err
 	}
@@ -24,7 +18,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 		return err
 	}
 
-	session, err := plauth.CreateSession(token, user.Username, db, ctx)
+	session, err := plauth.CreateSession(token, user.Username, repo.Queries, repo.Ctx)
 	if err != nil {
 		return err
 	}

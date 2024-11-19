@@ -16,18 +16,12 @@ func HandleCreateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 		return err
 	}
 
-	db, conn, ctx, err := repo.Connect()
-	if err != nil {
-		return err
-	}
-	defer conn.Close(ctx)
-
 	no, err := strconv.Atoi(r.FormValue("no"))
 	if err != nil {
 		return err
 	}
 
-	player_id, err := db.FindPlayerIDByClubAndNo(ctx, queries.FindPlayerIDByClubAndNoParams{
+	player_id, err := repo.Queries.FindPlayerIDByClubAndNo(repo.Ctx, queries.FindPlayerIDByClubAndNoParams{
 		ClubID: pgtype.Text{String: r.FormValue("club_id"), Valid: true},
 		No:     int16(no),
 	})
@@ -40,7 +34,7 @@ func HandleCreateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 		return err
 	}
 
-	db.CreateLineupPlayer(ctx, queries.CreateLineupPlayerParams{
+	repo.Queries.CreateLineupPlayer(repo.Ctx, queries.CreateLineupPlayerParams{
 		LineupID:   int32(lineupID),
 		PlayerID:   player_id,
 		PositionNo: int16(position_no),

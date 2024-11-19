@@ -8,13 +8,7 @@ import (
 )
 
 func HandleStandingsPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	db, conn, ctx, err := repo.Connect()
-	if err != nil {
-		return err
-	}
-	defer conn.Close(ctx)
-
-	clubs, err := db.ListClubStandings(ctx)
+	clubs, err := repo.Queries.ListClubStandings(repo.Ctx)
 	if err != nil {
 		return err
 	}

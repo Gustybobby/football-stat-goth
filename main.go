@@ -67,7 +67,11 @@ func main() {
 		SSLMode:  os.Getenv("DB_SSLMODE"),
 	}
 
-	repo := repos.New(config)
+	repo, err := repos.DbConnect(repos.Dsn(config))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer repo.Conn.Close(repo.Ctx)
 
 	SetupRoutes(router, repo)
 

@@ -16,23 +16,17 @@ func HandleAdminEditLineupsPage(w http.ResponseWriter, r *http.Request, repo *re
 		return err
 	}
 
-	db, conn, ctx, err := repo.Connect()
-	if err != nil {
-		return err
-	}
-	defer conn.Close(ctx)
-
-	match, err := db.FindMatchByID(ctx, int32(matchID))
+	match, err := repo.Queries.FindMatchByID(repo.Ctx, int32(matchID))
 	if err != nil {
 		return err
 	}
 
-	homeLineupPlayers, err := db.ListLineupPlayersByLineupID(ctx, match.HomeLineupID)
+	homeLineupPlayers, err := repo.Queries.ListLineupPlayersByLineupID(repo.Ctx, match.HomeLineupID)
 	if err != nil {
 		return err
 	}
 
-	awayLineupPlayers, err := db.ListLineupPlayersByLineupID(ctx, match.AwayLineupID)
+	awayLineupPlayers, err := repo.Queries.ListLineupPlayersByLineupID(repo.Ctx, match.AwayLineupID)
 	if err != nil {
 		return err
 	}

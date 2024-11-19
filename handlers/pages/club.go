@@ -14,18 +14,12 @@ import (
 func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	clubID := chi.URLParam(r, "clubID")
 
-	db, conn, ctx, err := repo.Connect()
-	if err != nil {
-		return err
-	}
-	defer conn.Close(ctx)
-
-	club, err := db.FindClubByID(ctx, clubID)
+	club, err := repo.Queries.FindClubByID(repo.Ctx, clubID)
 	if err != nil {
 		return err
 	}
 
-	fixtures, err := db.ListMatchesWithClubsAndGoals(ctx, queries.ListMatchesWithClubsAndGoalsParams{
+	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: true,
 		ClubID:       clubID,
 		IsFinished:   false,
@@ -35,7 +29,7 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	matches, err := db.ListMatchesWithClubsAndGoals(ctx, queries.ListMatchesWithClubsAndGoalsParams{
+	matches, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: true,
 		ClubID:       clubID,
 		IsFinished:   true,
@@ -45,7 +39,7 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	standings, err := db.ListClubStandings(ctx)
+	standings, err := repo.Queries.ListClubStandings(repo.Ctx)
 	if err != nil {
 		return err
 	}
@@ -53,7 +47,7 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return club.ID == clubID
 	})
 
-	averageStats, err := db.ClubAverageStatistics(ctx, clubID)
+	averageStats, err := repo.Queries.ClubAverageStatistics(repo.Ctx, clubID)
 	if err != nil {
 		return err
 	}

@@ -9,13 +9,7 @@ import (
 )
 
 func HandleHomePage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	db, conn, ctx, err := repo.Connect()
-	if err != nil {
-		return err
-	}
-	defer conn.Close(ctx)
-
-	fixtures, err := db.ListMatchesWithClubsAndGoals(ctx, queries.ListMatchesWithClubsAndGoalsParams{
+	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: false,
 		ClubID:       "",
 		IsFinished:   false,

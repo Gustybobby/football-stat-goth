@@ -11,12 +11,6 @@ import (
 )
 
 func HandleCreatePlayer(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	db, conn, ctx, err := repo.Connect()
-	if err != nil {
-		return err
-	}
-	defer conn.Close(ctx)
-
 	no, err := strconv.Atoi(r.FormValue("no"))
 	if err != nil {
 		return err
@@ -32,7 +26,7 @@ func HandleCreatePlayer(w http.ResponseWriter, r *http.Request, repo *repos.Repo
 		return err
 	}
 
-	db.CreatePlayer(ctx, queries.CreatePlayerParams{
+	repo.Queries.CreatePlayer(repo.Ctx, queries.CreatePlayerParams{
 		ClubID:      pgtype.Text{String: r.FormValue("club_id"), Valid: true},
 		No:          int16(no),
 		Firstname:   r.FormValue("firstname"),
