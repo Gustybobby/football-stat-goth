@@ -7,6 +7,8 @@ package queries
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createLineupPlayer = `-- name: CreateLineupPlayer :one
@@ -56,7 +58,8 @@ SELECT
     lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position, lineup_player.goals, lineup_player.yellow_cards, lineup_player.red_cards,
     "player".no,
     "player".firstname,
-    "player".lastname
+    "player".lastname,
+    "player".image
 FROM "lineup_player"
 INNER JOIN "player"
 ON "lineup_player".player_id = "player".id
@@ -74,6 +77,7 @@ type ListLineupPlayersByLineupIDRow struct {
 	No          int16
 	Firstname   string
 	Lastname    string
+	Image       pgtype.Text
 }
 
 func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int32) ([]ListLineupPlayersByLineupIDRow, error) {
@@ -96,6 +100,7 @@ func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int3
 			&i.No,
 			&i.Firstname,
 			&i.Lastname,
+			&i.Image,
 		); err != nil {
 			return nil, err
 		}

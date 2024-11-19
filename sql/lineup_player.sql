@@ -17,7 +17,8 @@ SELECT
     "lineup_player".*,
     "player".no,
     "player".firstname,
-    "player".lastname
+    "player".lastname,
+    "player".image
 FROM "lineup_player"
 INNER JOIN "player"
 ON "lineup_player".player_id = "player".id
