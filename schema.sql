@@ -53,9 +53,10 @@ CREATE TABLE "lineup_player" (
     yellow_cards    INT2 NOT NULL DEFAULT 0,
     red_cards       INT2 NOT NULL DEFAULT 0,
 
-    CONSTRAINT pk_lineup_player         PRIMARY KEY (lineup_id, player_id),
-    CONSTRAINT fk_lineup_player_lineup  FOREIGN KEY (lineup_id) REFERENCES "lineup"(id),
-    CONSTRAINT fk_lineup_player_player  FOREIGN KEY (player_id) REFERENCES "player"(id)
+    CONSTRAINT pk_lineup_player                 PRIMARY KEY (lineup_id, player_id),
+    CONSTRAINT unique_lineup_id_position_no     UNIQUE (lineup_id, position_no),
+    CONSTRAINT fk_lineup_player_lineup          FOREIGN KEY (lineup_id) REFERENCES "lineup"(id),
+    CONSTRAINT fk_lineup_player_player          FOREIGN KEY (player_id) REFERENCES "player"(id)
 );
 
 CREATE TABLE "match" (
