@@ -13,10 +13,16 @@ type AddPlayerFormParams struct {
 	Mirror     string
 }
 
+script removeForm(form_id string) {
+	const form = document.getElementById(form_id);
+	form.remove();
+}
+
 templ AddLineupPlayerForm(params AddPlayerFormParams) {
 	<div>
 		<div hx-swap-oob={ "beforeend:#add_player_" + params.ClubID }>
 			<form
+				id={ "add_lineup_player_form_" + strconv.Itoa(params.LineupID) + "_" + params.PositionNo }
 				class="motion-preset-expand motion-duration-150"
 				hx-post={ "/api/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
 			>
@@ -49,6 +55,12 @@ templ AddLineupPlayerForm(params AddPlayerFormParams) {
 				>
 					Add
 				</button>
+				<button
+					class="bg-primary px-4 py-2 rounded-lg hover:bg-primary/80 font-bold text-black hover:cursor-pointer transition-colors w-fit"
+					onclick={ removeForm("add_lineup_player_form_" + strconv.Itoa(params.LineupID) + "_" + params.PositionNo) }
+				>
+					Cancel
+				</button>
 			</form>
 		</div>
 	</div>
@@ -70,6 +82,7 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 	<div>
 		<div hx-swap-oob={ "beforeend:#edit_player_" + strconv.Itoa(int(lineupPlayer.LineupID)) }>
 			<form
+				id={ "edit_lineup_player_form_" + strconv.Itoa(int(lineupPlayer.LineupID)) + "_" + strconv.Itoa(int(lineupPlayer.PositionNo)) }
 				class="motion-preset-expand motion-duration-150 flex flex-col items-start"
 				hx-patch={ "/api/lineups/" + strconv.Itoa(int(lineupPlayer.LineupID)) + "/lineup_players/" + strconv.Itoa(int(lineupPlayer.PlayerID)) }
 			>
@@ -114,12 +127,20 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 					value={ strconv.Itoa(int(lineupPlayer.RedCards)) }
 					class="p-1 rounded-md border border-primary w-full mb-2"
 				/>
-				<button
-					type="submit"
-					class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
-				>
-					Edit
-				</button>
+				<div class="flex space-x-1">
+					<button
+						type="submit"
+						class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
+					>
+						Edit
+					</button>
+					<button
+						class="bg-primary px-4 py-2 rounded-lg hover:bg-primary/80 font-bold text-black hover:cursor-pointer transition-colors w-fit"
+						onclick={ removeForm("edit_lineup_player_form_" + strconv.Itoa(int(lineupPlayer.LineupID)) + "_" + strconv.Itoa(int(lineupPlayer.PositionNo))) }
+					>
+						Cancel
+					</button>
+				</div>
 			</form>
 		</div>
 	</div>

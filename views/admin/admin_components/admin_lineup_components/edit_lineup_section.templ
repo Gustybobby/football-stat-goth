@@ -18,7 +18,7 @@ templ EditLineupSection(params AddLineupPlayerParams) {
 		<h1 class="text-2xl font-bold mb-4">{ params.ClubName }</h1>
 		<div class="grid grid-cols-2 gap-4">
 			<div>
-				<div class="space-y-4" id={ "add_player_" + params.ClubID }></div>
+				<div class="space-y-4 mb-4" id={ "add_player_" + params.ClubID }></div>
 				<div class="space-y-4" id={ "edit_player_" + strconv.Itoa(int(params.LineupID)) }></div>
 			</div>
 			@PositionButtonGroup(params)
