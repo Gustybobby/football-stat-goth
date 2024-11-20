@@ -111,3 +111,49 @@ func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int3
 	}
 	return items, nil
 }
+
+const updateLineupPlayer = `-- name: UpdateLineupPlayer :one
+UPDATE lineup_player SET
+    position_no = COALESCE($3, position_no),
+    position = COALESCE($4, position),
+    goals = COALESCE($5, goals),
+    yellow_cards = COALESCE($6, yellow_cards),
+    red_cards = COALESCE($7, red_cards)
+WHERE
+    "lineup_player".lineup_id = $1 AND
+    "lineup_player".player_id = $2
+RETURNING lineup_id, player_id, position_no, position, goals, yellow_cards, red_cards
+`
+
+type UpdateLineupPlayerParams struct {
+	LineupID    int32
+	PlayerID    int32
+	PositionNo  pgtype.Int2
+	Position    NullPlayerPosition
+	Goals       pgtype.Int2
+	YellowCards pgtype.Int2
+	RedCards    pgtype.Int2
+}
+
+func (q *Queries) UpdateLineupPlayer(ctx context.Context, arg UpdateLineupPlayerParams) (LineupPlayer, error) {
+	row := q.db.QueryRow(ctx, updateLineupPlayer,
+		arg.LineupID,
+		arg.PlayerID,
+		arg.PositionNo,
+		arg.Position,
+		arg.Goals,
+		arg.YellowCards,
+		arg.RedCards,
+	)
+	var i LineupPlayer
+	err := row.Scan(
+		&i.LineupID,
+		&i.PlayerID,
+		&i.PositionNo,
+		&i.Position,
+		&i.Goals,
+		&i.YellowCards,
+		&i.RedCards,
+	)
+	return i, err
+}

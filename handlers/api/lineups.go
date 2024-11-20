@@ -85,3 +85,88 @@ func HandleCreateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 		Mirror:        mirror,
 	}, match, homeLineupPlayers, awayLineupPlayers))
 }
+
+func HandleUpdateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	lineupID, err := strconv.Atoi(chi.URLParam(r, "lineupID"))
+	if err != nil {
+		return err
+	}
+
+	playerID, err := strconv.Atoi(chi.URLParam(r, "playerID"))
+	if err != nil {
+		return err
+	}
+
+	var position_no = pgtype.Int2{
+		Int16: 0,
+		Valid: false,
+	}
+	if r.FormValue("position_no") == "" {
+		pos_no_value, err := strconv.Atoi(r.FormValue("position_no"))
+		if err != nil {
+			return err
+		}
+		position_no.Int16 = int16(pos_no_value)
+		position_no.Valid = true
+	}
+
+	var position = queries.NullPlayerPosition{
+		PlayerPosition: queries.PlayerPositionGK,
+		Valid:          false,
+	}
+	if r.FormValue("position") == "" {
+		position.PlayerPosition = queries.PlayerPosition(r.FormValue("position"))
+		position.Valid = true
+	}
+
+	var goals = pgtype.Int2{
+		Int16: 0,
+		Valid: false,
+	}
+	if r.FormValue("goals") == "" {
+		goals_value, err := strconv.Atoi(r.FormValue("goals"))
+		if err != nil {
+			return err
+		}
+		goals.Int16 = int16(goals_value)
+		goals.Valid = true
+	}
+
+	var yellow_cards = pgtype.Int2{
+		Int16: 0,
+		Valid: false,
+	}
+	if r.FormValue("yellow_cards") == "" {
+		yellow_cards_value, err := strconv.Atoi(r.FormValue("yellow_cards"))
+		if err != nil {
+			return err
+		}
+		yellow_cards.Int16 = int16(yellow_cards_value)
+		yellow_cards.Valid = true
+	}
+
+	var red_cards = pgtype.Int2{
+		Int16: 0,
+		Valid: false,
+	}
+	if r.FormValue("red_cards") == "" {
+		red_cards_value, err := strconv.Atoi(r.FormValue("red_cards"))
+		if err != nil {
+			return err
+		}
+		red_cards.Int16 = int16(red_cards_value)
+		red_cards.Valid = true
+	}
+
+	repo.Queries.UpdateLineupPlayer(repo.Ctx, queries.UpdateLineupPlayerParams{
+		LineupID:    int32(lineupID),
+		PlayerID:    int32(playerID),
+		PositionNo:  position_no,
+		Position:    position,
+		Goals:       goals,
+		YellowCards: yellow_cards,
+		RedCards:    red_cards,
+	})
+
+	return nil
+}

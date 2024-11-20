@@ -43,6 +43,7 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 		r.Post("/players", handlers.Make(api.HandleCreatePlayer, repo))
 
 		r.Post("/lineups/{lineupID}/lineup_players", handlers.Make(api.HandleCreateLineupPlayer, repo))
+		r.Patch("/lineups/{lineupID}/lineup_players/{playerID}", handlers.Make(api.HandleUpdateLineupPlayer, repo))
 	})
 
 	router.Route("/cmps", func(r chi.Router) {
