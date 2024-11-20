@@ -25,9 +25,14 @@ def scrape_player(page_source: str, client) -> dict:
         soup.find("div", class_="player-header__name-last").get_text().strip()
     )
 
-    data["no"] = soup.find(
-        "div", class_="player-header__player-number player-header__player-number--large"
-    ).get_text()
+    try:
+        data["no"] = soup.find(
+            "div",
+            class_="player-header__player-number player-header__player-number--large",
+        ).get_text()
+    except:
+        no = input("Missing Player No, Please input: ")
+        data["no"] = no
 
     data["nationality"] = soup.find(
         "span", class_="player-overview__player-country"
@@ -77,8 +82,6 @@ def scrape_player(page_source: str, client) -> dict:
         print("found club name:", club_name)
         club_id = input("Missing Club ID, Please input: ")
         data["club_id"] = club_id
-        no = input("Missing Player No, Please input: ")
-        data["no"] = no
 
     data["image"] = (
         db.get_bucket_url()
