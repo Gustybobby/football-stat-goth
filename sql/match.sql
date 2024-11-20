@@ -3,10 +3,22 @@ SELECT
     "match".*,
     "home_club".id AS home_club_id,
     "home_club".logo AS home_club_logo,
-    "home_lineup".goals AS home_goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+    ) AS home_goals,
     "away_club".id AS away_club_id,
     "away_club".logo AS away_club_logo,
-    "away_lineup".goals AS away_goals
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+    ) AS away_goals
 FROM "match"
 INNER JOIN "lineup" as "home_lineup"
 ON "match".home_lineup_id = "home_lineup".id
@@ -32,7 +44,13 @@ SELECT
     "home_club".id AS home_club_id,
     "home_club".short_name AS home_club_name,
     "home_club".logo AS home_club_logo,
-    "home_lineup".goals AS home_goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+    ) AS home_goals,
     "home_lineup".possession AS home_possession,
     "home_lineup".shots_on_target AS home_shots_on_target,
     "home_lineup".shots AS home_shots,
@@ -43,16 +61,23 @@ SELECT
     "home_lineup".corners AS home_corners,
     "home_lineup".offsides AS home_offsides,
     (
-        SELECT
-            CAST(COALESCE(SUM("lineup_player".yellow_cards), 0) AS INTEGER)
-        FROM "lineup_player"
-        WHERE "lineup_player".lineup_id = "home_lineup".id
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
     ) AS home_yellow_cards,
     "home_lineup".fouls_conceded AS home_fouls_conceded,
     "away_club".id AS away_club_id,
     "away_club".short_name AS away_club_name,
     "away_club".logo AS away_club_logo,
-    "away_lineup".goals AS away_goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+    ) AS away_goals,
     "away_lineup".possession AS away_possession,
     "away_lineup".shots_on_target AS away_shots_on_target,
     "away_lineup".shots AS away_shots,
@@ -63,10 +88,11 @@ SELECT
     "away_lineup".corners AS away_corners,
     "away_lineup".offsides AS away_offsides,
     (
-        SELECT
-            CAST(COALESCE(SUM("lineup_player".yellow_cards), 0) AS INTEGER)
-        FROM "lineup_player"
-        WHERE "lineup_player".lineup_id = "away_lineup".id
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
     ) AS away_yellow_cards,
     "away_lineup".fouls_conceded AS away_fouls_conceded
 FROM "match"
@@ -95,10 +121,34 @@ WITH "match_score" AS (
     SELECT
         "match".id,
         "home".club_id AS home_club_id,
-        "home".goals AS home_goals,
+        (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+        ) AS home_goals,
         "away".club_id AS away_club_id,
-        "away".goals AS away_goals,
-        "home".goals - "away".goals AS goals_diff
+        (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+        ) AS away_goals,
+        (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+        ) - (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+        ) AS goals_diff
     FROM "match"
     INNER JOIN "lineup" AS "home"
     ON "match".home_lineup_id = "home".id

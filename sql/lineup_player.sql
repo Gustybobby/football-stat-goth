@@ -15,6 +15,27 @@ RETURNING *;
 -- name: ListLineupPlayersByLineupID :many
 SELECT
     "lineup_player".*,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS yellow_cards,
+     (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,
@@ -27,10 +48,7 @@ WHERE "lineup_player".lineup_id = $1;
 -- name: UpdateLineupPlayer :one
 UPDATE lineup_player SET
     position_no = COALESCE(sqlc.narg('position_no'), position_no),
-    position = COALESCE(sqlc.narg('position'), position),
-    goals = COALESCE(sqlc.narg('goals'), goals),
-    yellow_cards = COALESCE(sqlc.narg('yellow_cards'), yellow_cards),
-    red_cards = COALESCE(sqlc.narg('red_cards'), red_cards)
+    position = COALESCE(sqlc.narg('position'), position)
 WHERE
     "lineup_player".lineup_id = $1 AND
     "lineup_player".player_id = $2
@@ -39,6 +57,27 @@ RETURNING *;
 -- name: FindLineupPlayerByLineupIDAndPositionNo :one
 SELECT
     "lineup_player".*,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS yellow_cards,
+     (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,

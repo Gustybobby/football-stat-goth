@@ -23,7 +23,7 @@ INSERT INTO "lineup_player" (
     $3,
     $4
 )
-RETURNING lineup_id, player_id, position_no, position, goals, yellow_cards, red_cards
+RETURNING lineup_id, player_id, position_no, position
 `
 
 type CreateLineupPlayerParams struct {
@@ -46,16 +46,34 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 		&i.PlayerID,
 		&i.PositionNo,
 		&i.Position,
-		&i.Goals,
-		&i.YellowCards,
-		&i.RedCards,
 	)
 	return i, err
 }
 
 const findLineupPlayerByLineupIDAndPositionNo = `-- name: FindLineupPlayerByLineupIDAndPositionNo :one
 SELECT
-    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position, lineup_player.goals, lineup_player.yellow_cards, lineup_player.red_cards,
+    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS yellow_cards,
+     (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,
@@ -79,9 +97,9 @@ type FindLineupPlayerByLineupIDAndPositionNoRow struct {
 	PlayerID    int32
 	PositionNo  int16
 	Position    PlayerPosition
-	Goals       int16
-	YellowCards int16
-	RedCards    int16
+	Goals       int64
+	YellowCards int64
+	RedCards    int64
 	No          int16
 	Firstname   string
 	Lastname    string
@@ -109,7 +127,28 @@ func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, a
 
 const listLineupPlayersByLineupID = `-- name: ListLineupPlayersByLineupID :many
 SELECT
-    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position, lineup_player.goals, lineup_player.yellow_cards, lineup_player.red_cards,
+    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS yellow_cards,
+     (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "lineup_player".lineup_id
+    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,
@@ -125,9 +164,9 @@ type ListLineupPlayersByLineupIDRow struct {
 	PlayerID    int32
 	PositionNo  int16
 	Position    PlayerPosition
-	Goals       int16
-	YellowCards int16
-	RedCards    int16
+	Goals       int64
+	YellowCards int64
+	RedCards    int64
 	No          int16
 	Firstname   string
 	Lastname    string
@@ -169,24 +208,18 @@ func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int3
 const updateLineupPlayer = `-- name: UpdateLineupPlayer :one
 UPDATE lineup_player SET
     position_no = COALESCE($3, position_no),
-    position = COALESCE($4, position),
-    goals = COALESCE($5, goals),
-    yellow_cards = COALESCE($6, yellow_cards),
-    red_cards = COALESCE($7, red_cards)
+    position = COALESCE($4, position)
 WHERE
     "lineup_player".lineup_id = $1 AND
     "lineup_player".player_id = $2
-RETURNING lineup_id, player_id, position_no, position, goals, yellow_cards, red_cards
+RETURNING lineup_id, player_id, position_no, position
 `
 
 type UpdateLineupPlayerParams struct {
-	LineupID    int32
-	PlayerID    int32
-	PositionNo  pgtype.Int2
-	Position    NullPlayerPosition
-	Goals       pgtype.Int2
-	YellowCards pgtype.Int2
-	RedCards    pgtype.Int2
+	LineupID   int32
+	PlayerID   int32
+	PositionNo pgtype.Int2
+	Position   NullPlayerPosition
 }
 
 func (q *Queries) UpdateLineupPlayer(ctx context.Context, arg UpdateLineupPlayerParams) (LineupPlayer, error) {
@@ -195,9 +228,6 @@ func (q *Queries) UpdateLineupPlayer(ctx context.Context, arg UpdateLineupPlayer
 		arg.PlayerID,
 		arg.PositionNo,
 		arg.Position,
-		arg.Goals,
-		arg.YellowCards,
-		arg.RedCards,
 	)
 	var i LineupPlayer
 	err := row.Scan(
@@ -205,9 +235,6 @@ func (q *Queries) UpdateLineupPlayer(ctx context.Context, arg UpdateLineupPlayer
 		&i.PlayerID,
 		&i.PositionNo,
 		&i.Position,
-		&i.Goals,
-		&i.YellowCards,
-		&i.RedCards,
 	)
 	return i, err
 }
