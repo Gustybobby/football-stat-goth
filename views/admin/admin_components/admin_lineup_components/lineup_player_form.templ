@@ -13,7 +13,7 @@ type AddPlayerFormParams struct {
 	Mirror     string
 }
 
-templ AddPlayerForm(params AddPlayerFormParams) {
+templ AddLineupPlayerForm(params AddPlayerFormParams) {
 	<div>
 		<div hx-swap-oob={ "beforeend:#add_player_" + params.ClubID }>
 			<form
@@ -43,7 +43,6 @@ templ AddPlayerForm(params AddPlayerFormParams) {
 				</select>
 				<input hidden name="position_no" value={ params.PositionNo }/>
 				<input hidden name="club_id" value={ params.ClubID }/>
-				<input hidden name="mirror" value={ params.Mirror }/>
 				<button
 					type="submit"
 					class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
@@ -55,7 +54,7 @@ templ AddPlayerForm(params AddPlayerFormParams) {
 	</div>
 }
 
-templ AddLineupPlayerFormResponse(
+templ LineupPlayerFormResponse(
 	params AddLineupPlayerParams,
 	match queries.FindMatchByIDRow,
 	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
@@ -64,5 +63,64 @@ templ AddLineupPlayerFormResponse(
 	<div>
 		@PositionButtonGroup(params)
 		@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
+	</div>
+}
+
+templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPositionNoRow) {
+	<div>
+		<div hx-swap-oob={ "beforeend:#edit_player_" + strconv.Itoa(int(lineupPlayer.LineupID)) }>
+			<form
+				class="motion-preset-expand motion-duration-150 flex flex-col items-start"
+				hx-patch={ "/api/lineups/" + strconv.Itoa(int(lineupPlayer.LineupID)) + "/lineup_players/" + strconv.Itoa(int(lineupPlayer.PlayerID)) }
+			>
+				<h1 class="font-semibold text-lg">
+					{ strconv.Itoa(int(lineupPlayer.PositionNo)) +"." } Edit { lineupPlayer.Firstname } { lineupPlayer.Lastname }({ strconv.Itoa(int(lineupPlayer.No)) }) stats
+				</h1>
+				<span>Position</span>
+				<select
+					name="position"
+					class="p-1 rounded-md border border-primary w-full mb-2"
+					required
+				>
+					for _,pos := range([5]string{"GK","DEF","MFD","FWD","SUB"}) {
+						if (string(lineupPlayer.Position) == pos) {
+							<option selected>{ pos }</option>
+						} else {
+							<option>{ pos }</option>
+						}
+					}
+				</select>
+				<span>Goals</span>
+				<input
+					name="goals"
+					type="text"
+					autocomplete="off"
+					value={ strconv.Itoa(int(lineupPlayer.Goals)) }
+					class="p-1 rounded-md border border-primary w-full mb-2"
+				/>
+				<span>Yellow cards</span>
+				<input
+					name="yellow_cards"
+					type="text"
+					autocomplete="off"
+					value={ strconv.Itoa(int(lineupPlayer.YellowCards)) }
+					class="p-1 rounded-md border border-primary w-full mb-2"
+				/>
+				<span>Red cards</span>
+				<input
+					name="red_cards"
+					type="text"
+					autocomplete="off"
+					value={ strconv.Itoa(int(lineupPlayer.RedCards)) }
+					class="p-1 rounded-md border border-primary w-full mb-2"
+				/>
+				<button
+					type="submit"
+					class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
+				>
+					Edit
+				</button>
+			</form>
+		</div>
 	</div>
 }

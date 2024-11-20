@@ -13,11 +13,14 @@ type AddLineupPlayerParams struct {
 	Mirror        bool
 }
 
-templ AddLineupPlayer(params AddLineupPlayerParams) {
+templ EditLineupSection(params AddLineupPlayerParams) {
 	<section class="rounded-lg border border-primary shadow-lg w-full p-4">
 		<h1 class="text-2xl font-bold mb-4">{ params.ClubName }</h1>
 		<div class="grid grid-cols-2 gap-4">
-			<div class="space-y-4" id={ "add_player_" + params.ClubID }></div>
+			<div>
+				<div class="space-y-4" id={ "add_player_" + params.ClubID }></div>
+				<div class="space-y-4" id={ "edit_player_" + strconv.Itoa(int(params.LineupID)) }></div>
+			</div>
 			@PositionButtonGroup(params)
 		</div>
 	</section>
@@ -35,14 +38,15 @@ templ PositionButtonGroup(params AddLineupPlayerParams) {
 					if isPositionNoExist(0, params.LineupPlayers) {
 						<button
 							class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
-							disabled
+							hx-get={ buttonHxGet(0, params, "edit") }
+							hx-swap="none"
 						>
 							{ strconv.Itoa(int(FindLineupPlayerByPositionNo(0, params.LineupPlayers).No)) }
 						</button>
 					} else {
 						<button
 							class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
-							hx-get={ buttonHxGet(0, params) }
+							hx-get={ buttonHxGet(0, params, "add") }
 							hx-swap="none"
 						>
 							+0
@@ -53,14 +57,15 @@ templ PositionButtonGroup(params AddLineupPlayerParams) {
 						if isPositionNoExist(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers) {
 							<button
 								class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
-								disabled
+								hx-get={ buttonHxGet(FindPositionNoFromIndex(i, j, params.Mirror), params, "edit") }
+								hx-swap="none"
 							>
 								{ strconv.Itoa(int(FindLineupPlayerByPositionNo(FindPositionNoFromIndex(i,j,params.Mirror), params.LineupPlayers).No)) }
 							</button>
 						} else {
 							<button
 								class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
-								hx-get={ buttonHxGet(FindPositionNoFromIndex(i, j, params.Mirror), params) }
+								hx-get={ buttonHxGet(FindPositionNoFromIndex(i, j, params.Mirror), params, "add") }
 								hx-swap="none"
 							>
 								+{ strconv.Itoa(FindPositionNoFromIndex(i, j, params.Mirror)) }
@@ -73,9 +78,9 @@ templ PositionButtonGroup(params AddLineupPlayerParams) {
 	</div>
 }
 
-func buttonHxGet(positionNo int, params AddLineupPlayerParams) string {
-	return "/cmps/lineup-players/add-form?lineup_id=" +
-		strconv.Itoa(int(params.LineupID)) +
+func buttonHxGet(positionNo int, params AddLineupPlayerParams, cmp_type string) string {
+	return "/cmps/lineup-players/form?type=" + cmp_type +
+		"&lineup_id=" + strconv.Itoa(int(params.LineupID)) +
 		"&position_no=" + strconv.Itoa(positionNo) +
 		"&club_id=" + params.ClubID +
 		"&mirror=" + strconv.FormatBool(params.Mirror)

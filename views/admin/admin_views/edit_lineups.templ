@@ -23,14 +23,14 @@ templ EditLineups(
 				@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
 			</div>
 			<div class="col-span-full space-y-4">
-				@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
+				@admin_lineup_components.EditLineupSection(admin_lineup_components.AddLineupPlayerParams{
 					ClubID:        match.HomeClubID,
 					ClubName:      match.HomeClubName,
 					LineupID:      match.HomeLineupID,
 					LineupPlayers: homeLineupPlayers,
 					Mirror:        false,
 				})
-				@admin_lineup_components.AddLineupPlayer(admin_lineup_components.AddLineupPlayerParams{
+				@admin_lineup_components.EditLineupSection(admin_lineup_components.AddLineupPlayerParams{
 					ClubID:        match.AwayClubID,
 					ClubName:      match.AwayClubName,
 					LineupID:      match.AwayLineupID,

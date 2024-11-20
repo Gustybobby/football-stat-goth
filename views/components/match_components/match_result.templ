@@ -7,7 +7,7 @@ import (
 )
 
 templ MatchResult(match queries.FindMatchByIDRow) {
-	<section class="rounded-lg border border-primary shadow-lg w-full p-4">
+	<section class="rounded-lg border border-primary shadow-lg w-full h-full p-4">
 		<div class="text-lg text-center w-full font-semibold text-secondary mb-2">
 			{ plformat.FormatTimestamp(match.StartAt.Time.Local()) } • { match.Location }
 		</div>

@@ -47,7 +47,7 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 	})
 
 	router.Route("/cmps", func(r chi.Router) {
-		r.Get("/lineup-players/add-form", handlers.Make(cmps.HandleAddLineupPlayerForm, repo))
+		r.Get("/lineup-players/form", handlers.Make(cmps.HandleLineupPlayerForm, repo))
 	})
 }
 

@@ -53,6 +53,60 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 	return i, err
 }
 
+const findLineupPlayerByLineupIDAndPositionNo = `-- name: FindLineupPlayerByLineupIDAndPositionNo :one
+SELECT
+    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position, lineup_player.goals, lineup_player.yellow_cards, lineup_player.red_cards,
+    "player".no,
+    "player".firstname,
+    "player".lastname,
+    "player".image
+FROM "lineup_player"
+INNER JOIN "player"
+ON "lineup_player".player_id = "player".id
+WHERE
+    "lineup_player".lineup_id = $1 AND
+    "lineup_player".position_no = $2
+LIMIT 1
+`
+
+type FindLineupPlayerByLineupIDAndPositionNoParams struct {
+	LineupID   int32
+	PositionNo int16
+}
+
+type FindLineupPlayerByLineupIDAndPositionNoRow struct {
+	LineupID    int32
+	PlayerID    int32
+	PositionNo  int16
+	Position    PlayerPosition
+	Goals       int16
+	YellowCards int16
+	RedCards    int16
+	No          int16
+	Firstname   string
+	Lastname    string
+	Image       pgtype.Text
+}
+
+func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, arg FindLineupPlayerByLineupIDAndPositionNoParams) (FindLineupPlayerByLineupIDAndPositionNoRow, error) {
+	row := q.db.QueryRow(ctx, findLineupPlayerByLineupIDAndPositionNo, arg.LineupID, arg.PositionNo)
+	var i FindLineupPlayerByLineupIDAndPositionNoRow
+	err := row.Scan(
+		&i.LineupID,
+		&i.PlayerID,
+		&i.PositionNo,
+		&i.Position,
+		&i.Goals,
+		&i.YellowCards,
+		&i.RedCards,
+		&i.No,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Image,
+	)
+	return i, err
+}
+
 const listLineupPlayersByLineupID = `-- name: ListLineupPlayersByLineupID :many
 SELECT
     lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position, lineup_player.goals, lineup_player.yellow_cards, lineup_player.red_cards,
