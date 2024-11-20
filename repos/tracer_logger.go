@@ -3,9 +3,7 @@ package repos
 import (
 	"context"
 	"log/slog"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -16,12 +14,10 @@ func prettyPrintSQL(sql string) []string {
 
 type LoggingQueryTracer struct {
 	logger *slog.Logger
-	start  int64
-	end    int64
 }
 
 func NewLoggingQueryTracer(logger *slog.Logger) *LoggingQueryTracer {
-	return &LoggingQueryTracer{logger: logger, start: time.Now().UnixMilli(), end: 0}
+	return &LoggingQueryTracer{logger: logger}
 }
 
 func (l *LoggingQueryTracer) TraceQueryStart(ctx context.Context, conn *pgx.Conn, data pgx.TraceQueryStartData) context.Context {
@@ -33,7 +29,6 @@ func (l *LoggingQueryTracer) TraceQueryStart(ctx context.Context, conn *pgx.Conn
 }
 
 func (l *LoggingQueryTracer) TraceQueryEnd(ctx context.Context, conn *pgx.Conn, data pgx.TraceQueryEndData) {
-	l.end = time.Now().UnixMilli()
 
 	if data.Err != nil {
 		l.logger.
@@ -46,7 +41,6 @@ func (l *LoggingQueryTracer) TraceQueryEnd(ctx context.Context, conn *pgx.Conn, 
 
 	l.logger.
 		Info("[query end]",
-			slog.String("time", strconv.FormatInt(l.end-l.start, 10)+"ms"),
 			slog.String("command_tag", data.CommandTag.String()),
 		)
 }
