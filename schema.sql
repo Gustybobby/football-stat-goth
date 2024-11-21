@@ -1,6 +1,6 @@
 CREATE TYPE "user_role" AS ENUM ('USER','ADMIN');
 CREATE TYPE "player_position" AS ENUM ('GK','DEF','MFD','FWD','SUB');
-CREATE TYPE "event_type" AS ENUM ('GOAL','YELLOW','RED','SUB');
+CREATE TYPE "event_type" AS ENUM ('GOAL','OWN_GOAL','YELLOW','RED','SUB');
 
 CREATE TABLE "club" (
     id          CHAR(3) PRIMARY KEY,
@@ -68,6 +68,8 @@ CREATE TABLE "lineup_event" (
     CONSTRAINT fk_lineup_player1 FOREIGN KEY (lineup_id,player_id1) REFERENCES "lineup_player"(lineup_id,player_id),
     CONSTRAINT fk_lineup_player2 FOREIGN KEY (lineup_id,player_id2) REFERENCES "lineup_player"(lineup_id,player_id)
 );
+
+CREATE INDEX "idx_lineup_event_lineup_id" ON "lineup_event" USING BTREE(lineup_id);
 
 CREATE TABLE "match" (
     id              SERIAL PRIMARY KEY,

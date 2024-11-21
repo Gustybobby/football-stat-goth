@@ -14,10 +14,11 @@ import (
 type EventType string
 
 const (
-	EventTypeGOAL   EventType = "GOAL"
-	EventTypeYELLOW EventType = "YELLOW"
-	EventTypeRED    EventType = "RED"
-	EventTypeSUB    EventType = "SUB"
+	EventTypeGOAL    EventType = "GOAL"
+	EventTypeOWNGOAL EventType = "OWN_GOAL"
+	EventTypeYELLOW  EventType = "YELLOW"
+	EventTypeRED     EventType = "RED"
+	EventTypeSUB     EventType = "SUB"
 )
 
 func (e *EventType) Scan(src interface{}) error {
