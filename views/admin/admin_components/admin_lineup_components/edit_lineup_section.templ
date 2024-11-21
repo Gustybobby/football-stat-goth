@@ -15,7 +15,7 @@ type AddLineupPlayerParams struct {
 
 templ EditLineupSection(params AddLineupPlayerParams) {
 	<section class="rounded-lg border border-primary shadow-lg w-full p-4">
-		<h1 class="text-2xl font-bold mb-4">{ params.ClubName }</h1>
+		<h1 class="text-2xl font-bold mb-4">{ params.ClubName } Lineup { strconv.Itoa(int(params.LineupID)) }</h1>
 		<div class="grid grid-cols-2 gap-4">
 			<div>
 				<div class="space-y-4 mb-4" id={ "add_player_" + params.ClubID }></div>
