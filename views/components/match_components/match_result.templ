@@ -6,7 +6,10 @@ import (
 	"strconv"
 )
 
-templ MatchResult(match queries.FindMatchByIDRow) {
+templ MatchResult(
+	match queries.FindMatchByIDRow,
+	events []queries.ListLineupEventsByMatchIDRow,
+) {
 	<section class="rounded-lg border border-primary shadow-lg w-full h-full p-4">
 		<div class="text-lg text-center w-full font-semibold text-secondary mb-2">
 			{ plformat.FormatTimestamp(match.StartAt.Time.Local()) } • { match.Location }
@@ -34,11 +37,37 @@ templ MatchResult(match queries.FindMatchByIDRow) {
 				<img src={ match.AwayClubLogo } class="size-20"/>
 			</a>
 		</div>
-		<div class="text-xl text-center w-full font-bold text-secondary mt-4">
-			{ match.Season }
-		</div>
-		<div class="text-2xl text-center w-full font-bold text-secondary">
-			Matchweek { strconv.Itoa(int(match.Week)) }
+		<div class="grid grid-cols-3">
+			<ul class="text-sm space-y-2 pb-4">
+				for _, event := range(filterEventsByLineupID(match.HomeLineupID,queries.EventTypeGOAL, events)) {
+					<li class="flex flex-col items-end">
+						<span class="font-bold">{ strconv.Itoa(int(event.Minutes)) }' ⚽</span>
+						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String }</span>
+						<span class="text-xs">
+							<p class="font-semibold inline">{ event.P2Firstname.String } { event.P2Lastname.String }</p> - Assist
+						</span>
+					</li>
+				}
+			</ul>
+			<div class="flex flex-col items-center justify-end">
+				<span class="text-xl text-center w-full font-bold text-secondary mt-4">
+					{ match.Season }
+				</span>
+				<span class="text-2xl text-center w-full font-bold text-secondary">
+					Matchweek { strconv.Itoa(int(match.Week)) }
+				</span>
+			</div>
+			<ul class="text-sm space-y-2 pb-4">
+				for _, event := range(filterEventsByLineupID(match.AwayLineupID,queries.EventTypeGOAL, events)) {
+					<li class="flex flex-col items-start">
+						<span class="font-bold">⚽ { strconv.Itoa(int(event.Minutes)) }'</span>
+						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String }</span>
+						<span class="text-xs">
+							<p class="font-semibold inline">{ event.P2Firstname.String } { event.P2Lastname.String }</p> - Assist
+						</span>
+					</li>
+				}
+			</ul>
 		</div>
 		if match.IsFinished {
 			<div class="grid grid-cols-3 my-4 text-lg">
@@ -84,4 +113,18 @@ templ MatchResult(match queries.FindMatchByIDRow) {
 			</div>
 		}
 	</section>
+}
+
+func filterEventsByLineupID(
+	lineup_id int32,
+	event_type queries.EventType,
+	events []queries.ListLineupEventsByMatchIDRow,
+) []queries.ListLineupEventsByMatchIDRow {
+	var filtered_events []queries.ListLineupEventsByMatchIDRow
+	for _, event := range events {
+		if event.LineupID == lineup_id && event.Event == event_type {
+			filtered_events = append(filtered_events, event)
+		}
+	}
+	return filtered_events
 }

@@ -32,6 +32,11 @@ func HandleMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposit
 		return err
 	}
 
+	events, err := repo.Queries.ListLineupEventsByMatchID(repo.Ctx, int32(matchID))
+	if err != nil {
+		return err
+	}
+
 	homeLineupPlayers, err := repo.Queries.ListLineupPlayersByLineupID(repo.Ctx, match.HomeLineupID)
 	if err != nil {
 		return err
@@ -42,5 +47,5 @@ func HandleMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposit
 		return err
 	}
 
-	return handlers.Render(w, r, views.Match(fixtures, match, homeLineupPlayers, awayLineupPlayers))
+	return handlers.Render(w, r, views.Match(fixtures, match, events, homeLineupPlayers, awayLineupPlayers))
 }
