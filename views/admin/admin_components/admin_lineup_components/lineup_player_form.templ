@@ -66,6 +66,43 @@ templ AddLineupPlayerForm(params AddPlayerFormParams) {
 	</div>
 }
 
+templ AddLineupSubstituteForm(params AddPlayerFormParams) {
+	<div>
+		<div hx-swap-oob={ "beforeend:#add_player_" + params.ClubID }>
+			<form
+				id={ "add_lineup_player_form_" + strconv.Itoa(params.LineupID) + "_" + params.PositionNo }
+				class="motion-preset-expand motion-duration-150"
+				hx-post={ "/api/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
+			>
+				<h1 class="font-semibold text-lg">Add { params.ClubID } Player as Substitute No. { params.PositionNo }</h1>
+				<span>No.</span>
+				<input
+					type="text"
+					name="no"
+					class="p-1 rounded-md border border-primary w-full mb-2"
+					required
+					autocomplete="off"
+				/>
+				<input hidden name="position" value="SUB"/>
+				<input hidden name="position_no" value={ params.PositionNo }/>
+				<input hidden name="club_id" value={ params.ClubID }/>
+				<button
+					type="submit"
+					class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
+				>
+					Add
+				</button>
+				<button
+					class="bg-primary px-4 py-2 rounded-lg hover:bg-primary/80 font-bold text-black hover:cursor-pointer transition-colors w-fit"
+					onclick={ removeForm("add_lineup_player_form_" + strconv.Itoa(params.LineupID) + "_" + params.PositionNo) }
+				>
+					Cancel
+				</button>
+			</form>
+		</div>
+	</div>
+}
+
 templ LineupPlayerFormResponse(
 	params AddLineupPlayerParams,
 	match queries.FindMatchByIDRow,

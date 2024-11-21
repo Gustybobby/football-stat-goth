@@ -16,6 +16,18 @@ func HandleLineupPlayerForm(w http.ResponseWriter, r *http.Request, repo *repos.
 	}
 
 	if r.URL.Query().Get("type") == "add" {
+		position_no, err := strconv.Atoi(r.URL.Query().Get("position_no"))
+		if err != nil {
+			return err
+		}
+		if position_no >= 100 {
+			return handlers.Render(w, r, admin_lineup_components.AddLineupSubstituteForm(admin_lineup_components.AddPlayerFormParams{
+				LineupID:   lineup_id,
+				PositionNo: r.URL.Query().Get("position_no"),
+				ClubID:     r.URL.Query().Get("club_id"),
+				Mirror:     r.URL.Query().Get("mirror"),
+			}))
+		}
 		return handlers.Render(w, r, admin_lineup_components.AddLineupPlayerForm(admin_lineup_components.AddPlayerFormParams{
 			LineupID:   lineup_id,
 			PositionNo: r.URL.Query().Get("position_no"),

@@ -28,7 +28,7 @@ templ EditLineupSection(params AddLineupPlayerParams) {
 
 templ PositionButtonGroup(params AddLineupPlayerParams) {
 	<div
-		class="flex flex-col space-y-4"
+		class="flex flex-col space-y-4 items-center"
 		id={ "position_button_group_" + params.ClubID }
 		hx-swap-oob={ "#" + "position_button_group_" + params.ClubID }
 	>
@@ -75,6 +75,27 @@ templ PositionButtonGroup(params AddLineupPlayerParams) {
 				}
 			</div>
 		}
+		<div class="grid grid-cols-5 gap-2 w-fit border-t-4 pt-4 border-secondary-background">
+			for i := range(10) {
+				if isPositionNoExist(100+i, params.LineupPlayers) {
+					<button
+						class="size-12 rounded-full text-center bg-primary text-secondary-background text-xl font-bold"
+						hx-get={ buttonHxGet(100+i, params, "edit") }
+						hx-swap="none"
+					>
+						{ strconv.Itoa(int(FindLineupPlayerByPositionNo(100+i, params.LineupPlayers).No)) }
+					</button>
+				} else {
+					<button
+						class="size-12 rounded-full text-center bg-secondary text-primary-background text-xl font-bold hover:bg-secondary-background"
+						hx-get={ buttonHxGet(100+i, params, "add") }
+						hx-swap="none"
+					>
+						+{ strconv.Itoa(100+i) }
+					</button>
+				}
+			}
+		</div>
 	</div>
 }
 
