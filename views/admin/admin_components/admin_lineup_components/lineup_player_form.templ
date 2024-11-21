@@ -106,12 +106,13 @@ templ AddLineupSubstituteForm(params AddPlayerFormParams) {
 templ LineupPlayerFormResponse(
 	params AddLineupPlayerParams,
 	match queries.FindMatchByIDRow,
+	events []queries.ListLineupEventsByMatchIDRow,
 	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
 	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
 ) {
 	<div>
 		@PositionButtonGroup(params)
-		@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
+		@match_components.LineupsField(match, events, homeLineupPlayers, awayLineupPlayers)
 	</div>
 }
 

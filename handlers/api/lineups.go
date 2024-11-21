@@ -108,6 +108,11 @@ func handleFormResponse(lineupID int32, w http.ResponseWriter, r *http.Request, 
 		return err
 	}
 
+	events, err := repo.Queries.ListLineupEventsByMatchID(repo.Ctx, int32(matchID))
+	if err != nil {
+		return err
+	}
+
 	homeLineupPlayers, err := repo.Queries.ListLineupPlayersByLineupID(repo.Ctx, match.HomeLineupID)
 	if err != nil {
 		return err
@@ -136,5 +141,5 @@ func handleFormResponse(lineupID int32, w http.ResponseWriter, r *http.Request, 
 		LineupID:      int32(lineupID),
 		LineupPlayers: lineupPlayers,
 		Mirror:        mirror,
-	}, match, homeLineupPlayers, awayLineupPlayers))
+	}, match, events, homeLineupPlayers, awayLineupPlayers))
 }

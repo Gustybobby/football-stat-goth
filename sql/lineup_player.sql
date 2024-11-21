@@ -15,30 +15,6 @@ RETURNING *;
 -- name: ListLineupPlayersByLineupID :many
 SELECT
     "lineup_player".*,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'GOAL' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS goals,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'YELLOW' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS yellow_cards,
-     (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'RED' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,
@@ -60,30 +36,6 @@ RETURNING *;
 -- name: FindLineupPlayerByLineupIDAndPositionNo :one
 SELECT
     "lineup_player".*,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'GOAL' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS goals,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'YELLOW' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS yellow_cards,
-     (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'RED' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,

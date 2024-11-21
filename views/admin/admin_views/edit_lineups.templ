@@ -21,7 +21,7 @@ templ EditLineups(
 				@match_components.MatchResult(match, events)
 			</div>
 			<div class="2xl:col-span-2">
-				@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
+				@match_components.LineupsField(match, events, homeLineupPlayers, awayLineupPlayers)
 			</div>
 			<div class="col-span-full space-y-4">
 				@admin_lineup_components.EditLineupSection(admin_lineup_components.AddLineupPlayerParams{

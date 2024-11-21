@@ -8,6 +8,7 @@ import (
 
 templ LineupsField(
 	match queries.FindMatchByIDRow,
+	events []queries.ListLineupEventsByMatchIDRow,
 	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
 	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
 ) {
@@ -27,7 +28,7 @@ templ LineupsField(
 					for _, posLineupPlayers := range(listLineupPlayersByPositionNo(homeLineupPlayers, false)) {
 						<div class="flex items-center justify-center space-x-12">
 							for _, lineupPlayer := range(posLineupPlayers) {
-								@PositionPin(lineupPlayer, false)
+								@PositionPin(lineupPlayer, events, false)
 							}
 						</div>
 					}
@@ -36,7 +37,7 @@ templ LineupsField(
 					for _, posLineupPlayers := range(listLineupPlayersByPositionNo(awayLineupPlayers, true)) {
 						<div class="flex items-center justify-center space-x-12">
 							for _, lineupPlayer := range(posLineupPlayers) {
-								@PositionPin(lineupPlayer, true)
+								@PositionPin(lineupPlayer, events, true)
 							}
 						</div>
 					}
@@ -90,6 +91,7 @@ func findPositionNoFromIndex(i int, j int, mirror bool) int {
 
 templ PositionPin(
 	lineupPlayer queries.ListLineupPlayersByLineupIDRow,
+	events []queries.ListLineupEventsByMatchIDRow,
 	light bool,
 ) {
 	<div
@@ -99,6 +101,29 @@ templ PositionPin(
 		<div class="tooltiptext -top-[6.5rem] bg-white text-black p-2 rounded-lg border border-primary shadow-lg w-56 h-24 flex items-center space-x-2 text-sm">
 			<img src={ lineupPlayer.Image.String } class="size-16"/>
 			<div class="flex flex-col items-start">
+				<div class="flex items-center space-x-1">
+					for _, event := range(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeSUB, events)) {
+						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
+							<span class="text-red-600 text-xs">
+								&#8598;
+								{ strconv.Itoa(int(event.Minutes)) }
+								if event.Extra.Valid {
+									+{ strconv.Itoa(int(event.Extra.Int16)) }
+								}
+								'
+							</span>
+						} else {
+							<span class="text-green-600 text-xs">
+								&#8600;
+								{ strconv.Itoa(int(event.Minutes)) }
+								if event.Extra.Valid {
+									+{ strconv.Itoa(int(event.Extra.Int16)) }
+								}
+								'
+							</span>
+						}
+					}
+				</div>
 				<a href="#" class="hover:underline text-left">
 					<span class="text-left">{ lineupPlayer.Firstname } { lineupPlayer.Lastname } ({ strconv.Itoa(int(lineupPlayer.No)) })</span>
 				</a>
@@ -114,9 +139,13 @@ templ PositionPin(
 					}
 				</span>
 				<span>
-					{ strings.Repeat("⚽", int(lineupPlayer.Goals)) }
-					{ strings.Repeat("🟨", int(lineupPlayer.YellowCards)) }
-					{ strings.Repeat("🟥", int(lineupPlayer.RedCards)) }
+					for _, event := range(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeGOAL, events)) {
+						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
+							⚽
+						}
+					}
+					{ strings.Repeat("🟨", len(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeYELLOW, events))) }
+					{ strings.Repeat("🟥", len(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeRED, events))) }
 				</span>
 			</div>
 		</div>
@@ -128,4 +157,18 @@ func pinVariant(light bool) string {
 		return "bg-secondary-foreground"
 	}
 	return "bg-secondary-background"
+}
+
+func filterEventsByPlayerID(
+	playerID int32,
+	event_type queries.EventType,
+	events []queries.ListLineupEventsByMatchIDRow,
+) []queries.ListLineupEventsByMatchIDRow {
+	var filtered_events []queries.ListLineupEventsByMatchIDRow
+	for _, event := range events {
+		if (event.PlayerId1.Int32 == playerID || event.PlayerId2.Int32 == playerID) && event.Event == event_type {
+			filtered_events = append(filtered_events, event)
+		}
+	}
+	return filtered_events
 }

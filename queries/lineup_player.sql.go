@@ -53,30 +53,6 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 const findLineupPlayerByLineupIDAndPositionNo = `-- name: FindLineupPlayerByLineupIDAndPositionNo :one
 SELECT
     lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'GOAL' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS goals,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'YELLOW' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS yellow_cards,
-     (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'RED' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,
@@ -96,17 +72,14 @@ type FindLineupPlayerByLineupIDAndPositionNoParams struct {
 }
 
 type FindLineupPlayerByLineupIDAndPositionNoRow struct {
-	LineupID    int32
-	PlayerID    int32
-	PositionNo  int16
-	Position    PlayerPosition
-	Goals       int64
-	YellowCards int64
-	RedCards    int64
-	No          int16
-	Firstname   string
-	Lastname    string
-	Image       pgtype.Text
+	LineupID   int32
+	PlayerID   int32
+	PositionNo int16
+	Position   PlayerPosition
+	No         int16
+	Firstname  string
+	Lastname   string
+	Image      pgtype.Text
 }
 
 func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, arg FindLineupPlayerByLineupIDAndPositionNoParams) (FindLineupPlayerByLineupIDAndPositionNoRow, error) {
@@ -117,9 +90,6 @@ func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, a
 		&i.PlayerID,
 		&i.PositionNo,
 		&i.Position,
-		&i.Goals,
-		&i.YellowCards,
-		&i.RedCards,
 		&i.No,
 		&i.Firstname,
 		&i.Lastname,
@@ -131,30 +101,6 @@ func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, a
 const listLineupPlayersByLineupID = `-- name: ListLineupPlayersByLineupID :many
 SELECT
     lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'GOAL' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS goals,
-    (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'YELLOW' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS yellow_cards,
-     (
-        SELECT COUNT(*)
-        FROM "lineup_event"
-        WHERE
-            "lineup_event"."event" = 'RED' AND
-            "lineup_event".lineup_id = "lineup_player".lineup_id AND
-            "lineup_event".player_id1 = "lineup_player".player_id
-    ) AS red_cards,
     "player".no,
     "player".firstname,
     "player".lastname,
@@ -166,17 +112,14 @@ WHERE "lineup_player".lineup_id = $1
 `
 
 type ListLineupPlayersByLineupIDRow struct {
-	LineupID    int32
-	PlayerID    int32
-	PositionNo  int16
-	Position    PlayerPosition
-	Goals       int64
-	YellowCards int64
-	RedCards    int64
-	No          int16
-	Firstname   string
-	Lastname    string
-	Image       pgtype.Text
+	LineupID   int32
+	PlayerID   int32
+	PositionNo int16
+	Position   PlayerPosition
+	No         int16
+	Firstname  string
+	Lastname   string
+	Image      pgtype.Text
 }
 
 func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int32) ([]ListLineupPlayersByLineupIDRow, error) {
@@ -193,9 +136,6 @@ func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int3
 			&i.PlayerID,
 			&i.PositionNo,
 			&i.Position,
-			&i.Goals,
-			&i.YellowCards,
-			&i.RedCards,
 			&i.No,
 			&i.Firstname,
 			&i.Lastname,
