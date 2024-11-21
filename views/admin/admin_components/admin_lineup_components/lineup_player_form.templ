@@ -87,7 +87,7 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 				hx-patch={ "/api/lineups/" + strconv.Itoa(int(lineupPlayer.LineupID)) + "/lineup_players/" + strconv.Itoa(int(lineupPlayer.PlayerID)) }
 			>
 				<h1 class="font-semibold text-lg">
-					{ strconv.Itoa(int(lineupPlayer.PositionNo)) +"." } Edit { lineupPlayer.Firstname } { lineupPlayer.Lastname }({ strconv.Itoa(int(lineupPlayer.No)) }) stats
+					{ strconv.Itoa(int(lineupPlayer.PositionNo)) +"." } Edit { lineupPlayer.Firstname } { lineupPlayer.Lastname }({ strconv.Itoa(int(lineupPlayer.No)) })
 				</h1>
 				<span>Position</span>
 				<select
@@ -103,30 +103,6 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 						}
 					}
 				</select>
-				<span>Goals</span>
-				<input
-					name="goals"
-					type="text"
-					autocomplete="off"
-					value={ strconv.Itoa(int(lineupPlayer.Goals)) }
-					class="p-1 rounded-md border border-primary w-full mb-2"
-				/>
-				<span>Yellow cards</span>
-				<input
-					name="yellow_cards"
-					type="text"
-					autocomplete="off"
-					value={ strconv.Itoa(int(lineupPlayer.YellowCards)) }
-					class="p-1 rounded-md border border-primary w-full mb-2"
-				/>
-				<span>Red cards</span>
-				<input
-					name="red_cards"
-					type="text"
-					autocomplete="off"
-					value={ strconv.Itoa(int(lineupPlayer.RedCards)) }
-					class="p-1 rounded-md border border-primary w-full mb-2"
-				/>
 				<div class="flex space-x-1">
 					<button
 						type="submit"
