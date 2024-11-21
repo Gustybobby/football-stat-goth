@@ -89,6 +89,7 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 				<h1 class="font-semibold text-lg">
 					{ strconv.Itoa(int(lineupPlayer.PositionNo)) +"." } Edit { lineupPlayer.Firstname } { lineupPlayer.Lastname }({ strconv.Itoa(int(lineupPlayer.No)) })
 				</h1>
+				<p>Player ID: { strconv.Itoa(int(lineupPlayer.PlayerID)) }</p>
 				<span>Position</span>
 				<select
 					name="position"
