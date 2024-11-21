@@ -6,18 +6,26 @@ SELECT
     (
         SELECT COUNT(*)
         FROM "lineup_event"
-        WHERE
+        WHERE (
             "lineup_event"."event" = 'GOAL' AND
             "lineup_event".lineup_id = "match".home_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        )
     ) AS home_goals,
     "away_club".id AS away_club_id,
     "away_club".logo AS away_club_logo,
     (
         SELECT COUNT(*)
         FROM "lineup_event"
-        WHERE
+        WHERE (
             "lineup_event"."event" = 'GOAL' AND
             "lineup_event".lineup_id = "match".away_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        )
     ) AS away_goals
 FROM "match"
 INNER JOIN "lineup" as "home_lineup"
@@ -47,9 +55,13 @@ SELECT
     (
         SELECT COUNT(*)
         FROM "lineup_event"
-        WHERE
+        WHERE (
             "lineup_event"."event" = 'GOAL' AND
             "lineup_event".lineup_id = "match".home_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        )
     ) AS home_goals,
     "home_lineup".possession AS home_possession,
     "home_lineup".shots_on_target AS home_shots_on_target,
@@ -74,9 +86,13 @@ SELECT
     (
         SELECT COUNT(*)
         FROM "lineup_event"
-        WHERE
+        WHERE (
             "lineup_event"."event" = 'GOAL' AND
             "lineup_event".lineup_id = "match".away_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        )
     ) AS away_goals,
     "away_lineup".possession AS away_possession,
     "away_lineup".shots_on_target AS away_shots_on_target,
@@ -124,30 +140,46 @@ WITH "match_score" AS (
         (
             SELECT COUNT(*)
             FROM "lineup_event"
-            WHERE
+            WHERE (
                 "lineup_event"."event" = 'GOAL' AND
                 "lineup_event".lineup_id = "match".home_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+            )
         ) AS home_goals,
         "away".club_id AS away_club_id,
         (
             SELECT COUNT(*)
             FROM "lineup_event"
-            WHERE
+            WHERE (
                 "lineup_event"."event" = 'GOAL' AND
                 "lineup_event".lineup_id = "match".away_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+            )
         ) AS away_goals,
         (
             SELECT COUNT(*)
             FROM "lineup_event"
-            WHERE
+            WHERE (
                 "lineup_event"."event" = 'GOAL' AND
                 "lineup_event".lineup_id = "match".home_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+            )
         ) - (
             SELECT COUNT(*)
             FROM "lineup_event"
-            WHERE
+            WHERE (
                 "lineup_event"."event" = 'GOAL' AND
                 "lineup_event".lineup_id = "match".away_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+            )
         ) AS goals_diff
     FROM "match"
     INNER JOIN "lineup" AS "home"
