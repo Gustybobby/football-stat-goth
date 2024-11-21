@@ -48,10 +48,12 @@ templ MatchResult(
 							}
 							' ⚽
 						</span>
-						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String }</span>
+						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String } ({ strconv.Itoa(int(event.P1No.Int16)) })</span>
 						if event.PlayerId2.Valid {
 							<span class="text-xs">
-								<p class="font-semibold inline">{ event.P2Firstname.String } { event.P2Lastname.String }</p>&nbsp;- Assist
+								<p class="font-semibold inline">
+									{ event.P2Firstname.String } { event.P2Lastname.String } ({ strconv.Itoa(int(event.P2No.Int16)) })
+								</p>&nbsp;- Assist
 							</span>
 						}
 					</li>
@@ -75,10 +77,12 @@ templ MatchResult(
 							}
 							'
 						</span>
-						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String }</span>
+						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String } ({ strconv.Itoa(int(event.P1No.Int16)) })</span>
 						if event.PlayerId2.Valid {
 							<span class="text-xs">
-								<p class="font-semibold inline">{ event.P2Firstname.String } { event.P2Lastname.String }</p>&nbsp;- Assist
+								<p class="font-semibold inline">
+									{ event.P2Firstname.String } { event.P2Lastname.String } ({ strconv.Itoa(int(event.P2No.Int16)) })
+								</p>&nbsp;- Assist
 							</span>
 						}
 					</li>
