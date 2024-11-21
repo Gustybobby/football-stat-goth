@@ -17,9 +17,13 @@ def scrape_player(page_source: str, client) -> dict:
 
     data = {}
 
-    data["firstname"] = (
-        soup.find("div", class_="player-header__name-first").get_text().strip()
-    )
+    firstname_div = soup.find("div", class_="player-header__name-first")
+    if firstname_div is not None:
+        data["firstname"] = (
+            soup.find("div", class_="player-header__name-first").get_text().strip()
+        )
+    else:
+        data["firstname"] = ""
 
     data["lastname"] = (
         soup.find("div", class_="player-header__name-last").get_text().strip()
@@ -79,7 +83,7 @@ def scrape_player(page_source: str, client) -> dict:
             )
         data["club_id"] = db.find_club_id(club_name, client)
     except:
-        print("found club name:", club_name)
+        print("found club name:", "'" + club_name + "'")
         club_id = input("Missing Club ID, Please input: ")
         data["club_id"] = club_id
 
