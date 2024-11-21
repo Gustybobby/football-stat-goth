@@ -30,6 +30,7 @@ ON "lineup_event".player_id1 = "player1".id
 LEFT JOIN "player" AS "player2"
 ON "lineup_event".player_id2 = "player2".id
 WHERE "match".id = $1
+ORDER BY ("lineup_event".minutes + COALESCE("lineup_event".extra,0)) ASC
 `
 
 type ListLineupEventsByMatchIDRow struct {
