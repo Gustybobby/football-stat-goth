@@ -41,12 +41,13 @@ templ MatchResult(
 			<ul class="text-sm space-y-2 pb-4">
 				for _, event := range(filterEventsByLineupID(match.HomeLineupID,queries.EventTypeGOAL, events)) {
 					<li class="flex flex-col items-end">
-						<span class="font-bold">
+						<span class="font-bold flex items-center">
 							{ strconv.Itoa(int(event.Minutes)) }
 							if event.Extra.Valid {
 								+{ strconv.Itoa(int(event.Extra.Int16)) }
 							}
-							' ⚽
+							'
+							<img src="/public/purple_football.webp" class="ml-1 size-3"/>
 						</span>
 						<span class="font-bold">
 							({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
@@ -72,8 +73,9 @@ templ MatchResult(
 			<ul class="text-sm space-y-2 pb-4">
 				for _, event := range(filterEventsByLineupID(match.AwayLineupID,queries.EventTypeGOAL, events)) {
 					<li class="flex flex-col items-start">
-						<span class="font-bold">
-							⚽ { strconv.Itoa(int(event.Minutes)) }
+						<span class="font-bold flex items-center">
+							<img src="/public/purple_football.webp" class="mr-1 size-3"/>
+							{ strconv.Itoa(int(event.Minutes)) }
 							if event.Extra.Valid {
 								+{ strconv.Itoa(int(event.Extra.Int16)) }
 							}

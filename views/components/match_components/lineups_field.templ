@@ -126,10 +126,10 @@ templ PositionPin(
 						Forward
 					}
 				</span>
-				<span>
+				<span class="flex items-center mt-1">
 					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeGOAL, events)) {
 						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
-							⚽
+							<img src="/public/purple_football.webp" class="size-3 mr-0.5"/>
 						}
 					}
 					{ strings.Repeat("🟨", len(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeYELLOW, events))) }
