@@ -24,7 +24,7 @@ templ AddLineupPlayerForm(params AddPlayerFormParams) {
 			<form
 				id={ "add_lineup_player_form_" + strconv.Itoa(params.LineupID) + "_" + params.PositionNo }
 				class="motion-preset-expand motion-duration-150"
-				hx-post={ "/api/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
+				hx-post={ "/api/admin/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
 			>
 				<h1 class="font-semibold text-lg">Add { params.ClubID } Player at Position No. { params.PositionNo }</h1>
 				<span>No.</span>
@@ -72,7 +72,7 @@ templ AddLineupSubstituteForm(params AddPlayerFormParams) {
 			<form
 				id={ "add_lineup_player_form_" + strconv.Itoa(params.LineupID) + "_" + params.PositionNo }
 				class="motion-preset-expand motion-duration-150"
-				hx-post={ "/api/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
+				hx-post={ "/api/admin/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
 			>
 				<h1 class="font-semibold text-lg">Add { params.ClubID } Player as Substitute No. { params.PositionNo }</h1>
 				<span>No.</span>
@@ -123,7 +123,7 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 			<form
 				id={ "edit_lineup_player_form_" + strconv.Itoa(int(lineupPlayer.LineupID)) + "_" + strconv.Itoa(int(lineupPlayer.PositionNo)) }
 				class="motion-preset-expand motion-duration-150 flex flex-col items-start"
-				hx-patch={ "/api/lineups/" + strconv.Itoa(int(lineupPlayer.LineupID)) + "/lineup_players/" + strconv.Itoa(int(lineupPlayer.PlayerID)) }
+				hx-patch={ "/api/admin/lineups/" + strconv.Itoa(int(lineupPlayer.LineupID)) + "/lineup_players/" + strconv.Itoa(int(lineupPlayer.PlayerID)) }
 			>
 				<h1 class="font-semibold text-lg">
 					{ strconv.Itoa(int(lineupPlayer.PositionNo)) +"." } Edit { lineupPlayer.Firstname } { lineupPlayer.Lastname }({ strconv.Itoa(int(lineupPlayer.No)) })
