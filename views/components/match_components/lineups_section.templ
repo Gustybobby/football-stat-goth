@@ -13,7 +13,7 @@ templ LineupsSection(
 ) {
 	<section
 		class="rounded-lg border border-primary shadow-lg w-full p-4"
-		id={ "lineups_field_" + strconv.Itoa(int(match.ID)) }
+		id={ "lineups_section_" + strconv.Itoa(int(match.ID)) }
 		hx-swap-oob={ "#" + "lineups_section_" + strconv.Itoa(int(match.ID)) }
 	>
 		@lineupPlayersSection(match.HomeClubID, match.HomeClubName, match.HomeClubLogo, events, homeLineupPlayers)
