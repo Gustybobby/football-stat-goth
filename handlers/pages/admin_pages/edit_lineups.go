@@ -2,7 +2,9 @@ package admin_pages
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/queries"
 	"football-stat-goth/repos"
+	"football-stat-goth/services/plauth"
 	"football-stat-goth/views/admin/admin_views"
 	"net/http"
 	"strconv"
@@ -14,6 +16,15 @@ func HandleAdminEditLineupsPage(w http.ResponseWriter, r *http.Request, repo *re
 	matchID, err := strconv.Atoi(chi.URLParam(r, "matchID"))
 	if err != nil {
 		return err
+	}
+
+	user, err := plauth.Auth(w, r, repo)
+	if err != nil {
+		return err
+	}
+	if user.Role != queries.UserRoleADMIN {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return nil
 	}
 
 	match, err := repo.Queries.FindMatchByID(repo.Ctx, int32(matchID))
