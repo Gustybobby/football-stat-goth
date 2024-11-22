@@ -43,6 +43,21 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
+const findPasswordHashByUsername = `-- name: FindPasswordHashByUsername :one
+SELECT
+    "user".password_hash
+FROM "user"
+WHERE "user".username = $1
+LIMIT 1
+`
+
+func (q *Queries) FindPasswordHashByUsername(ctx context.Context, username string) (string, error) {
+	row := q.db.QueryRow(ctx, findPasswordHashByUsername, username)
+	var password_hash string
+	err := row.Scan(&password_hash)
+	return password_hash, err
+}
+
 const findUserByUsername = `-- name: FindUserByUsername :one
 SELECT
     "user".username,

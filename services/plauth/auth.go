@@ -1,21 +1,34 @@
 package plauth
 
 import (
-	"context"
+	"encoding/json"
 	"football-stat-goth/queries"
+	"football-stat-goth/repos"
+	"log/slog"
 	"net/http"
+	"os"
 )
 
-func Auth(r *http.Request, db *queries.Queries, ctx context.Context) (*queries.FindUserByUsernameRow, error) {
+func Auth(w http.ResponseWriter, r *http.Request, repo *repos.Repository) (*queries.FindUserByUsernameRow, error) {
 	token, err := GetSessionTokenFromCookie(r)
 	if err != nil {
-		return nil, err
+		slog.Warn("cookie session token not found: " + err.Error())
+		return nil, nil
 	}
 
-	session, err := ValidateSessionToken(token, db, ctx)
+	session, err := ValidateSessionToken(token, repo.Queries, repo.Ctx)
 	if err != nil {
+		slog.Error("validate session token error: " + err.Error())
+		DeleteSessionTokenCookie(w, os.Getenv("ENV") == "production")
+		return nil, nil
+	}
+
+	stringifiedSession, err := json.MarshalIndent(session, "-", "  ")
+	if err != nil {
+		slog.Error(err.Error())
 		return nil, err
 	}
+	slog.Info("plauth session: " + string(stringifiedSession))
 
 	return &session.User, nil
 }

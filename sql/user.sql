@@ -8,6 +8,13 @@ FROM "user"
 WHERE "user".username = $1
 LIMIT 1;
 
+-- name: FindPasswordHashByUsername :one
+SELECT
+    "user".password_hash
+FROM "user"
+WHERE "user".username = $1
+LIMIT 1;
+
 -- name: CreateUser :one
 INSERT INTO "user" (
     username, password_hash, firstname, lastname

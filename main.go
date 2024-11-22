@@ -31,6 +31,7 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Get("/clubs/{clubID}", handlers.Make(pages.HandleClubPage, repo))
 	router.Get("/matches/{matchID}", handlers.Make(pages.HandleMatchPage, repo))
 	router.Get("/signup", handlers.Make(pages.HandleSignupPage, repo))
+	router.Get("/signin", handlers.Make(pages.HandleSigninPage, repo))
 
 	router.Route("/admin", func(r chi.Router) {
 		r.Get("/players/create", handlers.Make(admin_pages.HandleAdminCreatePlayersPage, repo))
@@ -40,6 +41,7 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 
 	router.Route("/api", func(r chi.Router) {
 		r.Post("/signup", handlers.Make(api.HandleSignup, repo))
+		r.Post("/signin", handlers.Make(api.HandleSignin, repo))
 		r.Post("/players", handlers.Make(api.HandleCreatePlayer, repo))
 
 		r.Post("/lineups/{lineupID}/lineup_players", handlers.Make(api.HandleCreateLineupPlayer, repo))

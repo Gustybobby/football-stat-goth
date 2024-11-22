@@ -18,3 +18,11 @@ func CreateUser(username string, password string, firstName string, lastName str
 
 	return &user, nil
 }
+
+func FindPasswordHash(username string, db *queries.Queries, ctx context.Context) (string, error) {
+	passwordHash, err := db.FindPasswordHashByUsername(ctx, username)
+	if err != nil {
+		return "", err
+	}
+	return passwordHash, nil
+}
