@@ -4,6 +4,7 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
+	"football-stat-goth/services/plauth"
 	"football-stat-goth/views"
 	"net/http"
 	"slices"
@@ -25,6 +26,11 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		IsFinished:   false,
 		Order:        "ASC",
 	})
+	if err != nil {
+		return err
+	}
+
+	user, err := plauth.Auth(w, r, repo)
 	if err != nil {
 		return err
 	}
@@ -52,5 +58,5 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	return handlers.Render(w, r, views.Club(club, fixtures, matches, standings[idx], idx+1, averageStats))
+	return handlers.Render(w, r, views.Club(fixtures, user, club, matches, standings[idx], idx+1, averageStats))
 }

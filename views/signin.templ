@@ -1,0 +1,29 @@
+package views
+
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/views/components"
+	"football-stat-goth/views/layouts"
+)
+
+templ Signin(user *queries.FindUserByUsernameRow) {
+	@layouts.Base() {
+		@components.Nav(user)
+		<main class="w-full p-4 bg-primary-background min-h-screen">
+			<div class="my-8 w-full flex flex-col items-center">
+				@components.PlaymakerTitle()
+				<h1 class="text-4xl font-extrabold my-8">Sign in</h1>
+				<form class="flex flex-col items-center space-y-2 mb-2" hx-post="/api/signin">
+					<input type="text" name="username" placeholder="Username" required class="p-1 rounded-md border border-primary"/>
+					<input type="password" name="password" placeholder="Password" required class="p-1 rounded-md border border-primary"/>
+					<input type="submit" value="Sign in" class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors"/>
+				</form>
+				<div>
+					No account? 
+					<a href="/signup" class="inline text-secondary underline">sign up</a>
+					now!
+				</div>
+			</div>
+		</main>
+	}
+}

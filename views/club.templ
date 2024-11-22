@@ -9,15 +9,16 @@ import (
 )
 
 templ Club(
-	club queries.Club,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
+	user *queries.FindUserByUsernameRow,
+	club queries.Club,
 	results []queries.ListMatchesWithClubsAndGoalsRow,
 	standing queries.ListClubStandingsRow,
 	position int,
 	averageStats queries.ClubAverageStatisticsRow,
 ) {
 	@layouts.Base() {
-		@components.Nav()
+		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
 			<div class="max-w-5xl">
 				@club_components.ClubProfile(club)

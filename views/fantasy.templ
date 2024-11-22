@@ -6,10 +6,10 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
+templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow, user *queries.FindUserByUsernameRow) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
-		@components.Nav()
+		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
 			<div class="max-w-5xl">
 				<section class="w-full flex px-2 py-8 space-x-4 flex-row">

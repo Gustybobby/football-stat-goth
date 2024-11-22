@@ -4,6 +4,7 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
+	"football-stat-goth/services/plauth"
 	"football-stat-goth/views"
 	"net/http"
 )
@@ -18,5 +19,11 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 	if err != nil {
 		return err
 	}
-	return handlers.Render(w, r, views.Fantasy(fixtures))
+
+	user, err := plauth.Auth(w, r, repo)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Fantasy(fixtures, user))
 }

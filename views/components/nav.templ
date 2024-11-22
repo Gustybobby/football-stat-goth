@@ -1,6 +1,8 @@
 package components
 
-templ Nav() {
+import "football-stat-goth/queries"
+
+templ Nav(user *queries.FindUserByUsernameRow) {
 	<header class="h-16 w-full flex justify-between items-center px-4 sticky top-0 bg-gradient-to-r from-secondary-background to-secondary text-primary-background shadow-lg z-50 border-y-4 border-b-secondary border-t-secondary-background">
 		<a class="flex items-center space-x-2" href="/">
 			<img src="/public/icon.png" class="size-8"/>
@@ -12,7 +14,11 @@ templ Nav() {
 			<a href="/clubs" class="hover:underline">Clubs</a>
 			<a href="/" class="hover:underline">Players</a>
 			<a href="/fantasy" class="hover:underline">Fantasy</a>
-			<a href="/signup" class="hover:underline">Signin</a>
+			if user != nil {
+				<a href="/profile" class="hover:underline">Profile</a>
+			} else {
+				<a href="/signin" class="hover:underline">Sign in</a>
+			}
 		</nav>
 	</header>
 }

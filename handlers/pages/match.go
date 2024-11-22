@@ -4,6 +4,7 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
+	"football-stat-goth/services/plauth"
 	"football-stat-goth/views"
 	"net/http"
 	"strconv"
@@ -13,6 +14,11 @@ import (
 
 func HandleMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	matchID, err := strconv.Atoi(chi.URLParam(r, "matchID"))
+	if err != nil {
+		return err
+	}
+
+	user, err := plauth.Auth(w, r, repo)
 	if err != nil {
 		return err
 	}
@@ -47,5 +53,5 @@ func HandleMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposit
 		return err
 	}
 
-	return handlers.Render(w, r, views.Match(fixtures, match, events, homeLineupPlayers, awayLineupPlayers))
+	return handlers.Render(w, r, views.Match(user, fixtures, match, events, homeLineupPlayers, awayLineupPlayers))
 }

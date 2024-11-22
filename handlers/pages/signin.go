@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func HandleSignupPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+func HandleSigninPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	user, err := plauth.Auth(w, r, repo)
 	if err != nil {
 		return err
@@ -18,5 +18,5 @@ func HandleSignupPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 
-	return handlers.Render(w, r, views.Signup(user))
+	return handlers.Render(w, r, views.Signin(user))
 }

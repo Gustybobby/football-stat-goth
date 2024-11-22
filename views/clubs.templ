@@ -6,9 +6,9 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ Clubs(clubs []queries.Club) {
+templ Clubs(clubs []queries.Club, user *queries.FindUserByUsernameRow) {
 	@layouts.Base() {
-		@components.Nav()
+		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
 			<section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
 				for _, club := range clubs {

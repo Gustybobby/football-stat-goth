@@ -7,9 +7,9 @@ import (
 	"strconv"
 )
 
-templ Standings(clubs []queries.ListClubStandingsRow) {
+templ Standings(user *queries.FindUserByUsernameRow, clubs []queries.ListClubStandingsRow) {
 	@layouts.Base() {
-		@components.Nav()
+		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
 			<h1 class="text-center font-bold text-4xl my-8">Premier League Standings</h1>
 			<table class="mb-16">
