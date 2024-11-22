@@ -48,7 +48,9 @@ templ MatchResult(
 							}
 							' ⚽
 						</span>
-						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String } ({ strconv.Itoa(int(event.P1No.Int16)) })</span>
+						<span class="font-bold">
+							({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
+						</span>
 						if event.PlayerId2.Valid {
 							<span class="text-xs">
 								<p class="font-semibold inline">
@@ -77,7 +79,9 @@ templ MatchResult(
 							}
 							'
 						</span>
-						<span class="font-bold">{ event.P1Firstname.String } { event.P1Lastname.String } ({ strconv.Itoa(int(event.P1No.Int16)) })</span>
+						<span class="font-bold">
+							({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
+						</span>
 						if event.PlayerId2.Valid {
 							<span class="text-xs">
 								<p class="font-semibold inline">
@@ -90,49 +94,53 @@ templ MatchResult(
 			</ul>
 		</div>
 		if match.IsFinished {
-			<div class="grid grid-cols-3 my-4 text-lg">
-				<ul class="text-center space-y-4">
-					<li>{ plformat.FormatPgTypeNumeric(match.HomePossession) }</li>
-					<li>{ strconv.Itoa(int(match.HomeShotsOnTarget)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeShots)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeTouches)) }</li>
-					<li>{ strconv.Itoa(int(match.HomePasses)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeTackles)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeClearances)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeCorners)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeOffsides)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeYellowCards)) }</li>
-					<li>{ strconv.Itoa(int(match.HomeFoulsConceded)) }</li>
-				</ul>
-				<ul class="text-center space-y-4 font-semibold">
-					<li>Possession %</li>
-					<li>Shots on target</li>
-					<li>Shots</li>
-					<li>Touches</li>
-					<li>Passes</li>
-					<li>Tackles</li>
-					<li>Clearances</li>
-					<li>Corners</li>
-					<li>Offsides</li>
-					<li>Yellow cards</li>
-					<li>Fouls conceded</li>
-				</ul>
-				<ul class="text-center space-y-4">
-					<li>{ plformat.FormatPgTypeNumeric(match.AwayPossession) }</li>
-					<li>{ strconv.Itoa(int(match.AwayShotsOnTarget)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayShots)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayTouches)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayPasses)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayTackles)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayClearances)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayCorners)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayOffsides)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayYellowCards)) }</li>
-					<li>{ strconv.Itoa(int(match.AwayFoulsConceded)) }</li>
-				</ul>
-			</div>
+			@statsComparison(match)
 		}
 	</section>
+}
+
+templ statsComparison(match queries.FindMatchByIDRow) {
+	<div class="grid grid-cols-3 my-4 text-lg">
+		<ul class="text-center space-y-4">
+			<li>{ plformat.FormatPgTypeNumeric(match.HomePossession) }</li>
+			<li>{ strconv.Itoa(int(match.HomeShotsOnTarget)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeShots)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeTouches)) }</li>
+			<li>{ strconv.Itoa(int(match.HomePasses)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeTackles)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeClearances)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeCorners)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeOffsides)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeYellowCards)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeFoulsConceded)) }</li>
+		</ul>
+		<ul class="text-center space-y-4 font-semibold">
+			<li>Possession %</li>
+			<li>Shots on target</li>
+			<li>Shots</li>
+			<li>Touches</li>
+			<li>Passes</li>
+			<li>Tackles</li>
+			<li>Clearances</li>
+			<li>Corners</li>
+			<li>Offsides</li>
+			<li>Yellow cards</li>
+			<li>Fouls conceded</li>
+		</ul>
+		<ul class="text-center space-y-4">
+			<li>{ plformat.FormatPgTypeNumeric(match.AwayPossession) }</li>
+			<li>{ strconv.Itoa(int(match.AwayShotsOnTarget)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayShots)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayTouches)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayPasses)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayTackles)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayClearances)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayCorners)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayOffsides)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayYellowCards)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayFoulsConceded)) }</li>
+		</ul>
+	</div>
 }
 
 func filterEventsByLineupID(
