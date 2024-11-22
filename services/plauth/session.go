@@ -15,7 +15,7 @@ import (
 
 type ValidationResult struct {
 	Session queries.Session
-	User    queries.User
+	User    queries.FindUserByUsernameRow
 }
 
 func ValidateSessionToken(token string, db *queries.Queries, ctx context.Context) (*ValidationResult, error) {

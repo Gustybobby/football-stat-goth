@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Auth(r *http.Request, db *queries.Queries, ctx context.Context) (*queries.User, error) {
+func Auth(r *http.Request, db *queries.Queries, ctx context.Context) (*queries.FindUserByUsernameRow, error) {
 	token, err := GetSessionTokenFromCookie(r)
 	if err != nil {
 		return nil, err

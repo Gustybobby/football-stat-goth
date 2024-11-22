@@ -44,18 +44,28 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const findUserByUsername = `-- name: FindUserByUsername :one
-SELECT username, password_hash, firstname, lastname, role
+SELECT
+    "user".username,
+    "user".firstname,
+    "user".lastname,
+    "user".role
 FROM "user"
 WHERE "user".username = $1
 LIMIT 1
 `
 
-func (q *Queries) FindUserByUsername(ctx context.Context, username string) (User, error) {
+type FindUserByUsernameRow struct {
+	Username  string
+	Firstname string
+	Lastname  string
+	Role      UserRole
+}
+
+func (q *Queries) FindUserByUsername(ctx context.Context, username string) (FindUserByUsernameRow, error) {
 	row := q.db.QueryRow(ctx, findUserByUsername, username)
-	var i User
+	var i FindUserByUsernameRow
 	err := row.Scan(
 		&i.Username,
-		&i.PasswordHash,
 		&i.Firstname,
 		&i.Lastname,
 		&i.Role,
