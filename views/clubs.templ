@@ -6,7 +6,7 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ Clubs(clubs []queries.Club, user *queries.FindUserByUsernameRow) {
+templ Clubs(user *queries.FindUserByUsernameRow, clubs []queries.Club) {
 	@layouts.Base() {
 		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">

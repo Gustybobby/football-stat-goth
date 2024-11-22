@@ -20,17 +20,17 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
+	user, err := plauth.Auth(w, r, repo)
+	if err != nil {
+		return err
+	}
+
 	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: true,
 		ClubID:       clubID,
 		IsFinished:   false,
 		Order:        "ASC",
 	})
-	if err != nil {
-		return err
-	}
-
-	user, err := plauth.Auth(w, r, repo)
 	if err != nil {
 		return err
 	}
@@ -58,5 +58,5 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	return handlers.Render(w, r, views.Club(fixtures, user, club, matches, standings[idx], idx+1, averageStats))
+	return handlers.Render(w, r, views.Club(user, fixtures, club, matches, standings[idx], idx+1, averageStats))
 }

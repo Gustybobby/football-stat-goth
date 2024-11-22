@@ -10,6 +10,11 @@ import (
 )
 
 func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	user, err := plauth.Auth(w, r, repo)
+	if err != nil {
+		return err
+	}
+
 	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: false,
 		ClubID:       "",
@@ -20,10 +25,5 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		return err
 	}
 
-	user, err := plauth.Auth(w, r, repo)
-	if err != nil {
-		return err
-	}
-
-	return handlers.Render(w, r, views.Fantasy(fixtures, user))
+	return handlers.Render(w, r, views.Fantasy(user, fixtures))
 }

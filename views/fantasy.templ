@@ -6,7 +6,7 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow, user *queries.FindUserByUsernameRow) {
+templ Fantasy(user *queries.FindUserByUsernameRow, fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
 		@components.Nav(user)
