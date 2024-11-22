@@ -23,6 +23,9 @@ templ EditLineups(
 			<div class="2xl:col-span-2">
 				@match_components.LineupsField(match, events, homeLineupPlayers, awayLineupPlayers)
 			</div>
+			<div class="col-span-full">
+				@match_components.LineupsSection(match, events, homeLineupPlayers, awayLineupPlayers)
+			</div>
 			<div class="col-span-full space-y-4">
 				@admin_lineup_components.EditLineupSection(admin_lineup_components.AddLineupPlayerParams{
 					ClubID:        match.HomeClubID,

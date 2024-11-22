@@ -98,30 +98,16 @@ templ PositionPin(
 		class={ "size-10 text-white font-bold rounded-full flex items-center justify-center text-center shadow-lg tooltip hover:scale-110 transition-transform cursor-pointer " + pinVariant(light) }
 	>
 		{ strconv.Itoa(int(lineupPlayer.No)) }
-		<div class="tooltiptext -top-[6.5rem] bg-white text-black p-2 rounded-lg border border-primary shadow-lg w-56 h-24 flex items-center space-x-2 text-sm">
-			<img src={ lineupPlayer.Image.String } class="size-16"/>
+		<div class="tooltiptext -top-[6.5rem] bg-white text-black p-2 rounded-lg border border-primary shadow-lg w-56 h-fit flex items-center space-x-2 text-sm">
+			<img
+				src={ lineupPlayer.Image.String }
+				class="size-16"
+				onerror="this.src='/public/missing_portrait.png';"
+			/>
 			<div class="flex flex-col items-start">
 				<div class="flex items-center space-x-1">
-					for _, event := range(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeSUB, events)) {
-						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
-							<span class="text-red-600 text-xs">
-								&#8598;
-								{ strconv.Itoa(int(event.Minutes)) }
-								if event.Extra.Valid {
-									+{ strconv.Itoa(int(event.Extra.Int16)) }
-								}
-								'
-							</span>
-						} else {
-							<span class="text-green-600 text-xs">
-								&#8600;
-								{ strconv.Itoa(int(event.Minutes)) }
-								if event.Extra.Valid {
-									+{ strconv.Itoa(int(event.Extra.Int16)) }
-								}
-								'
-							</span>
-						}
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeSUB, events)) {
+						@SubstituteEventCard(lineupPlayer, event)
 					}
 				</div>
 				<a href="#" class="hover:underline text-left">
@@ -139,13 +125,13 @@ templ PositionPin(
 					}
 				</span>
 				<span>
-					for _, event := range(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeGOAL, events)) {
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeGOAL, events)) {
 						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
 							⚽
 						}
 					}
-					{ strings.Repeat("🟨", len(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeYELLOW, events))) }
-					{ strings.Repeat("🟥", len(filterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeRED, events))) }
+					{ strings.Repeat("🟨", len(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeYELLOW, events))) }
+					{ strings.Repeat("🟥", len(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeRED, events))) }
 				</span>
 			</div>
 		</div>
@@ -157,18 +143,4 @@ func pinVariant(light bool) string {
 		return "bg-secondary-foreground"
 	}
 	return "bg-secondary-background"
-}
-
-func filterEventsByPlayerID(
-	playerID int32,
-	event_type queries.EventType,
-	events []queries.ListLineupEventsByMatchIDRow,
-) []queries.ListLineupEventsByMatchIDRow {
-	var filtered_events []queries.ListLineupEventsByMatchIDRow
-	for _, event := range events {
-		if (event.PlayerId1.Int32 == playerID || event.PlayerId2.Int32 == playerID) && event.Event == event_type {
-			filtered_events = append(filtered_events, event)
-		}
-	}
-	return filtered_events
 }
