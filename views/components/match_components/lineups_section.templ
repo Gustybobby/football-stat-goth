@@ -75,7 +75,7 @@ templ lineupPlayerCard(
 				class="size-24"
 				onerror="this.src='/public/missing_portrait.png';"
 			/>
-			<div class="flex flex-col items-start">
+			<div class="flex flex-col items-start font-bold text-xs">
 				<div>
 					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeSUB, events)) {
 						@SubstituteEventCard(lineupPlayer, event)
@@ -84,50 +84,34 @@ templ lineupPlayerCard(
 				<div>
 					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeGOAL, events)) {
 						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
-							<span class="font-bold text-xs last:mb-1">
-								⚽ { strconv.Itoa(int(event.Minutes)) }
-								if event.Extra.Valid {
-									+{ strconv.Itoa(int(event.Extra.Int16)) }
-								}
-								'
-							</span>
+							@GoalEventCard(event)
 						}
 					}
 				</div>
 				<div>
 					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeYELLOW, events)) {
-						<span class="font-bold text-xs last:mb-1">
-							🟨 { strconv.Itoa(int(event.Minutes)) }
-							if event.Extra.Valid {
-								+{ strconv.Itoa(int(event.Extra.Int16)) }
-							}
-							'
-						</span>
+						@YellowCardEventCard(event)
 					}
 				</div>
 				<div>
 					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeRED, events)) {
-						<span class="font-bold text-xs last:mb-1">
-							🟥 { strconv.Itoa(int(event.Minutes)) }
-							if event.Extra.Valid {
-								+{ strconv.Itoa(int(event.Extra.Int16)) }
-							}
-							'
-						</span>
+						@RedCardEventCard(event)
 					}
 				</div>
 			</div>
 		</div>
 		<span class="font-semibold w-full">
-			{ lineupPlayer.Firstname } { lineupPlayer.Lastname } ({ strconv.Itoa(int(lineupPlayer.No)) })
+			({ strconv.Itoa(int(lineupPlayer.No)) }) { lineupPlayer.Firstname } { lineupPlayer.Lastname }
 		</span>
 	</div>
 }
 
-templ SubstituteEventCard(lineupPlayer queries.ListLineupPlayersByLineupIDRow,
-	event queries.ListLineupEventsByMatchIDRow) {
+templ SubstituteEventCard(
+	lineupPlayer queries.ListLineupPlayersByLineupIDRow,
+	event queries.ListLineupEventsByMatchIDRow,
+) {
 	if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
-		<span class="text-red-600 text-xs font-bold">
+		<span class="text-red-600">
 			<p class="ml-1 mr-1.5 inline">&#8598;</p>
 			{ strconv.Itoa(int(event.Minutes)) }
 			if event.Extra.Valid {
@@ -136,7 +120,7 @@ templ SubstituteEventCard(lineupPlayer queries.ListLineupPlayersByLineupIDRow,
 			'
 		</span>
 	} else {
-		<span class="text-green-600 text-xs font-bold">
+		<span class="text-green-600">
 			<p class="ml-1 mr-1.5 inline">&#8600;</p>
 			{ strconv.Itoa(int(event.Minutes)) }
 			if event.Extra.Valid {
@@ -145,6 +129,36 @@ templ SubstituteEventCard(lineupPlayer queries.ListLineupPlayersByLineupIDRow,
 			'
 		</span>
 	}
+}
+
+templ GoalEventCard(event queries.ListLineupEventsByMatchIDRow) {
+	<span>
+		⚽ { strconv.Itoa(int(event.Minutes)) }
+		if event.Extra.Valid {
+			+{ strconv.Itoa(int(event.Extra.Int16)) }
+		}
+		'
+	</span>
+}
+
+templ YellowCardEventCard(event queries.ListLineupEventsByMatchIDRow) {
+	<span>
+		🟨 { strconv.Itoa(int(event.Minutes)) }
+		if event.Extra.Valid {
+			+{ strconv.Itoa(int(event.Extra.Int16)) }
+		}
+		'
+	</span>
+}
+
+templ RedCardEventCard(event queries.ListLineupEventsByMatchIDRow) {
+	<span>
+		🟥 { strconv.Itoa(int(event.Minutes)) }
+		if event.Extra.Valid {
+			+{ strconv.Itoa(int(event.Extra.Int16)) }
+		}
+		'
+	</span>
 }
 
 func FilterEventsByPlayerID(
