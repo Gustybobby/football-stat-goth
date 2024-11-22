@@ -22,7 +22,8 @@ SELECT
 FROM "lineup_player"
 INNER JOIN "player"
 ON "lineup_player".player_id = "player".id
-WHERE "lineup_player".lineup_id = $1;
+WHERE "lineup_player".lineup_id = $1
+ORDER BY "player".no ASC;
 
 -- name: UpdateLineupPlayer :one
 UPDATE lineup_player SET
