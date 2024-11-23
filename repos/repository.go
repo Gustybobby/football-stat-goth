@@ -4,6 +4,7 @@ import (
 	"context"
 	"football-stat-goth/queries"
 	"log/slog"
+	"os"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -21,7 +22,11 @@ func DbConnect(dsn string) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
-	config.Tracer = NewMultiQueryTracer(NewLoggingQueryTracer(slog.Default()))
+
+	if os.Getenv("DB_LOG") == "true" {
+		config.Tracer = NewMultiQueryTracer(NewLoggingQueryTracer(slog.Default()))
+	}
+
 	conn, err := pgx.ConnectConfig(ctx, config)
 	if err != nil {
 		return nil, err
