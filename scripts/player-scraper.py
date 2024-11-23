@@ -117,6 +117,7 @@ def replace_special(string: str):
         .replace("ã", "a")
         .replace("ñ", "n")
         .replace("ú", "u")
+        .replace("ü", "u")
     )
 
 
