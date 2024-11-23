@@ -110,7 +110,7 @@ templ PositionPin(
 						@SubstituteEventCard(lineupPlayer, event)
 					}
 				</div>
-				<a href={ templ.SafeURL("/players/" + strconv.Itoa(int(lineupPlayer.No))) } class="hover:underline text-left">
+				<a href={ templ.SafeURL("/players/" + strconv.Itoa(int(lineupPlayer.PlayerID))) } class="hover:underline text-left">
 					<span class="text-left">
 						({ strconv.Itoa(int(lineupPlayer.No)) }) { lineupPlayer.Firstname } { lineupPlayer.Lastname }
 					</span>
