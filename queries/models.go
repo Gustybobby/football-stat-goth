@@ -152,6 +152,13 @@ type Club struct {
 	Est       int32
 }
 
+type ClubPlayer struct {
+	ClubID   string
+	PlayerID int32
+	Season   string
+	No       int16
+}
+
 type Lineup struct {
 	ID            int32
 	ClubID        string
@@ -198,8 +205,6 @@ type Match struct {
 
 type Player struct {
 	ID          int32
-	ClubID      pgtype.Text
-	No          int16
 	Firstname   string
 	Lastname    string
 	Dob         pgtype.Timestamp

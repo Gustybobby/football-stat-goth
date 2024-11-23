@@ -1,15 +1,14 @@
--- name: FindPlayerIDByClubAndNo :one
+-- name: FindPlayerIDByClubNoSeason :one
 SELECT
-    "player".id
-FROM "player"
+    "club_player".player_id
+FROM "club_player"
 WHERE
-    "player".club_id = $1 AND
-    "player".no = $2;
+    "club_player".club_id = $1 AND
+    "club_player".no = $2 AND
+    "club_player".season = $3;
 
 -- name: CreatePlayer :one
 INSERT INTO "player" (
-    club_id,
-    no,
     firstname,
     lastname,
     dob,
@@ -24,8 +23,6 @@ INSERT INTO "player" (
     $4,
     $5,
     $6,
-    $7,
-    $8,
-    $9
+    $7
 )
 RETURNING *;

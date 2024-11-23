@@ -23,11 +23,10 @@ func HandleCreateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 		return err
 	}
 
-	club_id := r.FormValue("club_id")
-
-	player_id, err := repo.Queries.FindPlayerIDByClubAndNo(repo.Ctx, queries.FindPlayerIDByClubAndNoParams{
-		ClubID: pgtype.Text{String: club_id, Valid: true},
+	player_id, err := repo.Queries.FindPlayerIDByClubNoSeason(repo.Ctx, queries.FindPlayerIDByClubNoSeasonParams{
+		ClubID: r.FormValue("club_id"),
 		No:     int16(no),
+		Season: "2024/25",
 	})
 	if err != nil {
 		return err

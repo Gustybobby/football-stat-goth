@@ -13,18 +13,24 @@ CREATE TABLE "club" (
 
 CREATE TABLE "player" (
     id          SERIAL PRIMARY KEY,
-    club_id     CHAR(3),
-    no          INT2 NOT NULL,
     firstname   VARCHAR(64) NOT NULL,
     lastname    VARCHAR(64) NOT NULL,
     dob         TIMESTAMP NOT NULL,
     height      INT2 NOT NULL,
     nationality VARCHAR(64) NOT NULL,
     position    player_position NOT NULL,
-    image       VARCHAR(255),
+    image       VARCHAR(255)
+);
 
-    CONSTRAINT unique_club_id_no    UNIQUE (club_id, no),
-    CONSTRAINT fk_player_club       FOREIGN KEY (club_id) REFERENCES "club"(id)
+CREATE TABLE "club_player" (
+    club_id     CHAR(3),
+    player_id   INTEGER,
+    season      VARCHAR(16),
+    no          INT2 NOT NULL,
+
+    CONSTRAINT pk_club_player           PRIMARY KEY (club_id, player_id, season),  
+    CONSTRAINT fk_club_player_club      FOREIGN KEY (club_id) REFERENCES "club"(id),
+    CONSTRAINT fk_club_player_player    FOREIGN KEY (player_id) REFERENCES "player"(id)
 );
 
 CREATE TABLE "lineup" (
