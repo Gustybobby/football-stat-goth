@@ -114,6 +114,7 @@ def replace_special(string: str):
         .replace("ë", "e")
         .replace("í", "i")
         .replace("ø", "o")
+        .replace("ö", "o")
         .replace("ã", "a")
         .replace("ñ", "n")
         .replace("ú", "u")
