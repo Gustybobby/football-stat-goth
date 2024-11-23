@@ -13,11 +13,11 @@ templ LineupsField(
 	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
 ) {
 	<section
-		class="rounded-lg border border-primary shadow-lg w-full"
+		class="rounded-lg border border-primary shadow-lg w-full h-full flex flex-col justify-center items-center"
 		id={ "lineups_field_" + strconv.Itoa(int(match.ID)) }
 		hx-swap-oob={ "#" + "lineups_field_" + strconv.Itoa(int(match.ID)) }
 	>
-		<h1 class="pt-4 font-bold text-xl flex items-center justify-center space-x-2">
+		<h1 class="mt-4 font-bold text-xl flex items-center justify-center space-x-2">
 			<img src={ match.HomeClubLogo } class="size-12"/>
 			<span>{ match.HomeClubName }</span>
 		</h1>
@@ -44,7 +44,7 @@ templ LineupsField(
 				</div>
 			</div>
 		</div>
-		<h1 class="pb-4 font-bold text-xl flex items-center justify-center space-x-2">
+		<h1 class="mb-4 font-bold text-xl flex items-center justify-center space-x-2">
 			<img src={ match.AwayClubLogo } class="size-12"/>
 			<span>{ match.AwayClubName }</span>
 		</h1>
