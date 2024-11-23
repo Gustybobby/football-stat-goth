@@ -13,7 +13,7 @@ import (
 
 const listLineupEventsByMatchID = `-- name: ListLineupEventsByMatchID :many
 SELECT
-    lineup_event.id, lineup_event.lineup_id, lineup_event.player_id1, lineup_event.player_id2, lineup_event.event, lineup_event.minutes, lineup_event.extra,
+    lineup_event.id, lineup_event.lineup_id, lineup_event.player_id1, lineup_event.player_id2, lineup_event.event, lineup_event.minutes, lineup_event.extra, lineup_event.after_half,
     "player1".no AS p1_no,
     "player1".firstname AS p1_firstname,
     "player1".lastname AS p1_lastname,
@@ -41,6 +41,7 @@ type ListLineupEventsByMatchIDRow struct {
 	Event       EventType
 	Minutes     int16
 	Extra       pgtype.Int2
+	AfterHalf   bool
 	P1No        pgtype.Int2
 	P1Firstname pgtype.Text
 	P1Lastname  pgtype.Text
@@ -66,6 +67,7 @@ func (q *Queries) ListLineupEventsByMatchID(ctx context.Context, id int32) ([]Li
 			&i.Event,
 			&i.Minutes,
 			&i.Extra,
+			&i.AfterHalf,
 			&i.P1No,
 			&i.P1Firstname,
 			&i.P1Lastname,

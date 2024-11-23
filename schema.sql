@@ -64,6 +64,7 @@ CREATE TABLE "lineup_event" (
     event       event_type NOT NULL,
     minutes     INT2 NOT NULL,
     extra       INT2,
+    after_half  BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT fk_lineup_player1 FOREIGN KEY (lineup_id,player_id1) REFERENCES "lineup_player"(lineup_id,player_id),
     CONSTRAINT fk_lineup_player2 FOREIGN KEY (lineup_id,player_id2) REFERENCES "lineup_player"(lineup_id,player_id)

@@ -175,6 +175,7 @@ type LineupEvent struct {
 	Event     EventType
 	Minutes   int16
 	Extra     pgtype.Int2
+	AfterHalf bool
 }
 
 type LineupPlayer struct {
