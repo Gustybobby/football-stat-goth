@@ -13,14 +13,11 @@ import (
 )
 
 func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	user := plauth.GetContextUser(r)
+
 	clubID := chi.URLParam(r, "clubID")
 
 	club, err := repo.Queries.FindClubByID(repo.Ctx, clubID)
-	if err != nil {
-		return err
-	}
-
-	user, err := plauth.Auth(w, r, repo)
 	if err != nil {
 		return err
 	}

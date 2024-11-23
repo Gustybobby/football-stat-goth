@@ -100,7 +100,7 @@ templ PositionButtonGroup(params AddLineupPlayerParams) {
 }
 
 func buttonHxGet(positionNo int, params AddLineupPlayerParams, cmp_type string) string {
-	return "/cmps/lineup-players/form?type=" + cmp_type +
+	return "/cmps/admin/lineup-players/form?type=" + cmp_type +
 		"&lineup_id=" + strconv.Itoa(int(params.LineupID)) +
 		"&position_no=" + strconv.Itoa(positionNo) +
 		"&club_id=" + params.ClubID +

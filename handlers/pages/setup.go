@@ -3,11 +3,13 @@ package pages
 import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/handlers/pages/admin_pages"
+	"football-stat-goth/handlers/plmiddleware"
 	"football-stat-goth/repos"
 
 	"github.com/go-chi/chi/v5"
 )
 
+// prefix path '/'
 func SetupPageRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Get("/", handlers.Make(HandleHomePage, repo))
 	router.Get("/standings", handlers.Make(HandleStandingsPage, repo))
@@ -23,7 +25,10 @@ func SetupPageRoutes(router *chi.Mux, repo *repos.Repository) {
 	})
 }
 
+// prefix path '/admin'
 func SetupAdminPageRoutes(r_admin chi.Router, repo *repos.Repository) {
+	r_admin.Use(plmiddleware.AuthAdmin)
+
 	r_admin.Get("/players/create", handlers.Make(admin_pages.HandleAdminCreatePlayersPage, repo))
 
 	r_admin.Get("/matches/{matchID}/lineups", handlers.Make(admin_pages.HandleAdminEditLineupsPage, repo))

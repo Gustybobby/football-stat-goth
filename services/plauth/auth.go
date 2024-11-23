@@ -9,6 +9,12 @@ import (
 	"os"
 )
 
+type AuthContextKey string
+
+const (
+	ContextUserKey AuthContextKey = "pl.user"
+)
+
 func Auth(w http.ResponseWriter, r *http.Request, repo *repos.Repository) (*queries.FindUserByUsernameRow, error) {
 	token, err := GetSessionTokenFromCookie(r)
 	if err != nil {
@@ -31,4 +37,8 @@ func Auth(w http.ResponseWriter, r *http.Request, repo *repos.Repository) (*quer
 	slog.Info("plauth session: " + string(stringifiedSession))
 
 	return &session.User, nil
+}
+
+func GetContextUser(r *http.Request) *queries.FindUserByUsernameRow {
+	return r.Context().Value(ContextUserKey).(*queries.FindUserByUsernameRow)
 }

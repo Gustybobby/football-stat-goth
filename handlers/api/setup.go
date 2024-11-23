@@ -2,6 +2,7 @@ package api
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/handlers/plmiddleware"
 	"football-stat-goth/repos"
 
 	"github.com/go-chi/chi/v5"
@@ -20,6 +21,8 @@ func SetupApiRoutes(r_api chi.Router, repo *repos.Repository) {
 
 // prefix path '/api/admin'
 func SetupAdminApiRoutes(r_api_admin chi.Router, repo *repos.Repository) {
+	r_api_admin.Use(plmiddleware.AuthAdmin)
+
 	r_api_admin.Post("/players", handlers.Make(HandleCreatePlayer, repo))
 
 	r_api_admin.Post("/lineups/{lineupID}/lineup_players", handlers.Make(HandleCreateLineupPlayer, repo))

@@ -13,12 +13,9 @@ import (
 )
 
 func HandleMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	matchID, err := strconv.Atoi(chi.URLParam(r, "matchID"))
-	if err != nil {
-		return err
-	}
+	user := plauth.GetContextUser(r)
 
-	user, err := plauth.Auth(w, r, repo)
+	matchID, err := strconv.Atoi(chi.URLParam(r, "matchID"))
 	if err != nil {
 		return err
 	}

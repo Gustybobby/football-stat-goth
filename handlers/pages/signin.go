@@ -9,10 +9,7 @@ import (
 )
 
 func HandleSigninPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	user, err := plauth.Auth(w, r, repo)
-	if err != nil {
-		return err
-	}
+	user := plauth.GetContextUser(r)
 
 	if user != nil {
 		http.Redirect(w, r, "/", http.StatusFound)

@@ -9,10 +9,7 @@ import (
 )
 
 func HandleClubsPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	user, err := plauth.Auth(w, r, repo)
-	if err != nil {
-		return err
-	}
+	user := plauth.GetContextUser(r)
 
 	clubs, err := repo.Queries.ListClubsOrderByNameAsc(repo.Ctx)
 	if err != nil {

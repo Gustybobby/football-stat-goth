@@ -10,10 +10,7 @@ import (
 )
 
 func HandleHomePage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	user, err := plauth.Auth(w, r, repo)
-	if err != nil {
-		return err
-	}
+	user := plauth.GetContextUser(r)
 
 	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: false,

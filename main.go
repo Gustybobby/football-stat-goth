@@ -5,6 +5,7 @@ import (
 	"football-stat-goth/handlers/api"
 	"football-stat-goth/handlers/cmps"
 	"football-stat-goth/handlers/pages"
+	"football-stat-goth/handlers/plmiddleware"
 	"football-stat-goth/repos"
 	"log"
 	"log/slog"
@@ -20,6 +21,8 @@ import (
 var publicFS embed.FS
 
 func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
+	router.Use(plmiddleware.AuthMiddleware(repo))
+
 	router.Handle("/*", http.FileServerFS(publicFS))
 
 	pages.SetupPageRoutes(router, repo)
