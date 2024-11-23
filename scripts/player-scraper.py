@@ -12,10 +12,11 @@ POS_ENUM = {
 }
 
 
-def scrape_player(page_source: str, client) -> dict:
+def scrape_player(page_source: str, client) -> tuple[dict, dict]:
     soup = BeautifulSoup(page_source, "html.parser")
 
     data = {}
+    club_data = {"season": "2024/25"}
 
     firstname_div = soup.find("div", class_="player-header__name-first")
     if firstname_div is not None:
@@ -30,13 +31,13 @@ def scrape_player(page_source: str, client) -> dict:
     )
 
     try:
-        data["no"] = soup.find(
+        club_data["no"] = soup.find(
             "div",
             class_="player-header__player-number player-header__player-number--large",
         ).get_text()
     except:
         no = input("Missing Player No, Please input: ")
-        data["no"] = no
+        club_data["no"] = no
 
     data["nationality"] = soup.find(
         "span", class_="player-overview__player-country"
@@ -85,12 +86,12 @@ def scrape_player(page_source: str, client) -> dict:
             club_name = (
                 club_div.find_parent("div").find_all("div")[1].get_text().strip()
             )
-        data["club_id"] = db.find_club_id(club_name, client)
+        club_data["club_id"] = db.find_club_id(club_name, client)
     except:
         print("found club name:", "'" + club_name + "'")
         club_id = input("Missing Club ID, Please input (or NULL): ")
         if club_id != "NULL":
-            data["club_id"] = club_id
+            club_data["club_id"] = club_id
 
     data["image"] = (
         db.get_bucket_url()
@@ -110,7 +111,7 @@ def scrape_player(page_source: str, client) -> dict:
         + ".webp"
     )
 
-    return data
+    return data, club_data
 
 
 def replace_special(string: str):
@@ -130,22 +131,30 @@ def replace_special(string: str):
     )
 
 
-PLAYER_PROFILE_URLS = []
+PLAYER_PROFILE_URLS = [
+    "https://www.premierleague.com/players/66538/Tim-Iroegbunam/overview"
+]
 
 
 if __name__ == "__main__":
     client = db.supabase_connect()
 
     for profile_url in PLAYER_PROFILE_URLS:
-        player = scrape_player(requests.get(profile_url).text, client)
+        player, club_player = scrape_player(requests.get(profile_url).text, client)
 
         print("===============PLAYER===============")
         for key in player:
             print(key, ":", player[key])
+        print("=============CLUB_PLAYER============")
+        for key in club_player:
+            print(key, ":", club_player[key])
         print("====================================")
 
         ans = input("Insert? (Y/N): ")
 
         if ans == "Y":
             res = client.table("player").insert(player).execute()
+            print(res)
+            club_player["player_id"] = res.data[0]["id"]
+            res = client.table("club_player").insert(club_player).execute()
             print(res)
