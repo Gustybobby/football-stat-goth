@@ -44,6 +44,13 @@ SELECT
             "lineup_event"."event" = 'YELLOW' AND
             "lineup_event".lineup_id = "match".home_lineup_id
     ) AS home_yellow_cards,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+    ) AS home_red_cards,
     "home_lineup".fouls_conceded AS home_fouls_conceded,
     "away_club".id AS away_club_id,
     "away_club".short_name AS away_club_name,
@@ -75,6 +82,13 @@ SELECT
             "lineup_event"."event" = 'YELLOW' AND
             "lineup_event".lineup_id = "match".away_lineup_id
     ) AS away_yellow_cards,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+    ) AS away_red_cards,
     "away_lineup".fouls_conceded AS away_fouls_conceded
 FROM "match"
 INNER JOIN "lineup" as "home_lineup"
@@ -112,6 +126,7 @@ type FindMatchByIDRow struct {
 	HomeCorners       int16
 	HomeOffsides      int16
 	HomeYellowCards   int64
+	HomeRedCards      int64
 	HomeFoulsConceded int16
 	AwayClubID        string
 	AwayClubName      string
@@ -127,6 +142,7 @@ type FindMatchByIDRow struct {
 	AwayCorners       int16
 	AwayOffsides      int16
 	AwayYellowCards   int64
+	AwayRedCards      int64
 	AwayFoulsConceded int16
 }
 
@@ -156,6 +172,7 @@ func (q *Queries) FindMatchByID(ctx context.Context, id int32) (FindMatchByIDRow
 		&i.HomeCorners,
 		&i.HomeOffsides,
 		&i.HomeYellowCards,
+		&i.HomeRedCards,
 		&i.HomeFoulsConceded,
 		&i.AwayClubID,
 		&i.AwayClubName,
@@ -171,6 +188,7 @@ func (q *Queries) FindMatchByID(ctx context.Context, id int32) (FindMatchByIDRow
 		&i.AwayCorners,
 		&i.AwayOffsides,
 		&i.AwayYellowCards,
+		&i.AwayRedCards,
 		&i.AwayFoulsConceded,
 	)
 	return i, err

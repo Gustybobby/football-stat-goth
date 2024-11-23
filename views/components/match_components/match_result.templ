@@ -114,6 +114,7 @@ templ statsComparison(match queries.FindMatchByIDRow) {
 			<li>{ strconv.Itoa(int(match.HomeCorners)) }</li>
 			<li>{ strconv.Itoa(int(match.HomeOffsides)) }</li>
 			<li>{ strconv.Itoa(int(match.HomeYellowCards)) }</li>
+			<li>{ strconv.Itoa(int(match.HomeRedCards)) }</li>
 			<li>{ strconv.Itoa(int(match.HomeFoulsConceded)) }</li>
 		</ul>
 		<ul class="text-center space-y-4 font-semibold">
@@ -127,6 +128,7 @@ templ statsComparison(match queries.FindMatchByIDRow) {
 			<li>Corners</li>
 			<li>Offsides</li>
 			<li>Yellow cards</li>
+			<li>Red cards</li>
 			<li>Fouls conceded</li>
 		</ul>
 		<ul class="text-center space-y-4">
@@ -140,6 +142,7 @@ templ statsComparison(match queries.FindMatchByIDRow) {
 			<li>{ strconv.Itoa(int(match.AwayCorners)) }</li>
 			<li>{ strconv.Itoa(int(match.AwayOffsides)) }</li>
 			<li>{ strconv.Itoa(int(match.AwayYellowCards)) }</li>
+			<li>{ strconv.Itoa(int(match.AwayRedCards)) }</li>
 			<li>{ strconv.Itoa(int(match.AwayFoulsConceded)) }</li>
 		</ul>
 	</div>
