@@ -90,8 +90,7 @@ def scrape_player(page_source: str, client) -> tuple[dict, dict]:
     except:
         print("found club name:", "'" + club_name + "'")
         club_id = input("Missing Club ID, Please input (or NULL): ")
-        if club_id != "NULL":
-            club_data["club_id"] = club_id
+        club_data["club_id"] = club_id
 
     data["image"] = (
         db.get_bucket_url()
@@ -131,9 +130,7 @@ def replace_special(string: str):
     )
 
 
-PLAYER_PROFILE_URLS = [
-    "https://www.premierleague.com/players/66538/Tim-Iroegbunam/overview"
-]
+PLAYER_PROFILE_URLS = []
 
 
 if __name__ == "__main__":
