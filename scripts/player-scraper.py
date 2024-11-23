@@ -64,13 +64,17 @@ def scrape_player(page_source: str, client) -> dict:
         int(year), int(month), int(day), tzinfo=timezone.utc
     ).isoformat(timespec="milliseconds")
 
-    data["height"] = (
-        soup.find("div", class_="player-overview__label", string="Height")
-        .find_parent("div")
-        .find_all("div")[1]
-        .get_text()
-        .replace("cm", "")
-    )
+    try:
+        data["height"] = (
+            soup.find("div", class_="player-overview__label", string="Height")
+            .find_parent("div")
+            .find_all("div")[1]
+            .get_text()
+            .replace("cm", "")
+        )
+    except:
+        height = input("Missing Height(cm), Please input: ")
+        data["height"] = height
 
     try:
         club_div = soup.find("div", class_="player-overview__label", string="Club")
@@ -114,6 +118,7 @@ def replace_special(string: str):
         .replace("ë", "e")
         .replace("í", "i")
         .replace("î", "i")
+        .replace("ï", "i")
         .replace("ø", "o")
         .replace("ö", "o")
         .replace("ã", "a")
