@@ -88,8 +88,9 @@ def scrape_player(page_source: str, client) -> dict:
         data["club_id"] = db.find_club_id(club_name, client)
     except:
         print("found club name:", "'" + club_name + "'")
-        club_id = input("Missing Club ID, Please input: ")
-        data["club_id"] = club_id
+        club_id = input("Missing Club ID, Please input (or NULL): ")
+        if club_id != "NULL":
+            data["club_id"] = club_id
 
     data["image"] = (
         db.get_bucket_url()
