@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 EVENT_TYPE_MAP = {
     "Goal": "GOAL",
+    "label.penalty.scored": "GOAL",
     "Yellow Card": "YELLOW",
     "Red Card": "RED",
     "Substitution": "SUB",
@@ -20,7 +21,9 @@ def scrape_timeline(page_source: str) -> list:
     events = []
 
     # normal events (no extra time)
-    nm_events = timeline_div.find_all("div", class_="event home")
+    nm_events = timeline_div.find_all(
+        "div", class_="event home"
+    )  # event home/away, try one
     for event_div in nm_events:
         event_data = {}
 
@@ -169,12 +172,12 @@ def db_transform(events, match_id, db_client):
 
 if __name__ == "__main__":
     timeline_events = scrape_timeline(
-        requests.get("https://www.premierleague.com/match/115888").text
+        requests.get("https://www.premierleague.com/match/115890").text
     )
 
     client = db.supabase_connect()
 
-    insert_data = db_transform(timeline_events, 2, client)
+    insert_data = db_transform(timeline_events, 4, client)
     for row in insert_data:
         print(row)
 
