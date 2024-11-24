@@ -1,5 +1,7 @@
 import db
 import requests
+import time
+import random
 from bs4 import BeautifulSoup
 from datetime import datetime, timezone
 
@@ -12,7 +14,7 @@ POS_ENUM = {
 }
 
 
-def scrape_player(page_source: str, client) -> tuple[dict, dict]:
+def scrape_player(page_source: str, client) -> tuple[dict | None, dict | None]:
     soup = BeautifulSoup(page_source, "html.parser")
 
     data = {}
@@ -23,6 +25,8 @@ def scrape_player(page_source: str, client) -> tuple[dict, dict]:
         data["firstname"] = firstname_div.get_text().strip()
     else:
         data["firstname"] = input("Missing Firstname, Please input: ")
+        if data["firstname"] == "_skip":
+            return None, None
 
     lastname_div = soup.find("div", class_="player-header__name-last")
     if lastname_div is not None:
@@ -39,32 +43,6 @@ def scrape_player(page_source: str, client) -> tuple[dict, dict]:
         no = input("Missing Player No, Please input: ")
         club_data["no"] = no
 
-    data["nationality"] = soup.find(
-        "span", class_="player-overview__player-country"
-    ).get_text()
-
-    data["position"] = POS_ENUM[
-        (
-            soup.find("div", class_="player-overview__label", string="Position")
-            .find_parent("div")
-            .find_all("div")[1]
-            .get_text()
-        )
-    ]
-
-    day, month, year = (
-        soup.find("div", class_="player-overview__label", string="Date of Birth")
-        .find_parent("div")
-        .find_all("div")[1]
-        .get_text()
-        .strip()
-        .split(" ")[0]
-    ).split("/")
-
-    data["dob"] = datetime(
-        int(year), int(month), int(day), tzinfo=timezone.utc
-    ).isoformat(timespec="milliseconds")
-
     try:
         data["height"] = (
             soup.find("div", class_="player-overview__label", string="Height")
@@ -76,6 +54,47 @@ def scrape_player(page_source: str, client) -> tuple[dict, dict]:
     except:
         height = input("Missing Height(cm), Please input: ")
         data["height"] = height
+
+    try:
+        day, month, year = (
+            soup.find("div", class_="player-overview__label", string="Date of Birth")
+            .find_parent("div")
+            .find_all("div")[1]
+            .get_text()
+            .strip()
+            .split(" ")[0]
+        ).split("/")
+
+        data["dob"] = datetime(
+            int(year), int(month), int(day), tzinfo=timezone.utc
+        ).isoformat(timespec="milliseconds")
+    except:
+        data["dob"] = input("Missing DOB(ISO), Please input: ")
+
+    if db.player_exists(data, client):
+        random_sleep = random.randint(0, 2)
+        print("PLAYER EXISTS, sleeping for", random_sleep, "s")
+        time.sleep(random_sleep)
+        return None, None
+
+    try:
+        data["nationality"] = soup.find(
+            "span", class_="player-overview__player-country"
+        ).get_text()
+    except:
+        data["nationality"] = input("Missing Nationality, Please input: ")
+
+    try:
+        data["position"] = POS_ENUM[
+            (
+                soup.find("div", class_="player-overview__label", string="Position")
+                .find_parent("div")
+                .find_all("div")[1]
+                .get_text()
+            )
+        ]
+    except:
+        data["position"] = input("Missing Position, Please input: ")
 
     try:
         club_div = soup.find("div", class_="player-overview__label", string="Club")
@@ -130,15 +149,26 @@ def replace_special(string: str):
     )
 
 
-PLAYER_PROFILE_URLS = []
+def insert_players(player_urls: list, db_client) -> None:
+    for profile_url in player_urls:
+        print("Reading", profile_url)
 
+        trial = 0
+        while trial <= 5:
+            try:
+                source = requests.get(profile_url).text
+                break
+            except:
+                fetch_sleep = 2
+                print("fetch failed, retrying in", fetch_sleep, "s")
+                time.sleep(fetch_sleep)
+                trial += 5
 
-if __name__ == "__main__":
-    client = db.supabase_connect()
+        player, club_player = scrape_player(source, db_client)
 
-    for profile_url in PLAYER_PROFILE_URLS:
-        print("reading", profile_url)
-        player, club_player = scrape_player(requests.get(profile_url).text, client)
+        if player is None:
+            print("====================================")
+            continue
 
         print("===============PLAYER===============")
         for key in player:
@@ -149,10 +179,17 @@ if __name__ == "__main__":
         print("====================================")
 
         ans = input("Insert? (Y/N): ")
-
         if ans == "Y":
-            res = client.table("player").insert(player).execute()
+            res = db_client.table("player").insert(player).execute()
             print(res)
             club_player["player_id"] = res.data[0]["id"]
-            res = client.table("club_player").insert(club_player).execute()
+            res = db_client.table("club_player").insert(club_player).execute()
             print(res)
+
+        print("====================================")
+
+
+if __name__ == "__main__":
+    PLAYER_PROFILE_URLS = []
+    client = db.supabase_connect()
+    insert_players(PLAYER_PROFILE_URLS, client)

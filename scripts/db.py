@@ -55,3 +55,16 @@ def find_player_id_by_fullname(fullname: str, client: supabase.Client) -> int:
         return res.data[0]["id"]
     except:
         raise Exception(fullname + " is invalid")
+
+
+def player_exists(data: dict, client: supabase.Client) -> bool:
+    res = (
+        client.table("player")
+        .select("id")
+        .filter("firstname", "eq", data["firstname"])
+        .filter("lastname", "eq", data["lastname"])
+        .filter("dob", "eq", data["dob"])
+        .filter("height", "eq", data["height"])
+        .execute()
+    )
+    return len(res.data) != 0

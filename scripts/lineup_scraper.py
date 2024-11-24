@@ -1,3 +1,4 @@
+import requests
 from bs4 import BeautifulSoup
 
 
@@ -17,11 +18,16 @@ def scrape_lineups(page_source: str):
 
     for player in player_lis:
         player = player.find("a")
-        lineups.append("https://" + "/".join(player.attrs["href"][2:].split("/")[:3]))
+        lineups.append(
+            "https://www.premierleague.com"
+            + "/".join(player.attrs["href"].split("/")[:3])
+        )
 
     return lineups
 
 
 if __name__ == "__main__":
-    players = scrape_lineups(read_html("pages/115891.html"))
+    players = scrape_lineups(
+        requests.get("https://www.premierleague.com/match/115899").text
+    )
     print(players)

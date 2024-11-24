@@ -13,7 +13,11 @@ EVENT_TYPE_MAP = {
 }
 
 
-def scrape_timeline(page_source: str) -> list:
+def scrape_timeline(
+    page_source: str,
+    nm_event_class="event home",
+    nm_ot_class="event home event--added-time",
+) -> list:
     soup = BeautifulSoup(page_source, "html.parser")
 
     timeline_div = soup.find(
@@ -23,9 +27,7 @@ def scrape_timeline(page_source: str) -> list:
     events = []
 
     # normal events (no extra time)
-    nm_events = timeline_div.find_all(
-        "div", class_="event home"
-    )  # event home/away, try one
+    nm_events = timeline_div.find_all("div", class_=nm_event_class)
     for event_div in nm_events:
         event_data = {}
 
@@ -47,11 +49,20 @@ def scrape_timeline(page_source: str) -> list:
         events.append(event_data)
 
     # overtime events
-    ot_events = timeline_div.find_all("div", class_="event away event--added-time")
+    ot_events = timeline_div.find_all("div", class_=nm_ot_class)
     for ot_div in ot_events:
         event_data = {}
 
-        minutes, extra = ot_div.find("time", class_="min").text.strip().split(" ")
+        try:
+            minutes, extra = ot_div.find("time", class_="min").text.strip().split(" ")
+        except:
+            minutes, extra = (
+                ot_div.find("div", class_="event__minute")
+                .text.strip()
+                .replace(" ", "")
+                .replace("\n", "")
+                .split("+")
+            )
 
         event_data["minutes"] = minutes
         event_data["extra"] = extra.replace("'", "").replace("+", "")
@@ -158,6 +169,7 @@ def db_transform(events, match_id, db_client):
                         if "player2" in home_event
                         else None
                     ),
+                    "after_half": tl_event["after_half"],
                 }
             )
 
@@ -180,16 +192,16 @@ def db_transform(events, match_id, db_client):
                         if "player2" in away_event
                         else None
                     ),
+                    "after_half": tl_event["after_half"],
                 }
             )
     return rows
 
 
-MATCH_URL = "https://www.premierleague.com/match/115898"
-MATCH_ID = 12
-
-
 if __name__ == "__main__":
+    MATCH_URL = "https://www.premierleague.com/match/115899"
+    MATCH_ID = 13
+
     timeline_events = scrape_timeline(requests.get(MATCH_URL).text)
 
     client = db.supabase_connect()
