@@ -137,6 +137,7 @@ if __name__ == "__main__":
     client = db.supabase_connect()
 
     for profile_url in PLAYER_PROFILE_URLS:
+        print("reading", profile_url)
         player, club_player = scrape_player(requests.get(profile_url).text, client)
 
         print("===============PLAYER===============")
