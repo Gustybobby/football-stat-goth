@@ -1,3 +1,8 @@
+-- name: ListPlayersOrderByNameAsc :many
+SELECT *
+FROM "player"
+ORDER BY "player".club_id ASC;
+
 -- name: FindPlayerIDByClubAndNo :one
 SELECT
     "player".id

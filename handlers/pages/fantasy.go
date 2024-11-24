@@ -9,14 +9,20 @@ import (
 )
 
 func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
-		FilterClubID: false,
-		ClubID:       "",
-		IsFinished:   false,
-		Order:        "ASC",
-	})
+	// fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
+	// 	FilterClubID: false,
+	// 	ClubID:       "",
+	// 	IsFinished:   false,
+	// 	Order:        "ASC",
+	// })
+	// if err != nil {
+	// 	return err
+	// }
+
+	players, err := repo.Queries.ListPlayersOrderByNameAsc(repo.Ctx)
 	if err != nil {
 		return err
 	}
-	return handlers.Render(w, r, views.Fantasy(fixtures))
+
+	return handlers.Render(w, r, views.Fantasy([]queries.ListMatchesWithClubsAndGoalsRow{}, players))
 }

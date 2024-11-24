@@ -1,0 +1,20 @@
+package playercard_components
+
+import "football-stat-goth/queries"
+
+templ PlayerCard() {
+	<div class="flex justify-center">
+		<img class="h-full w-full" src="/public/playerCard.png"/>
+	</div>
+}
+
+templ PlayerCardImg(player queries.Player) {
+	<div class="relative">
+		@PlayerCard()
+		<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
+			<div class="flex justify-center items-center w-full h-full">
+				<img class="size-3/4" src={ player.Image.String }/>
+			</div>
+		</span>
+	</div>
+}

@@ -3,10 +3,14 @@ package views
 import (
 	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
+	"football-stat-goth/views/components/playercard_components"
 	"football-stat-goth/views/layouts"
 )
 
-templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
+templ Fantasy(
+	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
+	players []queries.Player,
+) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
 		@components.Nav()
@@ -18,7 +22,7 @@ templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 							Your Team
 						</h1>
 						<div
-							class="relative w-full h-3/5 rounded-b-lg border items-center border-primary shadow-lg bg-gradient-to-tr from-secondary-foreground from-20% via-sky-500 via-50% to-emerald-500 to-90%"
+							class="relative w-full h-[700px] rounded-b-lg border items-center border-primary shadow-lg bg-gradient-to-tr from-secondary-foreground from-20% via-sky-500 via-50% to-emerald-500 to-90%"
 						>
 							<img
 								class="w-full h-full"
@@ -26,25 +30,25 @@ templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 							/>
 							// make 3 section for each row instead, then make section within thos.
 							<div class="absolute inset-0 flex items-center px-14">
-								<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11">
+								<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11 -translate-y-11">
 									<div class="flex h-full justify-center">
-										@components.PlayerCard()
+										@playercard_components.PlayerCard()
 									</div>
-									<section class="flex h-full justify-center">
-										@components.PlayerCard()
-										@components.PlayerCard()
-										@components.PlayerCard()
-										@components.PlayerCard()
+									<section class="flex h-full justify-center -translate-y-8">
+										@playercard_components.PlayerCard()
+										@playercard_components.PlayerCard()
+										@playercard_components.PlayerCard()
+										@playercard_components.PlayerCard()
 									</section>
-									<section class="flex h-full justify-center">
-										@components.PlayerCard()
-										@components.PlayerCard()
-										@components.PlayerCard()
-										@components.PlayerCard()
+									<section class="flex h-full justify-center -translate-y-8">
+										@playercard_components.PlayerCard()
+										@playercard_components.PlayerCard()
+										@playercard_components.PlayerCard()
+										@playercard_components.PlayerCard()
 									</section>
-									<section class="flex h-full space-x-11 justify-center">
-										@components.PlayerCard()
-										@components.PlayerCard()
+									<section class="flex h-full space-x-11 justify-center -translate-y-8">
+										@playercard_components.PlayerCard()
+										@playercard_components.PlayerCard()
 									</section>
 								</section>
 							</div>
@@ -58,24 +62,29 @@ templ Fantasy(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 								Players
 							</h1>
 							<ul class=" px-4 ">
-								for range(8) {
-									<a href="" class="h-full flex justify-center">
+								for _,player := range players {
+									<a href="" class="h-full flex justify-center py-8">
 										<div class="flip-card w-32 h-40">
-											<div class="flip-card-inner">
-												<div class="flip-card-front">
+											<div class="flip-card-inner ">
+												<div class="flip-card-front relative">
 													// front side, user playercard_front
-													<div class="h-full">
-														@components.PlayerCard()
+													<div class="relative h-full">
+														@playercard_components.PlayerCardImg(player)
+														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
+															<p class="text-primary-foreground font-bold">{ player.Lastname }</p>
+														</span>
 													</div>
 												</div>
 												<div class="flip-card-back">
 													// back side, user playercard_back
-													@components.PlayerCard()
-													<span class="w-full h-full py-4 align-text-top text-left">
-														<p class="text-secondary-background font-bold">Haaland</p>
-														<p class="font-semibold">POS</p>
-														<p class="font-semibold">Cost:</p>
-													</span>
+													<div class="relative">
+														@playercard_components.PlayerCard()
+														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
+															<p class="text-primary-foreground font-bold">{ player.Lastname }</p>
+															<p class="font-semibold">{ string(player.Position) }</p>
+															<p class="font-semibold">Cost:</p>
+														</span>
+													</div>
 												</div>
 											</div>
 										</div>

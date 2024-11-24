@@ -96,3 +96,40 @@ func (q *Queries) FindPlayerIDByClubAndNo(ctx context.Context, arg FindPlayerIDB
 	err := row.Scan(&id)
 	return id, err
 }
+
+const listPlayersOrderByNameAsc = `-- name: ListPlayersOrderByNameAsc :many
+SELECT id, club_id, no, firstname, lastname, dob, height, nationality, position, image
+FROM "player"
+ORDER BY "player".club_id ASC
+`
+
+func (q *Queries) ListPlayersOrderByNameAsc(ctx context.Context) ([]Player, error) {
+	rows, err := q.db.Query(ctx, listPlayersOrderByNameAsc)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.ID,
+			&i.ClubID,
+			&i.No,
+			&i.Firstname,
+			&i.Lastname,
+			&i.Dob,
+			&i.Height,
+			&i.Nationality,
+			&i.Position,
+			&i.Image,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
