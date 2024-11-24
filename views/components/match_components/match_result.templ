@@ -39,7 +39,7 @@ templ MatchResult(
 		</div>
 		<div class="grid grid-cols-3">
 			<ul class="text-sm space-y-2 pb-4">
-				for _, event := range(filterEventsByLineupID(match.HomeLineupID,queries.EventTypeGOAL, events)) {
+				for _, event := range(filterGoalsByLineupID(match.HomeLineupID, events)) {
 					<li class="flex flex-col items-end">
 						<span class="font-bold flex items-center">
 							{ strconv.Itoa(int(event.Minutes)) }
@@ -47,7 +47,11 @@ templ MatchResult(
 								+{ strconv.Itoa(int(event.Extra.Int16)) }
 							}
 							'
-							<img src="/public/purple_football.webp" class="ml-1 size-3"/>
+							if event.Event == queries.EventTypeGOAL {
+								<img src="/public/purple_football.webp" class="ml-1 size-3"/>
+							} else {
+								<img src="/public/red_football.webp" class="ml-1 size-3"/>
+							}
 						</span>
 						<span class="font-bold">
 							({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
@@ -71,10 +75,14 @@ templ MatchResult(
 				</span>
 			</div>
 			<ul class="text-sm space-y-2 pb-4">
-				for _, event := range(filterEventsByLineupID(match.AwayLineupID,queries.EventTypeGOAL, events)) {
+				for _, event := range(filterGoalsByLineupID(match.AwayLineupID, events)) {
 					<li class="flex flex-col items-start">
 						<span class="font-bold flex items-center">
-							<img src="/public/purple_football.webp" class="mr-1 size-3"/>
+							if event.Event == queries.EventTypeGOAL {
+								<img src="/public/purple_football.webp" class="mr-1 size-3"/>
+							} else {
+								<img src="/public/red_football.webp" class="mr-1 size-3"/>
+							}
 							{ strconv.Itoa(int(event.Minutes)) }
 							if event.Extra.Valid {
 								+{ strconv.Itoa(int(event.Extra.Int16)) }
@@ -148,14 +156,13 @@ templ statsComparison(match queries.FindMatchByIDRow) {
 	</div>
 }
 
-func filterEventsByLineupID(
+func filterGoalsByLineupID(
 	lineup_id int32,
-	event_type queries.EventType,
 	events []queries.ListLineupEventsByMatchIDRow,
 ) []queries.ListLineupEventsByMatchIDRow {
 	var filtered_events []queries.ListLineupEventsByMatchIDRow
 	for _, event := range events {
-		if event.LineupID == lineup_id && event.Event == event_type {
+		if (event.LineupID == lineup_id && event.Event == queries.EventTypeGOAL) || (event.LineupID != lineup_id && event.Event == queries.EventTypeOWNGOAL) {
 			filtered_events = append(filtered_events, event)
 		}
 	}
