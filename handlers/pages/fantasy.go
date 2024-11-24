@@ -18,9 +18,12 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		IsFinished:   false,
 		Order:        "ASC",
 	})
+
+	players, err := repo.Queries.GetPlayerInfoForFantasy(repo.Ctx)
+
 	if err != nil {
 		return err
 	}
 
-	return handlers.Render(w, r, views.Fantasy(user, fixtures))
+	return handlers.Render(w, r, views.Fantasy(user, fixtures, players))
 }
