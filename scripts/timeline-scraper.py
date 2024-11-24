@@ -9,6 +9,7 @@ EVENT_TYPE_MAP = {
     "Second Yellow Card (Red Card)": "RED",
     "Red Card": "RED",
     "Substitution": "SUB",
+    "Own Goal": "OWN_GOAL",
 }
 
 
@@ -87,7 +88,12 @@ def extract_events(event_tags: list) -> list:
 
         player_info = event_tag.find("div", class_="eventPlayerInfo")
 
-        if event_type == "GOAL" or event_type == "YELLOW" or event_type == "RED":
+        if (
+            event_type == "GOAL"
+            or event_type == "YELLOW"
+            or event_type == "RED"
+            or event_type == "OWN_GOAL"
+        ):
             scorer = player_info.find("a", class_="name").text.split(".")[1].strip()
             event_data["player1"] = scorer
 
@@ -136,7 +142,11 @@ def db_transform(events, match_id, db_client):
         for home_event in tl_event["home"]:
             rows.append(
                 {
-                    "lineup_id": match["home_lineup_id"],
+                    "lineup_id": (
+                        match["home_lineup_id"]
+                        if home_event["event"] != "OWN_GOAL"
+                        else match["away_lineup_id"]
+                    ),
                     "minutes": int(tl_event["minutes"]),
                     "extra": int(tl_event["extra"]) if "extra" in tl_event else None,
                     "event": home_event["event"],
@@ -154,7 +164,11 @@ def db_transform(events, match_id, db_client):
         for away_event in tl_event["away"]:
             rows.append(
                 {
-                    "lineup_id": match["away_lineup_id"],
+                    "lineup_id": (
+                        match["away_lineup_id"]
+                        if away_event["event"] != "OWN_GOAL"
+                        else match["home_lineup_id"]
+                    ),
                     "minutes": int(tl_event["minutes"]),
                     "extra": int(tl_event["extra"]) if "extra" in tl_event else None,
                     "event": away_event["event"],
@@ -171,8 +185,8 @@ def db_transform(events, match_id, db_client):
     return rows
 
 
-MATCH_URL = "https://www.premierleague.com/match/115897"
-MATCH_ID = 11
+MATCH_URL = "https://www.premierleague.com/match/115898"
+MATCH_ID = 12
 
 
 if __name__ == "__main__":
