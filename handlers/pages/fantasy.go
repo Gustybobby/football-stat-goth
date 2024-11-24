@@ -19,7 +19,7 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		Order:        "ASC",
 	})
 
-	players, err := repo.Queries.ListPlayersOrderByPosAsc(repo.Ctx)
+	players, err := repo.Queries.GetPlayerInfoForFantasy(repo.Ctx)
 
 	if err != nil {
 		return err

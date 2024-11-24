@@ -26,8 +26,3 @@ INSERT INTO "player" (
     $7
 )
 RETURNING *;
-
--- name: ListPlayersOrderByPosAsc :many
-SELECT *
-FROM "player"
-ORDER BY "player".position ASC;

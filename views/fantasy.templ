@@ -10,7 +10,7 @@ import (
 templ Fantasy(
 	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
-	players []queries.Player,
+	players []queries.GetPlayerInfoForFantasyRow,
 ) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
@@ -74,6 +74,7 @@ templ Fantasy(
 														@playercard_components.PlayerCardImg(player)
 														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
 															<p class="text-primary-foreground font-bold player-name">{ player.Lastname }</p>
+															<p class=" hidden player-club">{ player.ClubID } </p>
 														</span>
 													</div>
 													<div class="flip-card-back relative">
@@ -96,7 +97,8 @@ templ Fantasy(
 										const cards = document.querySelectorAll('.player-card');
 										cards.forEach(card => {
 											const name = card.querySelector('.player-name').textContent.toLowerCase();
-											if (name.includes(filter)) {
+											const club = card.querySelector('.player-club').textContent.toLowerCase();
+											if (name.includes(filter) || club.includes(filter)) {
 												card.style.display = '';
 											} else {
 												card.style.display = 'none';

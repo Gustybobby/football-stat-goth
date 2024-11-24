@@ -89,21 +89,36 @@ func (q *Queries) FindPlayerIDByClubNoSeason(ctx context.Context, arg FindPlayer
 	return player_id, err
 }
 
-const listPlayersOrderByPosAsc = `-- name: ListPlayersOrderByPosAsc :many
-SELECT id, firstname, lastname, dob, height, nationality, position, image
-FROM "player"
+const listPlayerInfosOrderByPosAsc = `-- name: ListPlayerInfosOrderByPosAsc :many
+SELECT id, firstname, lastname, dob, height, nationality, position, image, club_id, player_id, season, no
+FROM "player" inner join "club_player" on "player".id = "club_player".player_id
 ORDER BY "player".position ASC
 `
 
-func (q *Queries) ListPlayersOrderByPosAsc(ctx context.Context) ([]Player, error) {
-	rows, err := q.db.Query(ctx, listPlayersOrderByPosAsc)
+type ListPlayerInfosOrderByPosAscRow struct {
+	ID          int32
+	Firstname   string
+	Lastname    string
+	Dob         pgtype.Timestamp
+	Height      int16
+	Nationality string
+	Position    PlayerPosition
+	Image       pgtype.Text
+	ClubID      string
+	PlayerID    int32
+	Season      string
+	No          int16
+}
+
+func (q *Queries) ListPlayerInfosOrderByPosAsc(ctx context.Context) ([]ListPlayerInfosOrderByPosAscRow, error) {
+	rows, err := q.db.Query(ctx, listPlayerInfosOrderByPosAsc)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Player
+	var items []ListPlayerInfosOrderByPosAscRow
 	for rows.Next() {
-		var i Player
+		var i ListPlayerInfosOrderByPosAscRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Firstname,
@@ -113,6 +128,10 @@ func (q *Queries) ListPlayersOrderByPosAsc(ctx context.Context) ([]Player, error
 			&i.Nationality,
 			&i.Position,
 			&i.Image,
+			&i.ClubID,
+			&i.PlayerID,
+			&i.Season,
+			&i.No,
 		); err != nil {
 			return nil, err
 		}
