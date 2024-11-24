@@ -17,8 +17,19 @@ def get_bucket_url() -> str:
 
 
 def find_club_id(club_name: str, client: supabase.Client) -> str:
-    res = client.table("club").select("id").filter("name", "eq", club_name).execute()
-    return res.data[0]["id"]
+    try:
+        res = (
+            client.table("club").select("id").filter("name", "eq", club_name).execute()
+        )
+        return res.data[0]["id"]
+    except:
+        res = (
+            client.table("club")
+            .select("id")
+            .filter("short_name", "eq", club_name)
+            .execute()
+        )
+        return res.data[0]["id"]
 
 
 def find_match_by_id(match_id: int, client: supabase.Client):
