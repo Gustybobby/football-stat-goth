@@ -7,6 +7,7 @@ EVENT_TYPE_MAP = {
     "label.penalty.scored": "GOAL",
     "Yellow Card": "YELLOW",
     "Second Yellow Card (Red Card)": "RED",
+    "Red Card": "RED",
     "Substitution": "SUB",
 }
 
@@ -170,14 +171,16 @@ def db_transform(events, match_id, db_client):
     return rows
 
 
+MATCH_URL = "https://www.premierleague.com/match/115897"
+MATCH_ID = 11
+
+
 if __name__ == "__main__":
-    timeline_events = scrape_timeline(
-        requests.get("https://www.premierleague.com/match/115891").text
-    )
+    timeline_events = scrape_timeline(requests.get(MATCH_URL).text)
 
     client = db.supabase_connect()
 
-    insert_data = db_transform(timeline_events, 5, client)
+    insert_data = db_transform(timeline_events, MATCH_ID, client)
     for row in insert_data:
         print(row)
 
