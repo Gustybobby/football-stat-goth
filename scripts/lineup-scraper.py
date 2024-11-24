@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 
 
 def read_html(file_dir: str) -> str:
-    with open(file_dir, "r") as file:
+    with open(file_dir, "r", encoding="utf-8") as file:
         html = file.read().replace("\n", "")
         file.close()
         return html
@@ -23,5 +23,5 @@ def scrape_lineups(page_source: str):
 
 
 if __name__ == "__main__":
-    players = scrape_lineups(read_html("pages/115889.html"))
+    players = scrape_lineups(read_html("pages/115891.html"))
     print(players)
