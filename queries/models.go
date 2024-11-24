@@ -11,6 +11,51 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type EventType string
+
+const (
+	EventTypeGOAL    EventType = "GOAL"
+	EventTypeOWNGOAL EventType = "OWN_GOAL"
+	EventTypeYELLOW  EventType = "YELLOW"
+	EventTypeRED     EventType = "RED"
+	EventTypeSUB     EventType = "SUB"
+)
+
+func (e *EventType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = EventType(s)
+	case string:
+		*e = EventType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for EventType: %T", src)
+	}
+	return nil
+}
+
+type NullEventType struct {
+	EventType EventType
+	Valid     bool // Valid is true if EventType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullEventType) Scan(value interface{}) error {
+	if value == nil {
+		ns.EventType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.EventType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullEventType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.EventType), nil
+}
+
 type PlayerPosition string
 
 const (
@@ -107,10 +152,16 @@ type Club struct {
 	Est       int32
 }
 
+type ClubPlayer struct {
+	ClubID   string
+	PlayerID int32
+	Season   string
+	No       int16
+}
+
 type Lineup struct {
 	ID            int32
 	ClubID        string
-	Goals         int16
 	Possession    pgtype.Numeric
 	ShotsOnTarget int16
 	Shots         int16
@@ -123,14 +174,22 @@ type Lineup struct {
 	FoulsConceded int16
 }
 
+type LineupEvent struct {
+	ID        int32
+	LineupID  int32
+	PlayerId1 pgtype.Int4
+	PlayerId2 pgtype.Int4
+	Event     EventType
+	Minutes   int16
+	Extra     pgtype.Int2
+	AfterHalf bool
+}
+
 type LineupPlayer struct {
-	LineupID    int32
-	PlayerID    int32
-	PositionNo  int16
-	Position    PlayerPosition
-	Goals       int16
-	YellowCards int16
-	RedCards    int16
+	LineupID   int32
+	PlayerID   int32
+	PositionNo int16
+	Position   PlayerPosition
 }
 
 type Match struct {
@@ -146,8 +205,6 @@ type Match struct {
 
 type Player struct {
 	ID          int32
-	ClubID      pgtype.Text
-	No          int16
 	Firstname   string
 	Lastname    string
 	Dob         pgtype.Timestamp

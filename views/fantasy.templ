@@ -8,12 +8,13 @@ import (
 )
 
 templ Fantasy(
+	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
 	players []queries.Player,
 ) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
-		@components.Nav()
+		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
 			<div class="max-w-5xl">
 				<section class="w-full flex px-2 py-8 space-x-4 flex-row">
@@ -61,23 +62,22 @@ templ Fantasy(
 							>
 								Players
 							</h1>
-							<ul class=" px-4 ">
-								for _,player := range players {
-									<a href="" class="h-full flex justify-center py-8">
-										<div class="flip-card w-32 h-40">
-											<div class="flip-card-inner ">
-												<div class="flip-card-front relative">
-													// front side, user playercard_front
-													<div class="relative h-full">
+							<div class="flex flex-col h-[700px]">
+								<input type="text" id="nameFilter" placeholder="Search player..." class="p-4 border border-gray-300 rounded m-4"/>
+								<ul class="px-4 h-full overflow-scroll">
+									for _,player := range players {
+										<a href="" class="flex justify-center py-8 player-card">
+											<div class="flip-card w-32 h-40">
+												<div class="flip-card-inner ">
+													<div class="flip-card-front relative h-full">
+														// front side, user playercard_front
 														@playercard_components.PlayerCardImg(player)
 														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
-															<p class="text-primary-foreground font-bold">{ player.Lastname }</p>
+															<p class="text-primary-foreground font-bold player-name">{ player.Lastname }</p>
 														</span>
 													</div>
-												</div>
-												<div class="flip-card-back">
-													// back side, user playercard_back
-													<div class="relative">
+													<div class="flip-card-back relative">
+														// back side, user playercard_back
 														@playercard_components.PlayerCard()
 														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
 															<p class="text-primary-foreground font-bold">{ player.Lastname }</p>
@@ -87,10 +87,24 @@ templ Fantasy(
 													</div>
 												</div>
 											</div>
-										</div>
-									</a>
-								}
-							</ul>
+										</a>
+									}
+								</ul>
+								<script>
+									document.getElementById('nameFilter').addEventListener('input', function() {
+										const filter = this.value.toLowerCase();
+										const cards = document.querySelectorAll('.player-card');
+										cards.forEach(card => {
+											const name = card.querySelector('.player-name').textContent.toLowerCase();
+											if (name.includes(filter)) {
+												card.style.display = '';
+											} else {
+												card.style.display = 'none';
+											}
+										});
+									});
+								</script>
+							</div>
 						</section>
 					</div>
 				</section>

@@ -8,20 +8,25 @@ import (
 )
 
 templ Match(
+	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
 	match queries.FindMatchByIDRow,
+	events []queries.ListLineupEventsByMatchIDRow,
 	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
 	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
 ) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
-		@components.Nav()
+		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background grid 2xl:grid-cols-5 grid-cols-1 gap-4">
 			<div class="2xl:col-span-3">
-				@match_components.MatchResult(match)
+				@match_components.MatchResult(match, events)
 			</div>
 			<div class="2xl:col-span-2">
-				@match_components.LineupsField(match, homeLineupPlayers, awayLineupPlayers)
+				@match_components.LineupsField(match, events, homeLineupPlayers, awayLineupPlayers)
+			</div>
+			<div class="col-span-full">
+				@match_components.LineupsSection(match, events, homeLineupPlayers, awayLineupPlayers)
 			</div>
 		</main>
 	}

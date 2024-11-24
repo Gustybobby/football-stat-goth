@@ -13,7 +13,9 @@ templ PlayerCardImg(player queries.Player) {
 		@PlayerCard()
 		<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
 			<div class="flex justify-center items-center w-full h-full">
-				<img class="size-3/4" src={ player.Image.String }/>
+				<object class="size-3/4" data={ player.Image.String } type="image/png">
+					<img class="size-full" src="/public/blank-player.png"/>
+				</object>
 			</div>
 		</span>
 	</div>

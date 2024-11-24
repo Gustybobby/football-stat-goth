@@ -18,7 +18,7 @@ templ CreatePlayers() {
 			<form
 				id="add_player_form"
 				class="grid grid-cols-2 gap-4 md:w-1/2"
-				hx-post="/api/players"
+				hx-post="/api/admin/players"
 				hx-on::after-request="if(event.detail.successful) this.reset()"
 				hx-swap="none"
 			>

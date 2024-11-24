@@ -21,6 +21,11 @@ func HandleAdminEditLineupsPage(w http.ResponseWriter, r *http.Request, repo *re
 		return err
 	}
 
+	events, err := repo.Queries.ListLineupEventsByMatchID(repo.Ctx, int32(matchID))
+	if err != nil {
+		return err
+	}
+
 	homeLineupPlayers, err := repo.Queries.ListLineupPlayersByLineupID(repo.Ctx, match.HomeLineupID)
 	if err != nil {
 		return err
@@ -31,5 +36,5 @@ func HandleAdminEditLineupsPage(w http.ResponseWriter, r *http.Request, repo *re
 		return err
 	}
 
-	return handlers.Render(w, r, admin_views.EditLineups(match, homeLineupPlayers, awayLineupPlayers))
+	return handlers.Render(w, r, admin_views.EditLineups(match, events, homeLineupPlayers, awayLineupPlayers))
 }

@@ -17,7 +17,17 @@ SELECT
     "home_club".id AS home_club_id,
     "home_club".short_name AS home_club_name,
     "home_club".logo AS home_club_logo,
-    "home_lineup".goals AS home_goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        )
+    ) AS home_goals,
     "home_lineup".possession AS home_possession,
     "home_lineup".shots_on_target AS home_shots_on_target,
     "home_lineup".shots AS home_shots,
@@ -28,16 +38,34 @@ SELECT
     "home_lineup".corners AS home_corners,
     "home_lineup".offsides AS home_offsides,
     (
-        SELECT
-            CAST(COALESCE(SUM("lineup_player".yellow_cards), 0) AS INTEGER)
-        FROM "lineup_player"
-        WHERE "lineup_player".lineup_id = "home_lineup".id
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
     ) AS home_yellow_cards,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+    ) AS home_red_cards,
     "home_lineup".fouls_conceded AS home_fouls_conceded,
     "away_club".id AS away_club_id,
     "away_club".short_name AS away_club_name,
     "away_club".logo AS away_club_logo,
-    "away_lineup".goals AS away_goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        )
+    ) AS away_goals,
     "away_lineup".possession AS away_possession,
     "away_lineup".shots_on_target AS away_shots_on_target,
     "away_lineup".shots AS away_shots,
@@ -48,11 +76,19 @@ SELECT
     "away_lineup".corners AS away_corners,
     "away_lineup".offsides AS away_offsides,
     (
-        SELECT
-            CAST(COALESCE(SUM("lineup_player".yellow_cards), 0) AS INTEGER)
-        FROM "lineup_player"
-        WHERE "lineup_player".lineup_id = "away_lineup".id
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'YELLOW' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
     ) AS away_yellow_cards,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE
+            "lineup_event"."event" = 'RED' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+    ) AS away_red_cards,
     "away_lineup".fouls_conceded AS away_fouls_conceded
 FROM "match"
 INNER JOIN "lineup" as "home_lineup"
@@ -79,7 +115,7 @@ type FindMatchByIDRow struct {
 	HomeClubID        string
 	HomeClubName      string
 	HomeClubLogo      string
-	HomeGoals         int16
+	HomeGoals         int64
 	HomePossession    pgtype.Numeric
 	HomeShotsOnTarget int16
 	HomeShots         int16
@@ -89,12 +125,13 @@ type FindMatchByIDRow struct {
 	HomeClearances    int16
 	HomeCorners       int16
 	HomeOffsides      int16
-	HomeYellowCards   int32
+	HomeYellowCards   int64
+	HomeRedCards      int64
 	HomeFoulsConceded int16
 	AwayClubID        string
 	AwayClubName      string
 	AwayClubLogo      string
-	AwayGoals         int16
+	AwayGoals         int64
 	AwayPossession    pgtype.Numeric
 	AwayShotsOnTarget int16
 	AwayShots         int16
@@ -104,7 +141,8 @@ type FindMatchByIDRow struct {
 	AwayClearances    int16
 	AwayCorners       int16
 	AwayOffsides      int16
-	AwayYellowCards   int32
+	AwayYellowCards   int64
+	AwayRedCards      int64
 	AwayFoulsConceded int16
 }
 
@@ -134,6 +172,7 @@ func (q *Queries) FindMatchByID(ctx context.Context, id int32) (FindMatchByIDRow
 		&i.HomeCorners,
 		&i.HomeOffsides,
 		&i.HomeYellowCards,
+		&i.HomeRedCards,
 		&i.HomeFoulsConceded,
 		&i.AwayClubID,
 		&i.AwayClubName,
@@ -149,9 +188,27 @@ func (q *Queries) FindMatchByID(ctx context.Context, id int32) (FindMatchByIDRow
 		&i.AwayCorners,
 		&i.AwayOffsides,
 		&i.AwayYellowCards,
+		&i.AwayRedCards,
 		&i.AwayFoulsConceded,
 	)
 	return i, err
+}
+
+const findMatchIDFromLineupID = `-- name: FindMatchIDFromLineupID :one
+SELECT
+    "match".id
+FROM "match"
+WHERE
+    "match".home_lineup_id = $1::integer OR
+    "match".away_lineup_id = $1::integer
+LIMIT 1
+`
+
+func (q *Queries) FindMatchIDFromLineupID(ctx context.Context, lineupID int32) (int32, error) {
+	row := q.db.QueryRow(ctx, findMatchIDFromLineupID, lineupID)
+	var id int32
+	err := row.Scan(&id)
+	return id, err
 }
 
 const listClubStandings = `-- name: ListClubStandings :many
@@ -159,10 +216,50 @@ WITH "match_score" AS (
     SELECT
         "match".id,
         "home".club_id AS home_club_id,
-        "home".goals AS home_goals,
+        (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE (
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+            )
+        ) AS home_goals,
         "away".club_id AS away_club_id,
-        "away".goals AS away_goals,
-        "home".goals - "away".goals AS goals_diff
+        (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE (
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+            )
+        ) AS away_goals,
+        (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE (
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+            )
+        ) - (
+            SELECT COUNT(*)
+            FROM "lineup_event"
+            WHERE (
+                "lineup_event"."event" = 'GOAL' AND
+                "lineup_event".lineup_id = "match".away_lineup_id
+            ) OR (
+                "lineup_event"."event" = 'OWN_GOAL' AND
+                "lineup_event".lineup_id = "match".home_lineup_id
+            )
+        ) AS goals_diff
     FROM "match"
     INNER JOIN "lineup" AS "home"
     ON "match".home_lineup_id = "home".id
@@ -253,10 +350,30 @@ SELECT
     match.id, match.home_lineup_id, match.away_lineup_id, match.season, match.week, match.location, match.start_at, match.is_finished,
     "home_club".id AS home_club_id,
     "home_club".logo AS home_club_logo,
-    "home_lineup".goals AS home_goals,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        )
+    ) AS home_goals,
     "away_club".id AS away_club_id,
     "away_club".logo AS away_club_logo,
-    "away_lineup".goals AS away_goals
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        )
+    ) AS away_goals
 FROM "match"
 INNER JOIN "lineup" as "home_lineup"
 ON "match".home_lineup_id = "home_lineup".id
@@ -295,10 +412,10 @@ type ListMatchesWithClubsAndGoalsRow struct {
 	IsFinished   bool
 	HomeClubID   string
 	HomeClubLogo string
-	HomeGoals    int16
+	HomeGoals    int64
 	AwayClubID   string
 	AwayClubLogo string
-	AwayGoals    int16
+	AwayGoals    int64
 }
 
 func (q *Queries) ListMatchesWithClubsAndGoals(ctx context.Context, arg ListMatchesWithClubsAndGoalsParams) ([]ListMatchesWithClubsAndGoalsRow, error) {

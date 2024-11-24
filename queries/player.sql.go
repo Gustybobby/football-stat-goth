@@ -13,8 +13,6 @@ import (
 
 const createPlayer = `-- name: CreatePlayer :one
 INSERT INTO "player" (
-    club_id,
-    no,
     firstname,
     lastname,
     dob,
@@ -29,16 +27,12 @@ INSERT INTO "player" (
     $4,
     $5,
     $6,
-    $7,
-    $8,
-    $9
+    $7
 )
-RETURNING id, club_id, no, firstname, lastname, dob, height, nationality, position, image
+RETURNING id, firstname, lastname, dob, height, nationality, position, image
 `
 
 type CreatePlayerParams struct {
-	ClubID      pgtype.Text
-	No          int16
 	Firstname   string
 	Lastname    string
 	Dob         pgtype.Timestamp
@@ -50,8 +44,6 @@ type CreatePlayerParams struct {
 
 func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Player, error) {
 	row := q.db.QueryRow(ctx, createPlayer,
-		arg.ClubID,
-		arg.No,
 		arg.Firstname,
 		arg.Lastname,
 		arg.Dob,
@@ -63,8 +55,6 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Pla
 	var i Player
 	err := row.Scan(
 		&i.ID,
-		&i.ClubID,
-		&i.No,
 		&i.Firstname,
 		&i.Lastname,
 		&i.Dob,
@@ -76,35 +66,37 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Pla
 	return i, err
 }
 
-const findPlayerIDByClubAndNo = `-- name: FindPlayerIDByClubAndNo :one
+const findPlayerIDByClubNoSeason = `-- name: FindPlayerIDByClubNoSeason :one
 SELECT
-    "player".id
-FROM "player"
+    "club_player".player_id
+FROM "club_player"
 WHERE
-    "player".club_id = $1 AND
-    "player".no = $2
+    "club_player".club_id = $1 AND
+    "club_player".no = $2 AND
+    "club_player".season = $3
 `
 
-type FindPlayerIDByClubAndNoParams struct {
-	ClubID pgtype.Text
+type FindPlayerIDByClubNoSeasonParams struct {
+	ClubID string
 	No     int16
+	Season string
 }
 
-func (q *Queries) FindPlayerIDByClubAndNo(ctx context.Context, arg FindPlayerIDByClubAndNoParams) (int32, error) {
-	row := q.db.QueryRow(ctx, findPlayerIDByClubAndNo, arg.ClubID, arg.No)
-	var id int32
-	err := row.Scan(&id)
-	return id, err
+func (q *Queries) FindPlayerIDByClubNoSeason(ctx context.Context, arg FindPlayerIDByClubNoSeasonParams) (int32, error) {
+	row := q.db.QueryRow(ctx, findPlayerIDByClubNoSeason, arg.ClubID, arg.No, arg.Season)
+	var player_id int32
+	err := row.Scan(&player_id)
+	return player_id, err
 }
 
-const listPlayersOrderByNameAsc = `-- name: ListPlayersOrderByNameAsc :many
-SELECT id, club_id, no, firstname, lastname, dob, height, nationality, position, image
+const listPlayersOrderByPosAsc = `-- name: ListPlayersOrderByPosAsc :many
+SELECT id, firstname, lastname, dob, height, nationality, position, image
 FROM "player"
-ORDER BY "player".club_id ASC
+ORDER BY "player".position ASC
 `
 
-func (q *Queries) ListPlayersOrderByNameAsc(ctx context.Context) ([]Player, error) {
-	rows, err := q.db.Query(ctx, listPlayersOrderByNameAsc)
+func (q *Queries) ListPlayersOrderByPosAsc(ctx context.Context) ([]Player, error) {
+	rows, err := q.db.Query(ctx, listPlayersOrderByPosAsc)
 	if err != nil {
 		return nil, err
 	}
@@ -114,8 +106,6 @@ func (q *Queries) ListPlayersOrderByNameAsc(ctx context.Context) ([]Player, erro
 		var i Player
 		if err := rows.Scan(
 			&i.ID,
-			&i.ClubID,
-			&i.No,
 			&i.Firstname,
 			&i.Lastname,
 			&i.Dob,

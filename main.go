@@ -2,11 +2,10 @@ package main
 
 import (
 	"embed"
-	"football-stat-goth/handlers"
 	"football-stat-goth/handlers/api"
 	"football-stat-goth/handlers/cmps"
 	"football-stat-goth/handlers/pages"
-	"football-stat-goth/handlers/pages/admin_pages"
+	"football-stat-goth/handlers/plmiddleware"
 	"football-stat-goth/repos"
 	"log"
 	"log/slog"
@@ -22,31 +21,18 @@ import (
 var publicFS embed.FS
 
 func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
+	router.Use(plmiddleware.AuthMiddleware(repo))
+
 	router.Handle("/*", http.FileServerFS(publicFS))
 
-	router.Get("/", handlers.Make(pages.HandleHomePage, repo))
-	router.Get("/standings", handlers.Make(pages.HandleStandingsPage, repo))
-	router.Get("/clubs", handlers.Make(pages.HandleClubsPage, repo))
-	router.Get("/fantasy", handlers.Make(pages.HandleFantasyPage, repo))
-	router.Get("/clubs/{clubID}", handlers.Make(pages.HandleClubPage, repo))
-	router.Get("/matches/{matchID}", handlers.Make(pages.HandleMatchPage, repo))
-	router.Get("/signup", handlers.Make(pages.HandleSignupPage, repo))
+	pages.SetupPageRoutes(router, repo)
 
-	router.Route("/admin", func(r chi.Router) {
-		r.Get("/players/create", handlers.Make(admin_pages.HandleAdminCreatePlayersPage, repo))
-
-		r.Get("/matches/{matchID}/lineups", handlers.Make(admin_pages.HandleAdminEditLineupsPage, repo))
+	router.Route("/api", func(r_api chi.Router) {
+		api.SetupApiRoutes(r_api, repo)
 	})
 
-	router.Route("/api", func(r chi.Router) {
-		r.Post("/signup", handlers.Make(api.HandleSignup, repo))
-		r.Post("/players", handlers.Make(api.HandleCreatePlayer, repo))
-
-		r.Post("/lineups/{lineupID}/lineup_players", handlers.Make(api.HandleCreateLineupPlayer, repo))
-	})
-
-	router.Route("/cmps", func(r chi.Router) {
-		r.Get("/lineup-players/add-form", handlers.Make(cmps.HandleAddLineupPlayerForm, repo))
+	router.Route("/cmps", func(r_cmps chi.Router) {
+		cmps.SetupComponentRoutes(r_cmps, repo)
 	})
 }
 

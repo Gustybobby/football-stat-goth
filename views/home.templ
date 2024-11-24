@@ -6,10 +6,10 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
-templ Home(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
+templ Home(user *queries.FindUserByUsernameRow, fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
-		@components.Nav()
+		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background min-h-screen">
 			<div class="my-8 w-full flex flex-col items-center">
 				@components.PlaymakerTitle()

@@ -1,5 +1,16 @@
 -- name: FindUserByUsername :one
-SELECT *
+SELECT
+    "user".username,
+    "user".firstname,
+    "user".lastname,
+    "user".role
+FROM "user"
+WHERE "user".username = $1
+LIMIT 1;
+
+-- name: FindPasswordHashByUsername :one
+SELECT
+    "user".password_hash
 FROM "user"
 WHERE "user".username = $1
 LIMIT 1;

@@ -1,0 +1,177 @@
+package match_components
+
+import (
+	"football-stat-goth/queries"
+	"strconv"
+)
+
+templ LineupsSection(
+	match queries.FindMatchByIDRow,
+	events []queries.ListLineupEventsByMatchIDRow,
+	homeLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+	awayLineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+) {
+	<section
+		class="rounded-lg border border-primary shadow-lg w-full p-4"
+		id={ "lineups_section_" + strconv.Itoa(int(match.ID)) }
+		hx-swap-oob={ "#" + "lineups_section_" + strconv.Itoa(int(match.ID)) }
+	>
+		@lineupPlayersSection(match.HomeClubID, match.HomeClubName, match.HomeClubLogo, events, homeLineupPlayers)
+		@lineupPlayersSection(match.AwayClubID, match.AwayClubName, match.AwayClubLogo, events, awayLineupPlayers)
+	</section>
+}
+
+templ lineupPlayersSection(
+	club_id string,
+	club_name string,
+	club_logo string,
+	events []queries.ListLineupEventsByMatchIDRow,
+	lineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+) {
+	<section class="p-2 flex flex-col items-start">
+		<a
+			class="flex items-center mb-4"
+			href={ templ.SafeURL("/clubs/" + club_id) }
+		>
+			<img src={ club_logo } class="size-12 mr-2"/>
+			<h1 class="text-2xl font-bold">{ club_name } Lineups</h1>
+		</a>
+		<div class="space-y-4">
+			@lineupPlayersPositionGroup("Goalkeepers", queries.PlayerPositionGK, events, lineupPlayers)
+			@lineupPlayersPositionGroup("Defenders", queries.PlayerPositionDEF, events, lineupPlayers)
+			@lineupPlayersPositionGroup("Midfielders", queries.PlayerPositionMFD, events, lineupPlayers)
+			@lineupPlayersPositionGroup("Forwards", queries.PlayerPositionFWD, events, lineupPlayers)
+			@lineupPlayersPositionGroup("Substitutes", queries.PlayerPositionSUB, events, lineupPlayers)
+		</div>
+	</section>
+}
+
+templ lineupPlayersPositionGroup(
+	position_name string,
+	position queries.PlayerPosition,
+	events []queries.ListLineupEventsByMatchIDRow,
+	lineupPlayers []queries.ListLineupPlayersByLineupIDRow,
+) {
+	<div class="flex flex-col items-start p-4 border border-primary shadow-lg rounded-lg">
+		<h2 class="text-xl font-bold mb-2">{ position_name }</h2>
+		<div class="grid grid-cols-6 gap-4 w-full">
+			for _, lineupPlayer := range(lineupPlayers) {
+				if lineupPlayer.Position == position {
+					@lineupPlayerCard(lineupPlayer, events)
+				}
+			}
+		</div>
+	</div>
+}
+
+templ lineupPlayerCard(
+	lineupPlayer queries.ListLineupPlayersByLineupIDRow,
+	events []queries.ListLineupEventsByMatchIDRow,
+) {
+	<div class="flex flex-col">
+		<div class="mb-1 flex">
+			<img
+				src={ lineupPlayer.Image.String }
+				class="size-24"
+				onerror="this.src='/public/missing_portrait.png';"
+			/>
+			<div class="flex flex-col items-start font-bold text-xs">
+				<div>
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeSUB, events)) {
+						@SubstituteEventCard(lineupPlayer, event)
+					}
+				</div>
+				<div>
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeGOAL, events)) {
+						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
+							@GoalEventCard(event)
+						}
+					}
+				</div>
+				<div>
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeYELLOW, events)) {
+						@YellowCardEventCard(event)
+					}
+				</div>
+				<div>
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeRED, events)) {
+						@RedCardEventCard(event)
+					}
+				</div>
+			</div>
+		</div>
+		<span class="font-semibold w-full">
+			({ strconv.Itoa(int(lineupPlayer.No)) }) { lineupPlayer.Firstname } { lineupPlayer.Lastname }
+		</span>
+	</div>
+}
+
+templ SubstituteEventCard(
+	lineupPlayer queries.ListLineupPlayersByLineupIDRow,
+	event queries.ListLineupEventsByMatchIDRow,
+) {
+	if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
+		<span class="text-red-600">
+			<p class="ml-1 mr-1.5 inline">&#8598;</p>
+			{ strconv.Itoa(int(event.Minutes)) }
+			if event.Extra.Valid {
+				+{ strconv.Itoa(int(event.Extra.Int16)) }
+			}
+			'
+		</span>
+	} else {
+		<span class="text-green-600">
+			<p class="ml-1 mr-1.5 inline">&#8600;</p>
+			{ strconv.Itoa(int(event.Minutes)) }
+			if event.Extra.Valid {
+				+{ strconv.Itoa(int(event.Extra.Int16)) }
+			}
+			'
+		</span>
+	}
+}
+
+templ GoalEventCard(event queries.ListLineupEventsByMatchIDRow) {
+	<span class="flex items-center">
+		<img src="/public/purple_football.webp" class="size-3 ml-1 mr-[3px]"/>
+		{ strconv.Itoa(int(event.Minutes)) }
+		if event.Extra.Valid {
+			+{ strconv.Itoa(int(event.Extra.Int16)) }
+		}
+		'
+	</span>
+}
+
+templ YellowCardEventCard(event queries.ListLineupEventsByMatchIDRow) {
+	<span>
+		🟨 { strconv.Itoa(int(event.Minutes)) }
+		if event.Extra.Valid {
+			+{ strconv.Itoa(int(event.Extra.Int16)) }
+		}
+		'
+	</span>
+}
+
+templ RedCardEventCard(event queries.ListLineupEventsByMatchIDRow) {
+	<span>
+		🟥 { strconv.Itoa(int(event.Minutes)) }
+		if event.Extra.Valid {
+			+{ strconv.Itoa(int(event.Extra.Int16)) }
+		}
+		'
+	</span>
+}
+
+func FilterEventsByPlayerID(
+	playerID int32,
+	event_type queries.EventType,
+	events []queries.ListLineupEventsByMatchIDRow,
+) []queries.ListLineupEventsByMatchIDRow {
+	var filtered_events []queries.ListLineupEventsByMatchIDRow
+	for _, event := range events {
+		if (event.PlayerId1.Int32 == playerID || event.PlayerId2.Int32 == playerID) && event.Event == event_type {
+			filtered_events = append(filtered_events, event)
+		}
+	}
+	return filtered_events
+}

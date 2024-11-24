@@ -23,7 +23,7 @@ INSERT INTO "lineup_player" (
     $3,
     $4
 )
-RETURNING lineup_id, player_id, position_no, position, goals, yellow_cards, red_cards
+RETURNING lineup_id, player_id, position_no, position
 `
 
 type CreateLineupPlayerParams struct {
@@ -46,38 +46,103 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 		&i.PlayerID,
 		&i.PositionNo,
 		&i.Position,
-		&i.Goals,
-		&i.YellowCards,
-		&i.RedCards,
+	)
+	return i, err
+}
+
+const findLineupPlayerByLineupIDAndPositionNo = `-- name: FindLineupPlayerByLineupIDAndPositionNo :one
+SELECT
+    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
+    "club_player".no,
+    "player".firstname,
+    "player".lastname,
+    "player".image
+FROM "lineup_player"
+INNER JOIN "lineup"
+ON "lineup_player".lineup_id = "lineup".id
+INNER JOIN "match"
+ON
+    "lineup".id = "match".home_lineup_id OR
+    "lineup".id = "match".away_lineup_id
+INNER JOIN "club_player"
+ON
+    "lineup".club_id = "club_player".club_id AND
+    "lineup_player".player_id = "club_player".player_id AND
+    "match".season = "club_player".season
+INNER JOIN "player"
+ON "club_player".player_id = "player".id
+WHERE
+    "lineup_player".lineup_id = $1 AND
+    "lineup_player".position_no = $2
+LIMIT 1
+`
+
+type FindLineupPlayerByLineupIDAndPositionNoParams struct {
+	LineupID   int32
+	PositionNo int16
+}
+
+type FindLineupPlayerByLineupIDAndPositionNoRow struct {
+	LineupID   int32
+	PlayerID   int32
+	PositionNo int16
+	Position   PlayerPosition
+	No         int16
+	Firstname  string
+	Lastname   string
+	Image      pgtype.Text
+}
+
+func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, arg FindLineupPlayerByLineupIDAndPositionNoParams) (FindLineupPlayerByLineupIDAndPositionNoRow, error) {
+	row := q.db.QueryRow(ctx, findLineupPlayerByLineupIDAndPositionNo, arg.LineupID, arg.PositionNo)
+	var i FindLineupPlayerByLineupIDAndPositionNoRow
+	err := row.Scan(
+		&i.LineupID,
+		&i.PlayerID,
+		&i.PositionNo,
+		&i.Position,
+		&i.No,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Image,
 	)
 	return i, err
 }
 
 const listLineupPlayersByLineupID = `-- name: ListLineupPlayersByLineupID :many
 SELECT
-    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position, lineup_player.goals, lineup_player.yellow_cards, lineup_player.red_cards,
-    "player".no,
+    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
+    "club_player".no,
     "player".firstname,
     "player".lastname,
     "player".image
 FROM "lineup_player"
+INNER JOIN "lineup"
+ON "lineup_player".lineup_id = "lineup".id
+INNER JOIN "match"
+ON
+    "lineup".id = "match".home_lineup_id OR
+    "lineup".id = "match".away_lineup_id
+INNER JOIN "club_player"
+ON
+    "lineup".club_id = "club_player".club_id AND
+    "lineup_player".player_id = "club_player".player_id AND
+    "match".season = "club_player".season
 INNER JOIN "player"
-ON "lineup_player".player_id = "player".id
+ON "club_player".player_id = "player".id
 WHERE "lineup_player".lineup_id = $1
+ORDER BY "club_player".no ASC
 `
 
 type ListLineupPlayersByLineupIDRow struct {
-	LineupID    int32
-	PlayerID    int32
-	PositionNo  int16
-	Position    PlayerPosition
-	Goals       int16
-	YellowCards int16
-	RedCards    int16
-	No          int16
-	Firstname   string
-	Lastname    string
-	Image       pgtype.Text
+	LineupID   int32
+	PlayerID   int32
+	PositionNo int16
+	Position   PlayerPosition
+	No         int16
+	Firstname  string
+	Lastname   string
+	Image      pgtype.Text
 }
 
 func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int32) ([]ListLineupPlayersByLineupIDRow, error) {
@@ -94,9 +159,6 @@ func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int3
 			&i.PlayerID,
 			&i.PositionNo,
 			&i.Position,
-			&i.Goals,
-			&i.YellowCards,
-			&i.RedCards,
 			&i.No,
 			&i.Firstname,
 			&i.Lastname,
@@ -110,4 +172,38 @@ func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int3
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateLineupPlayer = `-- name: UpdateLineupPlayer :one
+UPDATE lineup_player SET
+    position_no = COALESCE($3, position_no),
+    position = COALESCE($4, position)
+WHERE
+    "lineup_player".lineup_id = $1 AND
+    "lineup_player".player_id = $2
+RETURNING lineup_id, player_id, position_no, position
+`
+
+type UpdateLineupPlayerParams struct {
+	LineupID   int32
+	PlayerID   int32
+	PositionNo pgtype.Int2
+	Position   NullPlayerPosition
+}
+
+func (q *Queries) UpdateLineupPlayer(ctx context.Context, arg UpdateLineupPlayerParams) (LineupPlayer, error) {
+	row := q.db.QueryRow(ctx, updateLineupPlayer,
+		arg.LineupID,
+		arg.PlayerID,
+		arg.PositionNo,
+		arg.Position,
+	)
+	var i LineupPlayer
+	err := row.Scan(
+		&i.LineupID,
+		&i.PlayerID,
+		&i.PositionNo,
+		&i.Position,
+	)
+	return i, err
 }
