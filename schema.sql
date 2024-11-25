@@ -53,11 +53,13 @@ CREATE TABLE "lineup" (
 CREATE TABLE "lineup_player" (
     lineup_id       INTEGER NOT NULL,
     player_id       INTEGER NOT NULL,
+    no              INT2 NOT NULL,
     position_no     INT2 NOT NULL,
     position        player_position NOT NULL,
 
     CONSTRAINT pk_lineup_player                 PRIMARY KEY (lineup_id, player_id),
     CONSTRAINT unique_lineup_id_position_no     UNIQUE (lineup_id, position_no),
+    CONSTRAINT unique_lineup_id_no              UNIQUE (lineup_id, no),
     CONSTRAINT fk_lineup_player_lineup          FOREIGN KEY (lineup_id) REFERENCES "lineup"(id),
     CONSTRAINT fk_lineup_player_player          FOREIGN KEY (player_id) REFERENCES "player"(id)
 );
