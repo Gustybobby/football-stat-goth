@@ -1,3 +1,9 @@
+-- name: FindPlayerByID :one
+SELECT *
+FROM "player"
+WHERE "player".id = $1
+LIMIT 1;
+
 -- name: FindPlayerIDByClubNoSeason :one
 SELECT
     "club_player".player_id
