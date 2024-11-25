@@ -2,8 +2,10 @@ package pages
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/queries"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
+	"football-stat-goth/services/pltime"
 	"football-stat-goth/views"
 	"net/http"
 	"strconv"
@@ -29,5 +31,15 @@ func HandlePlayerPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 		return err
 	}
 
-	return handlers.Render(w, r, views.Player(user, player, club_players))
+	season := pltime.GetCurrentSeasonString()
+
+	performance, err := repo.Queries.FindPlayerSeasonPerformance(repo.Ctx, queries.FindPlayerSeasonPerformanceParams{
+		Season: season,
+		ID:     player.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Player(user, player, club_players, performance))
 }

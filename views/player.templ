@@ -8,15 +8,21 @@ import (
 	"time"
 )
 
-templ Player(user *queries.FindUserByUsernameRow, player queries.Player, club_players []queries.ListClubPlayerByPlayerIDRow) {
+templ Player(
+	user *queries.FindUserByUsernameRow,
+	player queries.Player,
+	club_players []queries.ListClubPlayerByPlayerIDRow,
+	performance queries.FindPlayerSeasonPerformanceRow,
+) {
 	@layouts.Base() {
 		@components.Nav(user)
-		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
+		<main class="w-full p-4 bg-primary-background flex flex-col items-center">
 			<div class="max-w-7xl w-full">
 				@playerProfile(player)
 				<div class="grid grid-cols-1 lg:grid-cols-3 p-4 gap-4">
-					<div>
+					<div class="flex flex-col space-y-4">
 						@clubRecords(club_players)
+						@seasonPerformance(performance)
 					</div>
 				</div>
 			</div>
@@ -98,6 +104,48 @@ templ clubRecords(club_players []queries.ListClubPlayerByPlayerIDRow) {
 							<td class="p-1 text-center font-bold">{ strconv.Itoa(int(club_player.No)) }</td>
 						</tr>
 					}
+				</tbody>
+			</table>
+		</div>
+	</section>
+}
+
+templ seasonPerformance(performance queries.FindPlayerSeasonPerformanceRow) {
+	<section class="rounded-lg border border-primary shadow-lg">
+		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
+			{ performance.Season } Performance
+		</h1>
+		<div class="p-2">
+			<table class="w-full text-left text-lg">
+				<tbody>
+					<tr>
+						<td class="font-semibold p-1">Appearances</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.Appearances)) }</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Goals</td>
+						<td class="font-bold p-1">
+							{ strconv.Itoa(int(performance.TotalGoals)) } (League #{ strconv.Itoa(int(performance.GoalsRank)) })
+						</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Assists</td>
+						<td class="font-bold p-1">
+							{ strconv.Itoa(int(performance.TotalAssists)) } (League #{ strconv.Itoa(int(performance.AssistsRank)) })
+						</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Yellow Cards</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalYellowCards)) }</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Red Cards</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalRedCards)) }</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Own Goals</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalOwnGoals)) }</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
