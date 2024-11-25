@@ -108,3 +108,14 @@ CREATE TABLE "session" (
     
     CONSTRAINT fk_session_user FOREIGN KEY (username) REFERENCES "user"(username)
 );
+
+CREATE TABLE "fantasy_player" (
+    club_id     CHAR(3),
+    player_id   INTEGER,
+    cost        INTEGER NOT NULL,
+    points      INTEGER,
+    rating      INTEGER,
+    
+    CONSTRAINT fk_fantasy_player_club      FOREIGN KEY (club_id) REFERENCES "club"(id),
+    CONSTRAINT fk_fantasy_player_player    FOREIGN KEY (player_id) REFERENCES "player"(id)
+);
