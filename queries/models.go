@@ -160,6 +160,7 @@ type ClubPlayer struct {
 }
 
 type FantasyPlayer struct {
+	ID       int32
 	ClubID   pgtype.Text
 	PlayerID pgtype.Int4
 	Cost     int32

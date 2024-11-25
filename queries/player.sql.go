@@ -66,6 +66,29 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Pla
 	return i, err
 }
 
+const findPlayerByID = `-- name: FindPlayerByID :one
+SELECT id, firstname, lastname, dob, height, nationality, position, image
+FROM "player"
+WHERE "player".id = $1
+LIMIT 1
+`
+
+func (q *Queries) FindPlayerByID(ctx context.Context, id int32) (Player, error) {
+	row := q.db.QueryRow(ctx, findPlayerByID, id)
+	var i Player
+	err := row.Scan(
+		&i.ID,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Dob,
+		&i.Height,
+		&i.Nationality,
+		&i.Position,
+		&i.Image,
+	)
+	return i, err
+}
+
 const findPlayerIDByClubNoSeason = `-- name: FindPlayerIDByClubNoSeason :one
 SELECT
     "club_player".player_id

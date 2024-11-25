@@ -110,6 +110,7 @@ CREATE TABLE "session" (
 );
 
 CREATE TABLE "fantasy_player" (
+    id          SERIAL PRIMARY KEY,
     club_id     CHAR(3),
     player_id   INTEGER,
     cost        INTEGER NOT NULL,
