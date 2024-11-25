@@ -24,5 +24,10 @@ func HandlePlayerPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 		return err
 	}
 
-	return handlers.Render(w, r, views.Player(user, player))
+	club_players, err := repo.Queries.ListClubPlayerByPlayerID(repo.Ctx, player.ID)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Player(user, player, club_players))
 }
