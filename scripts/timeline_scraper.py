@@ -4,13 +4,20 @@ from bs4 import BeautifulSoup
 
 EVENT_TYPE_MAP = {
     "Goal": "GOAL",
+    "label.penalty.scored": "GOAL",
     "Yellow Card": "YELLOW",
+    "Second Yellow Card (Red Card)": "RED",
     "Red Card": "RED",
     "Substitution": "SUB",
+    "Own Goal": "OWN_GOAL",
 }
 
 
-def scrape_timeline(page_source: str) -> list:
+def scrape_timeline(
+    page_source: str,
+    nm_event_class="event home",
+    nm_ot_class="event home event--added-time",
+) -> list:
     soup = BeautifulSoup(page_source, "html.parser")
 
     timeline_div = soup.find(
@@ -20,7 +27,7 @@ def scrape_timeline(page_source: str) -> list:
     events = []
 
     # normal events (no extra time)
-    nm_events = timeline_div.find_all("div", class_="event home")
+    nm_events = timeline_div.find_all("div", class_=nm_event_class)
     for event_div in nm_events:
         event_data = {}
 
@@ -42,11 +49,20 @@ def scrape_timeline(page_source: str) -> list:
         events.append(event_data)
 
     # overtime events
-    ot_events = timeline_div.find_all("div", class_="event away event--added-time")
+    ot_events = timeline_div.find_all("div", class_=nm_ot_class)
     for ot_div in ot_events:
         event_data = {}
 
-        minutes, extra = ot_div.find("time", class_="min").text.strip().split(" ")
+        try:
+            minutes, extra = ot_div.find("time", class_="min").text.strip().split(" ")
+        except:
+            minutes, extra = (
+                ot_div.find("div", class_="event__minute")
+                .text.strip()
+                .replace(" ", "")
+                .replace("\n", "")
+                .split("+")
+            )
 
         event_data["minutes"] = minutes
         event_data["extra"] = extra.replace("'", "").replace("+", "")
@@ -83,7 +99,12 @@ def extract_events(event_tags: list) -> list:
 
         player_info = event_tag.find("div", class_="eventPlayerInfo")
 
-        if event_type == "GOAL" or event_type == "YELLOW" or event_type == "RED":
+        if (
+            event_type == "GOAL"
+            or event_type == "YELLOW"
+            or event_type == "RED"
+            or event_type == "OWN_GOAL"
+        ):
             scorer = player_info.find("a", class_="name").text.split(".")[1].strip()
             event_data["player1"] = scorer
 
@@ -132,7 +153,11 @@ def db_transform(events, match_id, db_client):
         for home_event in tl_event["home"]:
             rows.append(
                 {
-                    "lineup_id": match["home_lineup_id"],
+                    "lineup_id": (
+                        match["home_lineup_id"]
+                        if home_event["event"] != "OWN_GOAL"
+                        else match["away_lineup_id"]
+                    ),
                     "minutes": int(tl_event["minutes"]),
                     "extra": int(tl_event["extra"]) if "extra" in tl_event else None,
                     "event": home_event["event"],
@@ -144,13 +169,18 @@ def db_transform(events, match_id, db_client):
                         if "player2" in home_event
                         else None
                     ),
+                    "after_half": tl_event["after_half"],
                 }
             )
 
         for away_event in tl_event["away"]:
             rows.append(
                 {
-                    "lineup_id": match["away_lineup_id"],
+                    "lineup_id": (
+                        match["away_lineup_id"]
+                        if away_event["event"] != "OWN_GOAL"
+                        else match["home_lineup_id"]
+                    ),
                     "minutes": int(tl_event["minutes"]),
                     "extra": int(tl_event["extra"]) if "extra" in tl_event else None,
                     "event": away_event["event"],
@@ -162,19 +192,21 @@ def db_transform(events, match_id, db_client):
                         if "player2" in away_event
                         else None
                     ),
+                    "after_half": tl_event["after_half"],
                 }
             )
     return rows
 
 
 if __name__ == "__main__":
-    timeline_events = scrape_timeline(
-        requests.get("https://www.premierleague.com/match/115888").text
-    )
+    MATCH_URL = "https://www.premierleague.com/match/115899"
+    MATCH_ID = 13
+
+    timeline_events = scrape_timeline(requests.get(MATCH_URL).text)
 
     client = db.supabase_connect()
 
-    insert_data = db_transform(timeline_events, 2, client)
+    insert_data = db_transform(timeline_events, MATCH_ID, client)
     for row in insert_data:
         print(row)
 

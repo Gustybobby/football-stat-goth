@@ -132,6 +132,11 @@ templ PositionPin(
 							<img src="/public/purple_football.webp" class="size-3 mr-0.5"/>
 						}
 					}
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeOWNGOAL, events)) {
+						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
+							<img src="/public/red_football.webp" class="size-3 mr-0.5"/>
+						}
+					}
 					{ strings.Repeat("🟨", len(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeYELLOW, events))) }
 					{ strings.Repeat("🟥", len(FilterEventsByPlayerID(lineupPlayer.PlayerID,queries.EventTypeRED, events))) }
 				</span>

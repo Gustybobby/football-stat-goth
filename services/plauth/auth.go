@@ -6,7 +6,6 @@ import (
 	"football-stat-goth/repos"
 	"log/slog"
 	"net/http"
-	"os"
 )
 
 type AuthContextKey string
@@ -25,7 +24,6 @@ func Auth(w http.ResponseWriter, r *http.Request, repo *repos.Repository) (*quer
 	session, err := ValidateSessionToken(token, repo.Queries, repo.Ctx)
 	if err != nil {
 		slog.Error("validate session token error: " + err.Error())
-		DeleteSessionTokenCookie(w, os.Getenv("ENV") == "production")
 		return nil, nil
 	}
 

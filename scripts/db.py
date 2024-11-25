@@ -17,8 +17,19 @@ def get_bucket_url() -> str:
 
 
 def find_club_id(club_name: str, client: supabase.Client) -> str:
-    res = client.table("club").select("id").filter("name", "eq", club_name).execute()
-    return res.data[0]["id"]
+    try:
+        res = (
+            client.table("club").select("id").filter("name", "eq", club_name).execute()
+        )
+        return res.data[0]["id"]
+    except:
+        res = (
+            client.table("club")
+            .select("id")
+            .filter("short_name", "eq", club_name)
+            .execute()
+        )
+        return res.data[0]["id"]
 
 
 def find_match_by_id(match_id: int, client: supabase.Client):
@@ -44,3 +55,16 @@ def find_player_id_by_fullname(fullname: str, client: supabase.Client) -> int:
         return res.data[0]["id"]
     except:
         raise Exception(fullname + " is invalid")
+
+
+def player_exists(data: dict, client: supabase.Client) -> bool:
+    res = (
+        client.table("player")
+        .select("id")
+        .filter("firstname", "eq", data["firstname"])
+        .filter("lastname", "eq", data["lastname"])
+        .filter("dob", "eq", data["dob"])
+        .filter("height", "eq", data["height"])
+        .execute()
+    )
+    return len(res.data) != 0

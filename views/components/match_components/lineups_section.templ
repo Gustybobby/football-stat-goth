@@ -68,7 +68,10 @@ templ lineupPlayerCard(
 	lineupPlayer queries.ListLineupPlayersByLineupIDRow,
 	events []queries.ListLineupEventsByMatchIDRow,
 ) {
-	<div class="flex flex-col">
+	<a
+		class="flex flex-col"
+		href={ templ.SafeURL("/players/" + strconv.Itoa(int(lineupPlayer.PlayerID))) }
+	>
 		<div class="mb-1 flex">
 			<img
 				src={ lineupPlayer.Image.String }
@@ -84,7 +87,14 @@ templ lineupPlayerCard(
 				<div>
 					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeGOAL, events)) {
 						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
-							@GoalEventCard(event)
+							@GoalEventCard(event, false)
+						}
+					}
+				</div>
+				<div>
+					for _, event := range(FilterEventsByPlayerID(lineupPlayer.PlayerID, queries.EventTypeOWNGOAL, events)) {
+						if event.PlayerId1.Int32 == lineupPlayer.PlayerID {
+							@GoalEventCard(event, true)
 						}
 					}
 				</div>
@@ -103,7 +113,7 @@ templ lineupPlayerCard(
 		<span class="font-semibold w-full">
 			({ strconv.Itoa(int(lineupPlayer.No)) }) { lineupPlayer.Firstname } { lineupPlayer.Lastname }
 		</span>
-	</div>
+	</a>
 }
 
 templ SubstituteEventCard(
@@ -131,9 +141,13 @@ templ SubstituteEventCard(
 	}
 }
 
-templ GoalEventCard(event queries.ListLineupEventsByMatchIDRow) {
+templ GoalEventCard(event queries.ListLineupEventsByMatchIDRow, isOwnGoal bool) {
 	<span class="flex items-center">
-		<img src="/public/purple_football.webp" class="size-3 ml-1 mr-[3px]"/>
+		if isOwnGoal {
+			<img src="/public/red_football.webp" class="size-3 ml-1 mr-[3px]"/>
+		} else {
+			<img src="/public/purple_football.webp" class="size-3 ml-1 mr-[3px]"/>
+		}
 		{ strconv.Itoa(int(event.Minutes)) }
 		if event.Extra.Valid {
 			+{ strconv.Itoa(int(event.Extra.Int16)) }

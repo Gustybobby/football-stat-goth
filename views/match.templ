@@ -25,9 +25,11 @@ templ Match(
 			<div class="2xl:col-span-2">
 				@match_components.LineupsField(match, events, homeLineupPlayers, awayLineupPlayers)
 			</div>
-			<div class="col-span-full">
-				@match_components.LineupsSection(match, events, homeLineupPlayers, awayLineupPlayers)
-			</div>
+			if match.IsFinished {
+				<div class="col-span-full">
+					@match_components.LineupsSection(match, events, homeLineupPlayers, awayLineupPlayers)
+				</div>
+			}
 		</main>
 	}
 }
