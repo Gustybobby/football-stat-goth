@@ -68,7 +68,10 @@ templ lineupPlayerCard(
 	lineupPlayer queries.ListLineupPlayersByLineupIDRow,
 	events []queries.ListLineupEventsByMatchIDRow,
 ) {
-	<div class="flex flex-col">
+	<a
+		class="flex flex-col"
+		href={ templ.SafeURL("/players/" + strconv.Itoa(int(lineupPlayer.PlayerID))) }
+	>
 		<div class="mb-1 flex">
 			<img
 				src={ lineupPlayer.Image.String }
@@ -110,7 +113,7 @@ templ lineupPlayerCard(
 		<span class="font-semibold w-full">
 			({ strconv.Itoa(int(lineupPlayer.No)) }) { lineupPlayer.Firstname } { lineupPlayer.Lastname }
 		</span>
-	</div>
+	</a>
 }
 
 templ SubstituteEventCard(

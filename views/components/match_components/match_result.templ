@@ -53,14 +53,20 @@ templ MatchResult(
 								<img src="/public/red_football.webp" class="ml-1 size-3"/>
 							}
 						</span>
-						<span class="font-bold">
+						<a
+							class="font-bold hover:underline"
+							href={ templ.SafeURL("/players/" + strconv.Itoa(int(event.PlayerId1.Int32))) }
+						>
 							({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
-						</span>
+						</a>
 						if event.PlayerId2.Valid {
 							<span class="text-xs">
-								<p class="font-semibold inline">
+								<a
+									class="font-semibold inline hover:underline"
+									href={ templ.SafeURL("/players/" + strconv.Itoa(int(event.PlayerId2.Int32))) }
+								>
 									{ event.P2Firstname.String } { event.P2Lastname.String } ({ strconv.Itoa(int(event.P2No.Int16)) })
-								</p>&nbsp;- Assist
+								</a>&nbsp;- Assist
 							</span>
 						}
 					</li>
@@ -89,14 +95,20 @@ templ MatchResult(
 							}
 							'
 						</span>
-						<span class="font-bold">
+						<a
+							class="font-bold hover:underline"
+							href={ templ.SafeURL("/players/" + strconv.Itoa(int(event.PlayerId1.Int32))) }
+						>
 							({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
-						</span>
+						</a>
 						if event.PlayerId2.Valid {
 							<span class="text-xs">
-								<p class="font-semibold inline">
+								<a
+									class="font-semibold inline hover:underline"
+									href={ templ.SafeURL("/players/" + strconv.Itoa(int(event.PlayerId2.Int32))) }
+								>
 									{ event.P2Firstname.String } { event.P2Lastname.String } ({ strconv.Itoa(int(event.P2No.Int16)) })
-								</p>&nbsp;- Assist
+								</a>&nbsp;- Assist
 							</span>
 						}
 					</li>
