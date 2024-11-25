@@ -18,6 +18,9 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		IsFinished:   false,
 		Order:        "ASC",
 	})
+	if err != nil {
+		return err
+	}
 
 	players, err := repo.Queries.GetPlayerInfoForFantasy(repo.Ctx)
 
