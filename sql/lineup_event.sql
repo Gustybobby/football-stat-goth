@@ -27,6 +27,12 @@ ON
 LEFT JOIN "player" AS "player2"
 ON "club_player2".player_id = "player2".id
 WHERE "match".id = $1
-ORDER BY ("lineup_event".minutes + COALESCE("lineup_event".extra,0)) ASC;
+ORDER BY (
+    (
+      (CASE WHEN "lineup_event".after_half THEN 90 ELSE 0 END)
+      + "lineup_event".minutes
+    )*10
+    + COALESCE("lineup_event".extra,0)
+) ASC;
 
     

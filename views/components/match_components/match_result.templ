@@ -104,9 +104,139 @@ templ MatchResult(
 			</ul>
 		</div>
 		if match.IsFinished {
+			@timeline(listEventsByMinutes(match.HomeLineupID, false, events), listEventsByMinutes(match.HomeLineupID, true, events))
 			@statsComparison(match)
 		}
 	</section>
+}
+
+templ timeline(first_minute_events []MinuteEvent, second_minute_events []MinuteEvent) {
+	<section class="flex justify-center p-4">
+		<div class="flex items-center">
+			<div class="mx-0.5 text-sm font-bold text-primary-background bg-secondary px-1 py-0.5 rounded-md">KO</div>
+			@timelineHalf(first_minute_events, 0)
+			<div class="mx-0.5 text-sm font-bold text-primary-background bg-secondary px-1 py-0.5 rounded-md">HT</div>
+			@timelineHalf(second_minute_events, 100)
+			<div class="mx-0.5 text-sm font-bold text-primary-background bg-secondary px-1 py-0.5 rounded-md">FT</div>
+		</div>
+	</section>
+}
+
+templ timelineHalf(minute_events []MinuteEvent, offset int) {
+	for i, minute_event := range(minute_events) {
+		<div id={ "timeline_" + strconv.Itoa(i+offset) } class="min-w-1.5">
+			<ul class="h-16 flex flex-col justify-end text-sm">
+				for _, home_event := range(minute_event.HomeEvents) {
+					@timelineEventPin(home_event)
+				}
+			</ul>
+			if minute_event.HomeEvents == nil && minute_event.AwayEvents == nil {
+				<div class="flex items-center h-6"><div class="w-full border-b-2 border-secondary"></div></div>
+			} else {
+				<div class="px-0.5 text-xs font-bold text-secondary h-6 flex items-center justify-center">
+					{ strconv.Itoa(minute_event.Minutes) }
+					<p class="font-semibold inline">
+						if minute_event.Extra > 0 {
+							+{ strconv.Itoa(minute_event.Extra) }
+						}
+					</p>
+				</div>
+			}
+			<ul class="h-16 text-sm">
+				for _, away_event := range(minute_event.AwayEvents) {
+					@timelineEventPin(away_event)
+				}
+			</ul>
+		</div>
+	}
+}
+
+templ timelineEventPin(event queries.ListLineupEventsByMatchIDRow) {
+	<li class="flex items-center justify-center tooltip hover:cursor-pointer">
+		if event.Event == queries.EventTypeYELLOW {
+			🟨
+		} else if event.Event == queries.EventTypeRED {
+			🟥
+		} else if event.Event == queries.EventTypeSUB {
+			🗘
+		} else if event.Event == queries.EventTypeGOAL {
+			<img src="/public/purple_football.webp" class="size-2.5"/>
+		} else if event.Event == queries.EventTypeOWNGOAL {
+			<img src="/public/red_football.webp" class="size-2.5"/>
+		}
+		<div class="tooltiptext -top-24 bg-white text-black p-3 rounded-lg border border-primary shadow-lg flex flex-col items-start text-sm w-64">
+			if event.Event == queries.EventTypeGOAL {
+				<h1 class="font-bold text-secondary text-base mb-1">
+					{ strconv.Itoa(int(event.Minutes)) }
+					if event.Extra.Valid {
+						+{ strconv.Itoa(int(event.Extra.Int16)) }
+					}
+					' 
+					<p class="font-semibold inline">Goal</p>
+				</h1>
+				<span class="text-left font-bold">
+					({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
+				</span>
+				if event.PlayerId2.Valid {
+					<span class="text-left font-semibold text-xs mt-1">
+						({ strconv.Itoa(int(event.P2No.Int16)) }) { event.P2Firstname.String } { event.P2Lastname.String }&nbsp;
+						<p class="font-normal inline">- Assist</p>
+					</span>
+				}
+			} else if event.Event == queries.EventTypeOWNGOAL {
+				<h1 class="font-bold text-secondary text-base mb-1">
+					{ strconv.Itoa(int(event.Minutes)) }
+					if event.Extra.Valid {
+						+{ strconv.Itoa(int(event.Extra.Int16)) }
+					}
+					' 
+					<p class="font-semibold inline">Own Goal</p>
+				</h1>
+				<span class="text-left font-bold">
+					({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
+				</span>
+			} else if event.Event == queries.EventTypeYELLOW {
+				<h1 class="font-bold text-secondary text-base mb-1">
+					{ strconv.Itoa(int(event.Minutes)) }
+					if event.Extra.Valid {
+						+{ strconv.Itoa(int(event.Extra.Int16)) }
+					}
+					' 
+					<p class="font-semibold inline">Yellow Card</p>
+				</h1>
+				<span class="text-left font-bold">
+					({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
+				</span>
+			} else if event.Event == queries.EventTypeRED {
+				<h1 class="font-bold text-secondary text-base mb-1">
+					{ strconv.Itoa(int(event.Minutes)) }
+					if event.Extra.Valid {
+						+{ strconv.Itoa(int(event.Extra.Int16)) }
+					}
+					' 
+					<p class="font-semibold inline">Red Card</p>
+				</h1>
+				<span class="text-left font-bold">
+					({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
+				</span>
+			} else if event.Event == queries.EventTypeSUB {
+				<h1 class="font-bold text-secondary text-base mb-1">
+					{ strconv.Itoa(int(event.Minutes)) }
+					if event.Extra.Valid {
+						+{ strconv.Itoa(int(event.Extra.Int16)) }
+					}
+					' 
+					<p class="font-semibold inline">Substitution</p>
+				</h1>
+				<span class="text-left font-bold mb-1">
+					<p class="ml-1 mr-1.5 inline text-red-600">&#8598;</p> ({ strconv.Itoa(int(event.P1No.Int16)) }) { event.P1Firstname.String } { event.P1Lastname.String }
+				</span>
+				<span class="text-left font-bold">
+					<p class="ml-1 mr-1.5 inline text-green-600">&#8600;</p> ({ strconv.Itoa(int(event.P2No.Int16)) }) { event.P2Firstname.String } { event.P2Lastname.String }&nbsp;
+				</span>
+			}
+		</div>
+	</li>
 }
 
 templ statsComparison(match queries.FindMatchByIDRow) {
@@ -167,4 +297,67 @@ func filterGoalsByLineupID(
 		}
 	}
 	return filtered_events
+}
+
+type MinuteEvent struct {
+	Minutes    int
+	Extra      int
+	HomeEvents []queries.ListLineupEventsByMatchIDRow
+	AwayEvents []queries.ListLineupEventsByMatchIDRow
+}
+
+func listEventsByMinutes(homeLineupID int32, afterHalf bool, events []queries.ListLineupEventsByMatchIDRow) []MinuteEvent {
+	var minute_events []MinuteEvent
+
+	min := 0
+	end := 45
+	if afterHalf {
+		min = 45
+		end = 90
+	}
+
+	extra := 1
+
+	for _, event := range events {
+		if (!afterHalf && event.AfterHalf) || (afterHalf && !event.AfterHalf) {
+			continue
+		}
+		if event.Extra.Int16 == 0 {
+			for i := 0; i < 90; i++ {
+				if min > int(event.Minutes) {
+					break
+				}
+				minute_events = append(minute_events, MinuteEvent{
+					Minutes: min,
+					Extra:   0,
+				})
+				min += 1
+			}
+		} else {
+			for i := 0; i < 90; i++ {
+				if extra > int(event.Extra.Int16) {
+					break
+				}
+				minute_events = append(minute_events, MinuteEvent{
+					Minutes: end,
+					Extra:   extra,
+				})
+				extra += 1
+			}
+		}
+		if event.LineupID == homeLineupID {
+			minute_events[len(minute_events)-1].HomeEvents = append(minute_events[len(minute_events)-1].HomeEvents, event)
+		} else {
+			minute_events[len(minute_events)-1].AwayEvents = append(minute_events[len(minute_events)-1].AwayEvents, event)
+		}
+	}
+
+	for min = min; min < end-5; min++ {
+		minute_events = append(minute_events, MinuteEvent{
+			Minutes: min,
+			Extra:   0,
+		})
+	}
+
+	return minute_events
 }
