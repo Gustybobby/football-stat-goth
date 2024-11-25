@@ -57,6 +57,33 @@ def find_player_id_by_fullname(fullname: str, client: supabase.Client) -> int:
         raise Exception(fullname + " is invalid")
 
 
+def find_player_id_by_club_no(
+    no: int, club_id: str, season: str, client: supabase.Client
+) -> int:
+    print(no, club_id, season)
+    data = (
+        (
+            client.table("club_player")
+            .select("player_id")
+            .filter("club_id", "eq", club_id)
+            .filter("no", "eq", no)
+            .filter("season", "eq", season)
+        )
+        .execute()
+        .data
+    )
+    if len(list(data)) > 1:
+        print("there are duplicate players with same no")
+        for row in data:
+            print("->", row)
+        ans = input("Input ID: ")
+        return int(ans)
+    if len(list(data)) == 0:
+        ans = input("Input ID: ")
+        return int(ans)
+    return data[0]["player_id"]
+
+
 def player_exists(data: dict, client: supabase.Client) -> bool:
     res = (
         client.table("player")

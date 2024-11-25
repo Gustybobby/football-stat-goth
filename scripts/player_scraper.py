@@ -72,7 +72,7 @@ def scrape_player(page_source: str, client) -> tuple[dict | None, dict | None]:
         data["dob"] = input("Missing DOB(ISO), Please input: ")
 
     if db.player_exists(data, client):
-        random_sleep = random.randint(0, 2)
+        random_sleep = random.randint(0, 1)
         print("PLAYER EXISTS, sleeping for", random_sleep, "s")
         time.sleep(random_sleep)
         return None, None
