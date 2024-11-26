@@ -27,7 +27,7 @@ templ Standings(user *queries.FindUserByUsernameRow, clubs []queries.ListClubSta
 						<th class="px-4 py-2 text-left">Points</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="[&>*:nth-child(17)]:border-red-600 [&>*:nth-child(17)]:border-b-2">
 					for idx,club := range clubs {
 						<tr class="border-b border-primary">
 							<td class="font-semibold px-4 py-2 text-secondary text-center">{ strconv.Itoa(idx+1) }</td>
