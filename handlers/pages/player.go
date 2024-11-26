@@ -34,8 +34,10 @@ func HandlePlayerPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 	season := pltime.GetCurrentSeasonString()
 
 	performance, err := repo.Queries.FindPlayerSeasonPerformance(repo.Ctx, queries.FindPlayerSeasonPerformanceParams{
-		Season: season,
-		ID:     player.ID,
+		Season:       season,
+		ID:           player.ID,
+		FilterClubID: false,
+		ClubID:       "",
 	})
 	if err != nil {
 		return err

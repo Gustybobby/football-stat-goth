@@ -181,6 +181,19 @@ WITH "total_stats" AS (
             "lineup_event".lineup_id = "match".away_lineup_id
         )
     GROUP BY "player".id
+    HAVING
+        CASE
+            WHEN $3::bool
+            THEN EXISTS (
+                SELECT 1
+                FROM "club_player"
+                WHERE
+                    "club_player".player_id = "player".id AND
+                    "club_player".club_id = $4::TEXT AND
+                    "club_player".season = $2::TEXT
+            )
+            ELSE true
+        END
 ), "total_rank_stats" AS (
     SELECT
         total_stats.id, total_stats.total_goals, total_stats.total_assists, total_stats.total_yellow_cards, total_stats.total_red_cards, total_stats.total_own_goals, total_stats.appearances,
@@ -199,8 +212,10 @@ WHERE "total_rank_stats".id = $1::INTEGER
 `
 
 type FindPlayerSeasonPerformanceParams struct {
-	ID     int32
-	Season string
+	ID           int32
+	Season       string
+	FilterClubID bool
+	ClubID       string
 }
 
 type FindPlayerSeasonPerformanceRow struct {
@@ -217,7 +232,12 @@ type FindPlayerSeasonPerformanceRow struct {
 }
 
 func (q *Queries) FindPlayerSeasonPerformance(ctx context.Context, arg FindPlayerSeasonPerformanceParams) (FindPlayerSeasonPerformanceRow, error) {
-	row := q.db.QueryRow(ctx, findPlayerSeasonPerformance, arg.ID, arg.Season)
+	row := q.db.QueryRow(ctx, findPlayerSeasonPerformance,
+		arg.ID,
+		arg.Season,
+		arg.FilterClubID,
+		arg.ClubID,
+	)
 	var i FindPlayerSeasonPerformanceRow
 	err := row.Scan(
 		&i.ID,

@@ -102,6 +102,19 @@ WITH "total_stats" AS (
             "lineup_event".lineup_id = "match".away_lineup_id
         )
     GROUP BY "player".id
+    HAVING
+        CASE
+            WHEN sqlc.arg('filter_club_id')::bool
+            THEN EXISTS (
+                SELECT 1
+                FROM "club_player"
+                WHERE
+                    "club_player".player_id = "player".id AND
+                    "club_player".club_id = sqlc.arg('club_id')::TEXT AND
+                    "club_player".season = sqlc.arg('season')::TEXT
+            )
+            ELSE true
+        END
 ), "total_rank_stats" AS (
     SELECT
         "total_stats".*,
