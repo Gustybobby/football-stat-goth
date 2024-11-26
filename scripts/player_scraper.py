@@ -161,7 +161,7 @@ def insert_players(player_urls: list, db_client) -> None:
                 fetch_sleep = 2
                 print("fetch failed, retrying in", fetch_sleep, "s")
                 time.sleep(fetch_sleep)
-                trial += 5
+                trial += 1
 
         player, club_player = scrape_player(source, db_client)
 
