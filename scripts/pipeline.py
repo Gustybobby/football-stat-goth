@@ -7,7 +7,7 @@ import player_scraper
 import timeline_scraper
 
 if __name__ == "__main__":
-    PL_MATCH_ID = 115842
+    PL_MATCH_ID = 115848
 
     client = db.supabase_connect()
 
@@ -41,7 +41,11 @@ if __name__ == "__main__":
         for row in insert_data:
             print(row)
 
-        ans = input("Insert? (Y/N/R): ")
+        if len(insert_data) > 0:
+            ans = input("Insert? (Y/N/R): ")
+        else:
+            ans = "R"
+
         if ans == "Y":
             res = client.table("lineup_event").insert(insert_data).execute()
             print(res)
