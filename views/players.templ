@@ -1,0 +1,46 @@
+package views
+
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/views/components"
+	"football-stat-goth/views/layouts"
+)
+
+templ Players(user *queries.FindUserByUsernameRow) {
+	@layouts.Base() {
+		@components.Nav(user)
+		<main class="w-full p-4 bg-primary-background flex flex-col items-center">
+			<div class="max-w-7xl w-full">
+				<section class="w-full px-2 pt-12 pb-6 border-b border-primary flex justify-between items-center">
+					<h1 class="text-5xl font-extrabold text-secondary">Premier League Players</h1>
+					<form
+						class="h-full flex items-center border-collapse"
+						hx-get="/cmps/players-table"
+						hx-target="#players_table"
+					>
+						<div class="border border-primary h-16 border-r-0  w-72">
+							<input
+								class="p-3 size-full"
+								type="text"
+								name="fullname"
+								autocomplete="off"
+								placeholder="Search players"
+							/>
+						</div>
+						<button
+							class="border border-primary size-16 hover:bg-primary-foreground place-items-center transition-colors"
+							type="submit"
+						>
+							<img src="/public/search.svg" class="size-4"/>
+						</button>
+					</form>
+				</section>
+				<div
+					id="players_table"
+					hx-trigger="load"
+					hx-get="/cmps/players-table"
+				></div>
+			</div>
+		</main>
+	}
+}

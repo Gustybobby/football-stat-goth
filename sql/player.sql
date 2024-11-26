@@ -13,6 +13,16 @@ WHERE
     "club_player".no = $2 AND
     "club_player".season = $3;
 
+-- name: ListPlayerLikeFullname :many
+SELECT *
+FROM "player"
+WHERE
+    CONCAT("player".firstname,' ',"player".lastname)
+    LIKE sqlc.arg('fullname_like')::TEXT
+ORDER BY "player".id ASC
+OFFSET sqlc.arg('offset')::INTEGER
+LIMIT sqlc.arg('limit')::INTEGER;
+
 -- name: CreatePlayer :one
 INSERT INTO "player" (
     firstname,

@@ -112,6 +112,52 @@ func (q *Queries) FindPlayerIDByClubNoSeason(ctx context.Context, arg FindPlayer
 	return player_id, err
 }
 
+const listPlayerLikeFullname = `-- name: ListPlayerLikeFullname :many
+SELECT id, firstname, lastname, dob, height, nationality, position, image
+FROM "player"
+WHERE
+    CONCAT("player".firstname,' ',"player".lastname)
+    LIKE $1::TEXT
+ORDER BY "player".id ASC
+OFFSET $2::INTEGER
+LIMIT $3::INTEGER
+`
+
+type ListPlayerLikeFullnameParams struct {
+	FullnameLike string
+	Offset       int32
+	Limit        int32
+}
+
+func (q *Queries) ListPlayerLikeFullname(ctx context.Context, arg ListPlayerLikeFullnameParams) ([]Player, error) {
+	rows, err := q.db.Query(ctx, listPlayerLikeFullname, arg.FullnameLike, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Player
+	for rows.Next() {
+		var i Player
+		if err := rows.Scan(
+			&i.ID,
+			&i.Firstname,
+			&i.Lastname,
+			&i.Dob,
+			&i.Height,
+			&i.Nationality,
+			&i.Position,
+			&i.Image,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listPlayerSeasonPerformance = `-- name: ListPlayerSeasonPerformance :many
 WITH "total_stats" AS (
     SELECT

@@ -10,6 +10,7 @@ import (
 
 // prefix path '/cmps'
 func SetupComponentRoutes(r_cmps chi.Router, repo *repos.Repository) {
+	r_cmps.Get("/players-table", handlers.Make(HandlePlayersTable, repo))
 	r_cmps.Route("/admin", func(r_cmps_admin chi.Router) {
 		SetupAdminComponentRoutes(r_cmps_admin, repo)
 	})

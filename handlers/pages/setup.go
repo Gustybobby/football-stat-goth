@@ -17,6 +17,7 @@ func SetupPageRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Get("/fantasy", handlers.Make(HandleFantasyPage, repo))
 	router.Get("/clubs/{clubID}", handlers.Make(HandleClubPage, repo))
 	router.Get("/matches/{matchID}", handlers.Make(HandleMatchPage, repo))
+	router.Get("/players", handlers.Make(HandlePlayersPage, repo))
 	router.Get("/players/{playerID}", handlers.Make(HandlePlayerPage, repo))
 	router.Get("/signup", handlers.Make(HandleSignupPage, repo))
 	router.Get("/signin", handlers.Make(HandleSigninPage, repo))
