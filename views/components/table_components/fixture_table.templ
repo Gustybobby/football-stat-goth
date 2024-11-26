@@ -3,14 +3,12 @@ package table_components
 import (
 	"football-stat-goth/queries"
 	"football-stat-goth/services/plformat"
+	"football-stat-goth/views/components"
 	"strconv"
 )
 
 templ FixtureTable(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
-	<section class="rounded-lg border border-primary shadow-lg w-60">
-		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
-			Fixtures
-		</h1>
+	@components.BaseCard("Fixtures") {
 		if len(fixtures) > 0 {
 			<ul>
 				for _, match := range fixtures {
@@ -44,5 +42,5 @@ templ FixtureTable(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 		} else {
 			<div class="text-center w-full p-2">No upcoming matches</div>
 		}
-	</section>
+	}
 }

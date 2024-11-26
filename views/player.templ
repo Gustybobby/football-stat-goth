@@ -79,10 +79,7 @@ templ playerProfile(player queries.Player) {
 }
 
 templ clubRecords(club_players []queries.ListClubPlayerByPlayerIDRow) {
-	<section class="rounded-lg border border-primary shadow-lg">
-		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
-			Club Records
-		</h1>
+	@components.BaseCard("Club Records") {
 		<div class="p-2">
 			<table class="w-full text-left">
 				<thead>
@@ -111,14 +108,11 @@ templ clubRecords(club_players []queries.ListClubPlayerByPlayerIDRow) {
 				</tbody>
 			</table>
 		</div>
-	</section>
+	}
 }
 
 templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
-	<section class="rounded-lg border border-primary shadow-lg">
-		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
-			{ performance.Season } Performance
-		</h1>
+	@components.BaseCard(performance.Season + " Performance") {
 		<div class="p-2">
 			<table class="w-full text-left text-lg">
 				<tbody>
@@ -153,5 +147,5 @@ templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
 				</tbody>
 			</table>
 		</div>
-	</section>
+	}
 }

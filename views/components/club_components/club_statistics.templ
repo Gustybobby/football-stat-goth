@@ -2,75 +2,32 @@ package club_components
 
 import (
 	"football-stat-goth/queries"
+	"football-stat-goth/views/components"
 	"strconv"
 )
 
 templ ClubStatistics(averageStats queries.ClubAverageStatisticsRow) {
-	<section class="rounded-lg border border-primary shadow-lg w-full">
-		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
-			Average Statistics
-		</h1>
+	@components.BaseCard("Average Statistics") {
 		<div class="grid grid-cols-5 p-2 text-center gap-2">
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Possession</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgPossession,'f', 2, 32) }%
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Shots on Target</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgShotsOnTarget,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Shots</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgShots,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Touches</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgTouches,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Passes</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgPasses,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Tackles</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgTackles,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Clearances</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgClearances,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Corners</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgCorners,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Offsides</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgOffsides,'f', 2, 32) }
-				</p>
-			</div>
-			<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
-				<h2 class="text-xl text-secondary h-12">Fouls Conceded</h2>
-				<p class="text-2xl py-2">
-					{ strconv.FormatFloat(averageStats.AvgFoulsConceded,'f', 2, 32) }
-				</p>
-			</div>
+			@statCard("Possession", strconv.FormatFloat(averageStats.AvgPossession, 'f', 2, 32)+"%")
+			@statCard("Shots on Target", strconv.FormatFloat(averageStats.AvgShotsOnTarget, 'f', 2, 32))
+			@statCard("Shots", strconv.FormatFloat(averageStats.AvgShots, 'f', 2, 32))
+			@statCard("Touches", strconv.FormatFloat(averageStats.AvgTouches, 'f', 2, 32))
+			@statCard("Passes", strconv.FormatFloat(averageStats.AvgPasses, 'f', 2, 32))
+			@statCard("Tackles", strconv.FormatFloat(averageStats.AvgTackles, 'f', 2, 32))
+			@statCard("Clearances", strconv.FormatFloat(averageStats.AvgClearances, 'f', 2, 32))
+			@statCard("Corners", strconv.FormatFloat(averageStats.AvgCorners, 'f', 2, 32))
+			@statCard("Offsides", strconv.FormatFloat(averageStats.AvgOffsides, 'f', 2, 32))
+			@statCard("Fouls Conceded", strconv.FormatFloat(averageStats.AvgFoulsConceded, 'f', 2, 32))
 		</div>
-	</section>
+	}
+}
+
+templ statCard(name string, value string) {
+	<div class="p-2 border border-primary shadow-lg rounded-lg aspect-square font-bold place-content-center bg-gradient-to-br from-primary-background to-primary-foreground">
+		<h2 class="text-xl text-secondary h-12">{ name }</h2>
+		<p class="text-2xl py-2">
+			{ value }
+		</p>
+	</div>
 }

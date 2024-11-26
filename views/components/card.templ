@@ -1,0 +1,10 @@
+package components
+
+templ BaseCard(title string) {
+	<section class="rounded-lg border border-primary shadow-lg w-full">
+		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
+			{ title }
+		</h1>
+		{ children... }
+	</section>
+}
