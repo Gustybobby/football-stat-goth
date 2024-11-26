@@ -385,9 +385,12 @@ INNER JOIN "club" as "away_club"
 ON "away_lineup".club_id = "away_club".id
 WHERE
     is_finished = $1::bool AND
-    CASE WHEN $2::bool
-    THEN "home_club".id = $3::text OR "away_club".id = $3::text
-    ELSE true
+    CASE
+        WHEN $2::bool
+        THEN
+            "home_club".id = $3::text OR
+            "away_club".id = $3::text
+        ELSE true
     END
 ORDER BY
     CASE WHEN $4::text = 'ASC' THEN "match".start_at END ASC,

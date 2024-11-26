@@ -37,10 +37,13 @@ ON "match".away_lineup_id = "away_lineup".id
 INNER JOIN "club" as "away_club"
 ON "away_lineup".club_id = "away_club".id
 WHERE
-    is_finished = sqlc.arg(is_finished)::bool AND
-    CASE WHEN sqlc.arg(filter_club_id)::bool
-    THEN "home_club".id = sqlc.arg(club_id)::text OR "away_club".id = sqlc.arg(club_id)::text
-    ELSE true
+    is_finished = sqlc.arg('is_finished')::bool AND
+    CASE
+        WHEN sqlc.arg('filter_club_id')::bool
+        THEN
+            "home_club".id = sqlc.arg('club_id')::text OR
+            "away_club".id = sqlc.arg('club_id')::text
+        ELSE true
     END
 ORDER BY
     CASE WHEN sqlc.arg('order')::text = 'ASC' THEN "match".start_at END ASC,
