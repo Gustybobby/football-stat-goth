@@ -2,6 +2,7 @@ package views
 
 import (
 	"football-stat-goth/queries"
+	"football-stat-goth/services/plformat"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
 	"strconv"
@@ -13,6 +14,7 @@ templ Player(
 	player queries.Player,
 	club_players []queries.ListClubPlayerByPlayerIDRow,
 	performance queries.ListPlayerSeasonPerformanceRow,
+	matches []queries.ListPlayerMatchHistoryRow,
 ) {
 	@layouts.Base() {
 		@components.Nav(user)
@@ -23,6 +25,9 @@ templ Player(
 					<div class="flex flex-col space-y-4">
 						@clubRecords(club_players)
 						@seasonPerformance(performance)
+					</div>
+					<div class="col-span-2">
+						@matchHistory(matches)
 					</div>
 				</div>
 			</div>
@@ -65,15 +70,7 @@ templ playerProfile(player queries.Player) {
 			</div>
 		</div>
 		<h1 class="font-extrabold text-4xl">
-			if player.Position == queries.PlayerPositionGK {
-				Goalkeeper
-			} else if player.Position == queries.PlayerPositionDEF {
-				Defender
-			} else if player.Position == queries.PlayerPositionMFD {
-				Midfielder
-			} else if player.Position == queries.PlayerPositionFWD {
-				Forward
-			}
+			{ plformat.FormatPlayerPosition(player.Position) }
 		</h1>
 	</section>
 }
@@ -147,5 +144,51 @@ templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
 				</tbody>
 			</table>
 		</div>
+	}
+}
+
+templ matchHistory(matches []queries.ListPlayerMatchHistoryRow) {
+	@components.BaseCard("Match History") {
+		<ul>
+			for _, match := range matches {
+				<li class="border-b border-primary">
+					<a
+						class="grid grid-cols-8 text-secondary-background font-bold gap-2 p-2 hover:bg-primary-foreground"
+						href={ templ.SafeURL("/matches/" + strconv.Itoa(int(match.ID))) }
+					>
+						<div class="w-full text-center p-2 text-black font-normal col-span-2">
+							{ plformat.FormatTimestamp(match.StartAt.Time.Local()) }
+						</div>
+						<span class="flex items-center space-x-2 justify-end">
+							<p>{ match.HomeClubID }</p>
+							<img src={ match.HomeClubLogo } class="size-8"/>
+						</span>
+						<span class="font-semibold flex justify-center items-center">
+							if match.HomeGoals > match.AwayGoals {
+								<p class="inline font-extrabold text-secondary">{ strconv.Itoa(int(match.HomeGoals)) }</p>
+							} else {
+								<p class="inline">{ strconv.Itoa(int(match.HomeGoals)) }</p>
+							}
+							&nbsp;-&nbsp;
+							if match.HomeGoals < match.AwayGoals {
+								<p class="inline font-extrabold text-secondary">{ strconv.Itoa(int(match.AwayGoals)) }</p>
+							} else {
+								<p class="inline">{ strconv.Itoa(int(match.AwayGoals)) }</p>
+							}
+						</span>
+						<span class="flex items-center space-x-2 justify-start">
+							<img src={ match.AwayClubLogo } class="size-8"/>
+							<p>{ match.AwayClubID }</p>
+						</span>
+						<span class="col-span-2 font-semibold flex justify-center items-center text-black">
+							{ plformat.FormatPlayerPosition(match.PlayerPosition) }
+						</span>
+						<span class="font-semibold flex justify-center items-center text-black">
+							No. { strconv.Itoa(int(match.PlayerNo)) }
+						</span>
+					</a>
+				</li>
+			}
+		</ul>
 	}
 }

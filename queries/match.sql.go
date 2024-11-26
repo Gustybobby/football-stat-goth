@@ -460,3 +460,126 @@ func (q *Queries) ListMatchesWithClubsAndGoals(ctx context.Context, arg ListMatc
 	}
 	return items, nil
 }
+
+const listPlayerMatchHistory = `-- name: ListPlayerMatchHistory :many
+SELECT
+    match.id, match.home_lineup_id, match.away_lineup_id, match.season, match.week, match.location, match.start_at, match.is_finished,
+    "home_club".id AS home_club_id,
+    "home_club".logo AS home_club_logo,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        )
+    ) AS home_goals,
+    "away_club".id AS away_club_id,
+    "away_club".logo AS away_club_logo,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        )
+    ) AS away_goals,
+    (
+        SELECT "lineup_player".position
+        FROM "lineup_player"
+        WHERE (
+            "lineup_player".lineup_id = "home_lineup".id OR
+            "lineup_player".lineup_id = "away_lineup".id
+        ) AND "lineup_player".player_id = $1::INTEGER
+    ) AS player_position,
+    (
+        SELECT "lineup_player".no
+        FROM "lineup_player"
+        WHERE (
+            "lineup_player".lineup_id = "home_lineup".id OR
+            "lineup_player".lineup_id = "away_lineup".id
+        ) AND "lineup_player".player_id = $1::INTEGER
+    ) AS player_no
+FROM "match"
+INNER JOIN "lineup" as "home_lineup"
+ON "match".home_lineup_id = "home_lineup".id
+INNER JOIN "club" as "home_club"
+ON "home_lineup".club_id = "home_club".id
+INNER JOIN "lineup" as "away_lineup"
+ON "match".away_lineup_id = "away_lineup".id
+INNER JOIN "club" as "away_club"
+ON "away_lineup".club_id = "away_club".id
+WHERE
+    is_finished = true AND
+    EXISTS (
+        SELECT 1
+        FROM "lineup_player"
+        WHERE (
+            "lineup_player".lineup_id = "home_lineup".id OR
+            "lineup_player".lineup_id = "away_lineup".id
+        ) AND "lineup_player".player_id = $1::INTEGER
+    )
+ORDER BY "match".start_at DESC
+`
+
+type ListPlayerMatchHistoryRow struct {
+	ID             int32
+	HomeLineupID   int32
+	AwayLineupID   int32
+	Season         string
+	Week           int16
+	Location       string
+	StartAt        pgtype.Timestamp
+	IsFinished     bool
+	HomeClubID     string
+	HomeClubLogo   string
+	HomeGoals      int64
+	AwayClubID     string
+	AwayClubLogo   string
+	AwayGoals      int64
+	PlayerPosition PlayerPosition
+	PlayerNo       int16
+}
+
+func (q *Queries) ListPlayerMatchHistory(ctx context.Context, playerID int32) ([]ListPlayerMatchHistoryRow, error) {
+	rows, err := q.db.Query(ctx, listPlayerMatchHistory, playerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPlayerMatchHistoryRow
+	for rows.Next() {
+		var i ListPlayerMatchHistoryRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.HomeLineupID,
+			&i.AwayLineupID,
+			&i.Season,
+			&i.Week,
+			&i.Location,
+			&i.StartAt,
+			&i.IsFinished,
+			&i.HomeClubID,
+			&i.HomeClubLogo,
+			&i.HomeGoals,
+			&i.AwayClubID,
+			&i.AwayClubLogo,
+			&i.AwayGoals,
+			&i.PlayerPosition,
+			&i.PlayerNo,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

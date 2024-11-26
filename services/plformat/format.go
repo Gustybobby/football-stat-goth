@@ -1,6 +1,7 @@
 package plformat
 
 import (
+	"football-stat-goth/queries"
 	"strconv"
 	"time"
 
@@ -17,4 +18,17 @@ func FormatPgTypeNumeric(num pgtype.Numeric) (string, error) {
 
 func FormatTimestamp(time time.Time) string {
 	return time.Format("02/01/2006 15:04")
+}
+
+func FormatPlayerPosition(position queries.PlayerPosition) string {
+	if position == queries.PlayerPositionGK {
+		return "Goalkeeper"
+	} else if position == queries.PlayerPositionDEF {
+		return "Defender"
+	} else if position == queries.PlayerPositionMFD {
+		return "Midfielder"
+	} else if position == queries.PlayerPositionFWD {
+		return "Forward"
+	}
+	return "Substitute"
 }

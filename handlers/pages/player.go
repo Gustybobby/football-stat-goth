@@ -45,5 +45,10 @@ func HandlePlayerPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 		return err
 	}
 
-	return handlers.Render(w, r, views.Player(user, player, club_players, performance[0]))
+	matches, err := repo.Queries.ListPlayerMatchHistory(repo.Ctx, player.ID)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Player(user, player, club_players, performance[0], matches))
 }

@@ -241,3 +241,69 @@ GROUP BY "club".id
 ORDER BY
     SUM("results".wins) * 3 + SUM("results".draws) * 1 + SUM("results".losses) * 0 DESC,
     SUM("results".goals) - SUM("results".opp_goals) DESC;
+
+-- name: ListPlayerMatchHistory :many
+SELECT
+    "match".*,
+    "home_club".id AS home_club_id,
+    "home_club".logo AS home_club_logo,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        )
+    ) AS home_goals,
+    "away_club".id AS away_club_id,
+    "away_club".logo AS away_club_logo,
+    (
+        SELECT COUNT(*)
+        FROM "lineup_event"
+        WHERE (
+            "lineup_event"."event" = 'GOAL' AND
+            "lineup_event".lineup_id = "match".away_lineup_id
+        ) OR (
+            "lineup_event"."event" = 'OWN_GOAL' AND
+            "lineup_event".lineup_id = "match".home_lineup_id
+        )
+    ) AS away_goals,
+    (
+        SELECT "lineup_player".position
+        FROM "lineup_player"
+        WHERE (
+            "lineup_player".lineup_id = "home_lineup".id OR
+            "lineup_player".lineup_id = "away_lineup".id
+        ) AND "lineup_player".player_id = sqlc.arg('player_id')::INTEGER
+    ) AS player_position,
+    (
+        SELECT "lineup_player".no
+        FROM "lineup_player"
+        WHERE (
+            "lineup_player".lineup_id = "home_lineup".id OR
+            "lineup_player".lineup_id = "away_lineup".id
+        ) AND "lineup_player".player_id = sqlc.arg('player_id')::INTEGER
+    ) AS player_no
+FROM "match"
+INNER JOIN "lineup" as "home_lineup"
+ON "match".home_lineup_id = "home_lineup".id
+INNER JOIN "club" as "home_club"
+ON "home_lineup".club_id = "home_club".id
+INNER JOIN "lineup" as "away_lineup"
+ON "match".away_lineup_id = "away_lineup".id
+INNER JOIN "club" as "away_club"
+ON "away_lineup".club_id = "away_club".id
+WHERE
+    is_finished = true AND
+    EXISTS (
+        SELECT 1
+        FROM "lineup_player"
+        WHERE (
+            "lineup_player".lineup_id = "home_lineup".id OR
+            "lineup_player".lineup_id = "away_lineup".id
+        ) AND "lineup_player".player_id = sqlc.arg('player_id')::INTEGER
+    )
+ORDER BY "match".start_at DESC;
