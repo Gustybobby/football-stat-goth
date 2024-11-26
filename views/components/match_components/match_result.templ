@@ -365,7 +365,7 @@ func listEventsByMinutes(homeLineupID int32, afterHalf bool, events []queries.Li
 	}
 
 	if len(minute_events) > 0 {
-		for min = minute_events[len(minute_events)-1].Minutes; min < end-5; min++ {
+		for min = minute_events[len(minute_events)-1].Minutes; min < end-1; min++ {
 			minute_events = append(minute_events, MinuteEvent{
 				Minutes: min,
 				Extra:   0,
