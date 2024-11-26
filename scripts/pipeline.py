@@ -7,7 +7,7 @@ import player_scraper
 import timeline_scraper
 
 if __name__ == "__main__":
-    PL_MATCH_ID = 115835
+    PL_MATCH_ID = 115842
 
     client = db.supabase_connect()
 

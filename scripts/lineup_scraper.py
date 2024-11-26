@@ -38,8 +38,8 @@ def scrape_pitch_position(
         "div", class_="teamList mcLineUpContainter awayLineup"
     ).find("div", class_="matchLineupTeamContainer")
 
-    home_pos_map, home_subs = scrape_lineup_position(home_lineup, True)
-    away_pos_map, away_subs = scrape_lineup_position(away_lineup, False)
+    home_pos_map, home_name_map, home_subs = scrape_lineup_position(home_lineup, True)
+    away_pos_map, away_name_map, away_subs = scrape_lineup_position(away_lineup, False)
 
     home_pitch = soup.find("div", class_="team home pitchPositonsContainer")
     rows = home_pitch.find_all("div", class_="row")
@@ -52,11 +52,12 @@ def scrape_pitch_position(
             lineup_players.append(
                 {
                     "lineup_id": home_lineup_id,
-                    "player_id": db.find_player_id_by_club_no(
-                        int(pin.text), home_club_id, "2024/25", db_client
+                    "player_id": db.find_player_id_by_fullname(
+                        home_name_map[pin.text], db_client
                     ),
                     "position_no": i * 10 + j,
                     "position": home_pos_map[pin.text],
+                    "no": int(pin.text),
                 }
             )
 
@@ -64,11 +65,12 @@ def scrape_pitch_position(
         lineup_players.append(
             {
                 "lineup_id": home_lineup_id,
-                "player_id": db.find_player_id_by_club_no(
-                    sub, home_club_id, "2024/25", db_client
+                "player_id": db.find_player_id_by_fullname(
+                    home_name_map[str(sub)], db_client
                 ),
                 "position_no": 100 + i,
                 "position": "SUB",
+                "no": sub,
             }
         )
 
@@ -81,11 +83,12 @@ def scrape_pitch_position(
             lineup_players.append(
                 {
                     "lineup_id": away_lineup_id,
-                    "player_id": db.find_player_id_by_club_no(
-                        int(pin.text), away_club_id, "2024/25", db_client
+                    "player_id": db.find_player_id_by_fullname(
+                        away_name_map[pin.text], db_client
                     ),
                     "position_no": i * 10 + j,
                     "position": away_pos_map[pin.text],
+                    "no": int(pin.text),
                 }
             )
 
@@ -93,17 +96,26 @@ def scrape_pitch_position(
         lineup_players.append(
             {
                 "lineup_id": away_lineup_id,
-                "player_id": db.find_player_id_by_club_no(
-                    sub, away_club_id, "2024/25", db_client
+                "player_id": db.find_player_id_by_fullname(
+                    away_name_map[str(sub)], db_client
                 ),
                 "position_no": 100 + i,
                 "position": "SUB",
+                "no": sub,
             }
         )
 
-    res = db_client.table("lineup_player").insert(lineup_players).execute()
-    print("inserted lineup players into their positions", res)
+    for lineup_player in lineup_players:
+        print(lineup_player)
     print("====================================================")
+
+    ans = input("Insert? (Y/N): ")
+    if ans == "Y":
+        res = db_client.table("lineup_player").insert(lineup_players).execute()
+        print("inserted lineup players into their positions", res)
+        print("====================================================")
+    else:
+        raise Exception("insertion cancelled")
 
 
 def scrape_lineup_position(container, is_home: bool):
@@ -121,6 +133,7 @@ def scrape_lineup_position(container, is_home: bool):
     }
 
     no_pos_map = {}
+    no_name_map = {}
     count = 0
 
     SUB = {"GK": [], "DEF": [], "MFD": [], "FWD": []}
@@ -128,6 +141,10 @@ def scrape_lineup_position(container, is_home: bool):
     for ul in container.find_all("ul", class_=con_class):
         for li in ul.find_all("li"):
             number = li.find("div", class_="number").text
+
+            name = li.find("div", class_="name").text.replace("ball", "").strip()
+            no_name_map[number] = name
+
             position = li.find("span", class_="position").find("span").text
             if count < 11:
                 no_pos_map[number] = POS_ENUM[position]
@@ -138,4 +155,4 @@ def scrape_lineup_position(container, is_home: bool):
     subs = (
         sorted(SUB["GK"]) + sorted(SUB["DEF"]) + sorted(SUB["MFD"]) + sorted(SUB["FWD"])
     )
-    return (no_pos_map, subs)
+    return (no_pos_map, no_name_map, subs)

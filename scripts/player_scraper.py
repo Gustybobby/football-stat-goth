@@ -24,24 +24,13 @@ def scrape_player(page_source: str, client) -> tuple[dict | None, dict | None]:
     if firstname_div is not None:
         data["firstname"] = firstname_div.get_text().strip()
     else:
-        data["firstname"] = input("Missing Firstname, Please input: ")
-        if data["firstname"] == "_skip":
-            return None, None
+        data["firstname"] = ""
 
     lastname_div = soup.find("div", class_="player-header__name-last")
     if lastname_div is not None:
         data["lastname"] = lastname_div.get_text().strip()
     else:
         data["lastname"] = input("Missing Lastname, Please input: ")
-
-    try:
-        club_data["no"] = soup.find(
-            "div",
-            class_="player-header__player-number player-header__player-number--large",
-        ).get_text()
-    except:
-        no = input("Missing Player No, Please input: ")
-        club_data["no"] = no
 
     try:
         data["height"] = (
@@ -76,6 +65,15 @@ def scrape_player(page_source: str, client) -> tuple[dict | None, dict | None]:
         print("PLAYER EXISTS, sleeping for", random_sleep, "s")
         time.sleep(random_sleep)
         return None, None
+
+    try:
+        club_data["no"] = soup.find(
+            "div",
+            class_="player-header__player-number player-header__player-number--large",
+        ).get_text()
+    except:
+        no = input("Missing Player No, Please input: ")
+        club_data["no"] = no
 
     try:
         data["nationality"] = soup.find(
