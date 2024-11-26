@@ -23,7 +23,7 @@ INSERT INTO "lineup_player" (
     $3,
     $4
 )
-RETURNING lineup_id, player_id, position_no, position
+RETURNING lineup_id, player_id, no, position_no, position
 `
 
 type CreateLineupPlayerParams struct {
@@ -44,6 +44,7 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 	err := row.Scan(
 		&i.LineupID,
 		&i.PlayerID,
+		&i.No,
 		&i.PositionNo,
 		&i.Position,
 	)
@@ -52,25 +53,13 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 
 const findLineupPlayerByLineupIDAndPositionNo = `-- name: FindLineupPlayerByLineupIDAndPositionNo :one
 SELECT
-    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
-    "club_player".no,
+    lineup_player.lineup_id, lineup_player.player_id, lineup_player.no, lineup_player.position_no, lineup_player.position,
     "player".firstname,
     "player".lastname,
     "player".image
 FROM "lineup_player"
-INNER JOIN "lineup"
-ON "lineup_player".lineup_id = "lineup".id
-INNER JOIN "match"
-ON
-    "lineup".id = "match".home_lineup_id OR
-    "lineup".id = "match".away_lineup_id
-INNER JOIN "club_player"
-ON
-    "lineup".club_id = "club_player".club_id AND
-    "lineup_player".player_id = "club_player".player_id AND
-    "match".season = "club_player".season
 INNER JOIN "player"
-ON "club_player".player_id = "player".id
+ON "lineup_player".player_id = "player".id
 WHERE
     "lineup_player".lineup_id = $1 AND
     "lineup_player".position_no = $2
@@ -85,9 +74,9 @@ type FindLineupPlayerByLineupIDAndPositionNoParams struct {
 type FindLineupPlayerByLineupIDAndPositionNoRow struct {
 	LineupID   int32
 	PlayerID   int32
+	No         int16
 	PositionNo int16
 	Position   PlayerPosition
-	No         int16
 	Firstname  string
 	Lastname   string
 	Image      pgtype.Text
@@ -99,9 +88,9 @@ func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, a
 	err := row.Scan(
 		&i.LineupID,
 		&i.PlayerID,
+		&i.No,
 		&i.PositionNo,
 		&i.Position,
-		&i.No,
 		&i.Firstname,
 		&i.Lastname,
 		&i.Image,
@@ -111,35 +100,23 @@ func (q *Queries) FindLineupPlayerByLineupIDAndPositionNo(ctx context.Context, a
 
 const listLineupPlayersByLineupID = `-- name: ListLineupPlayersByLineupID :many
 SELECT
-    lineup_player.lineup_id, lineup_player.player_id, lineup_player.position_no, lineup_player.position,
-    "club_player".no,
+    lineup_player.lineup_id, lineup_player.player_id, lineup_player.no, lineup_player.position_no, lineup_player.position,
     "player".firstname,
     "player".lastname,
     "player".image
 FROM "lineup_player"
-INNER JOIN "lineup"
-ON "lineup_player".lineup_id = "lineup".id
-INNER JOIN "match"
-ON
-    "lineup".id = "match".home_lineup_id OR
-    "lineup".id = "match".away_lineup_id
-INNER JOIN "club_player"
-ON
-    "lineup".club_id = "club_player".club_id AND
-    "lineup_player".player_id = "club_player".player_id AND
-    "match".season = "club_player".season
 INNER JOIN "player"
-ON "club_player".player_id = "player".id
+ON "lineup_player".player_id = "player".id
 WHERE "lineup_player".lineup_id = $1
-ORDER BY "club_player".no ASC
+ORDER BY "lineup_player".no ASC
 `
 
 type ListLineupPlayersByLineupIDRow struct {
 	LineupID   int32
 	PlayerID   int32
+	No         int16
 	PositionNo int16
 	Position   PlayerPosition
-	No         int16
 	Firstname  string
 	Lastname   string
 	Image      pgtype.Text
@@ -157,9 +134,9 @@ func (q *Queries) ListLineupPlayersByLineupID(ctx context.Context, lineupID int3
 		if err := rows.Scan(
 			&i.LineupID,
 			&i.PlayerID,
+			&i.No,
 			&i.PositionNo,
 			&i.Position,
-			&i.No,
 			&i.Firstname,
 			&i.Lastname,
 			&i.Image,
@@ -181,7 +158,7 @@ UPDATE lineup_player SET
 WHERE
     "lineup_player".lineup_id = $1 AND
     "lineup_player".player_id = $2
-RETURNING lineup_id, player_id, position_no, position
+RETURNING lineup_id, player_id, no, position_no, position
 `
 
 type UpdateLineupPlayerParams struct {
@@ -202,6 +179,7 @@ func (q *Queries) UpdateLineupPlayer(ctx context.Context, arg UpdateLineupPlayer
 	err := row.Scan(
 		&i.LineupID,
 		&i.PlayerID,
+		&i.No,
 		&i.PositionNo,
 		&i.Position,
 	)

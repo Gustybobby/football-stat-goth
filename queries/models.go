@@ -197,6 +197,7 @@ type LineupEvent struct {
 type LineupPlayer struct {
 	LineupID   int32
 	PlayerID   int32
+	No         int16
 	PositionNo int16
 	Position   PlayerPosition
 }

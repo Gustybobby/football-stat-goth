@@ -4,21 +4,150 @@ import (
 	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
+	"strconv"
+	"time"
 )
 
-templ Player(user *queries.FindUserByUsernameRow, player queries.Player) {
+templ Player(
+	user *queries.FindUserByUsernameRow,
+	player queries.Player,
+	club_players []queries.ListClubPlayerByPlayerIDRow,
+	performance queries.FindPlayerSeasonPerformanceRow,
+) {
 	@layouts.Base() {
 		@components.Nav(user)
-		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
-			<div class="max-w-5xl">
-				<section class="flex flex-col items-center w-full py-12 border-b border-primary md:flex-row">
-					<img src={ player.Image.String } class="size-36 mb-4 md:mr-4 md:mb-0"/>
-					<div class="space-y-2">
-						<span class="text-5xl font-extrabold">{ player.Firstname }</span>
-						<span class="text-5xl font-extrabold">{ player.Lastname }</span>
+		<main class="w-full p-4 bg-primary-background flex flex-col items-center">
+			<div class="max-w-7xl w-full">
+				@playerProfile(player)
+				<div class="grid grid-cols-1 lg:grid-cols-3 p-4 gap-4">
+					<div class="flex flex-col space-y-4">
+						@clubRecords(club_players)
+						@seasonPerformance(performance)
 					</div>
-				</section>
+				</div>
 			</div>
 		</main>
 	}
+}
+
+templ playerProfile(player queries.Player) {
+	<section class="w-full px-2 pt-12 pb-6 border-b border-primary flex flex-col justify-start items-center space-y-4 md:space-y-0 md:flex-row md:justify-between">
+		<div class="flex flex-col items-center w-full md:flex-row">
+			<img src={ player.Image.String } class="size-36 mb-4 md:mr-4 md:mb-0"/>
+			<div class="flex flex-col space-y-2 items-center md:items-start">
+				<span class="text-5xl font-semibold">{ player.Firstname }</span>
+				<span class="text-5xl font-extrabold">{ player.Lastname }</span>
+				<div class="flex flex-col items-center space-y-2 md:space-y-0 md:flex-row md:space-x-2">
+					<div class="px-2 py-1 border border-primary rounded-md">
+						Nationality 
+						<span class="font-bold inline">
+							{ player.Nationality }
+						</span>
+					</div>
+					<div class="px-2 py-1 border border-primary rounded-md">
+						Date of Birth 
+						<span class="font-bold inline">
+							{ player.Dob.Time.Format("02/01/2006") }
+							({ strconv.Itoa(time.Now().Year() - player.Dob.Time.Year()) })
+						</span>
+					</div>
+					<div class="px-2 py-1 border border-primary rounded-md">
+						Height 
+						<span class="font-bold inline">
+							{ strconv.Itoa(int(player.Height)) }cm
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<h1 class="font-extrabold text-4xl">
+			if player.Position == queries.PlayerPositionGK {
+				Goalkeeper
+			} else if player.Position == queries.PlayerPositionDEF {
+				Defender
+			} else if player.Position == queries.PlayerPositionMFD {
+				Midfielder
+			} else if player.Position == queries.PlayerPositionFWD {
+				Forward
+			}
+		</h1>
+	</section>
+}
+
+templ clubRecords(club_players []queries.ListClubPlayerByPlayerIDRow) {
+	<section class="rounded-lg border border-primary shadow-lg">
+		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
+			Club Records
+		</h1>
+		<div class="p-2">
+			<table class="w-full text-left">
+				<thead>
+					<tr>
+						<th class="p-1">Season</th>
+						<th class="p-1">Club</th>
+						<th class="p-1 text-center">No.</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, club_player := range(club_players) {
+						<tr>
+							<td class="p-1">{ club_player.Season }</td>
+							<td>
+								<a
+									class="p-1 flex items-center hover:underline"
+									href={ templ.SafeURL("/clubs/" + club_player.ClubID) }
+								>
+									<img src={ club_player.ClubLogo } class="size-8 mr-2"/>
+									{ club_player.ClubShortName }
+								</a>
+							</td>
+							<td class="p-1 text-center font-bold">{ strconv.Itoa(int(club_player.No)) }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</section>
+}
+
+templ seasonPerformance(performance queries.FindPlayerSeasonPerformanceRow) {
+	<section class="rounded-lg border border-primary shadow-lg">
+		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
+			{ performance.Season } Performance
+		</h1>
+		<div class="p-2">
+			<table class="w-full text-left text-lg">
+				<tbody>
+					<tr>
+						<td class="font-semibold p-1">Appearances</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.Appearances)) }</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Goals</td>
+						<td class="font-bold p-1">
+							{ strconv.Itoa(int(performance.TotalGoals)) } (League #{ strconv.Itoa(int(performance.GoalsRank)) })
+						</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Assists</td>
+						<td class="font-bold p-1">
+							{ strconv.Itoa(int(performance.TotalAssists)) } (League #{ strconv.Itoa(int(performance.AssistsRank)) })
+						</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Yellow Cards</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalYellowCards)) }</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Red Cards</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalRedCards)) }</td>
+					</tr>
+					<tr>
+						<td class="font-semibold p-1">Own Goals</td>
+						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalOwnGoals)) }</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
 }

@@ -4,6 +4,7 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
+	"football-stat-goth/services/pltime"
 	"football-stat-goth/views/admin/admin_components/admin_lineup_components"
 	"net/http"
 	"strconv"
@@ -26,7 +27,7 @@ func HandleCreateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 	player_id, err := repo.Queries.FindPlayerIDByClubNoSeason(repo.Ctx, queries.FindPlayerIDByClubNoSeasonParams{
 		ClubID: r.FormValue("club_id"),
 		No:     int16(no),
-		Season: "2024/25",
+		Season: pltime.GetCurrentSeasonString(),
 	})
 	if err != nil {
 		return err
