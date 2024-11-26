@@ -12,7 +12,7 @@ templ Player(
 	user *queries.FindUserByUsernameRow,
 	player queries.Player,
 	club_players []queries.ListClubPlayerByPlayerIDRow,
-	performance queries.FindPlayerSeasonPerformanceRow,
+	performance queries.ListPlayerSeasonPerformanceRow,
 ) {
 	@layouts.Base() {
 		@components.Nav(user)
@@ -114,7 +114,7 @@ templ clubRecords(club_players []queries.ListClubPlayerByPlayerIDRow) {
 	</section>
 }
 
-templ seasonPerformance(performance queries.FindPlayerSeasonPerformanceRow) {
+templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
 	<section class="rounded-lg border border-primary shadow-lg">
 		<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
 			{ performance.Season } Performance

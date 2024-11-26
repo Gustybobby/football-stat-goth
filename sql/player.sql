@@ -33,7 +33,7 @@ INSERT INTO "player" (
 )
 RETURNING *;
 
--- name: FindPlayerSeasonPerformance :one
+-- name: ListPlayerSeasonPerformance :many
 WITH "total_stats" AS (
     SELECT
         "player".id,
@@ -129,4 +129,9 @@ WITH "total_stats" AS (
 )
 SELECT *
 FROM "total_rank_stats"
-WHERE "total_rank_stats".id = sqlc.arg('id')::INTEGER;
+WHERE
+    CASE
+        WHEN sqlc.arg('filter_player_id')::bool
+        THEN "total_rank_stats".id = sqlc.arg('player_id')::INTEGER
+        ELSE true
+    END;

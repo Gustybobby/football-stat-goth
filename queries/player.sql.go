@@ -112,7 +112,7 @@ func (q *Queries) FindPlayerIDByClubNoSeason(ctx context.Context, arg FindPlayer
 	return player_id, err
 }
 
-const findPlayerSeasonPerformance = `-- name: FindPlayerSeasonPerformance :one
+const listPlayerSeasonPerformance = `-- name: ListPlayerSeasonPerformance :many
 WITH "total_stats" AS (
     SELECT
         "player".id,
@@ -176,28 +176,28 @@ WITH "total_stats" AS (
         "player".id = "lineup_event".player_id2
     LEFT JOIN "match"
     ON
-        "match".season = $2::TEXT AND (
+        "match".season = $3::TEXT AND (
             "lineup_event".lineup_id = "match".home_lineup_id OR
             "lineup_event".lineup_id = "match".away_lineup_id
         )
     GROUP BY "player".id
     HAVING
         CASE
-            WHEN $3::bool
+            WHEN $4::bool
             THEN EXISTS (
                 SELECT 1
                 FROM "club_player"
                 WHERE
                     "club_player".player_id = "player".id AND
-                    "club_player".club_id = $4::TEXT AND
-                    "club_player".season = $2::TEXT
+                    "club_player".club_id = $5::TEXT AND
+                    "club_player".season = $3::TEXT
             )
             ELSE true
         END
 ), "total_rank_stats" AS (
     SELECT
         total_stats.id, total_stats.total_goals, total_stats.total_assists, total_stats.total_yellow_cards, total_stats.total_red_cards, total_stats.total_own_goals, total_stats.appearances,
-        $2::TEXT AS season,
+        $3::TEXT AS season,
         RANK() OVER (
             ORDER BY "total_stats".total_goals DESC
         ) AS goals_rank,
@@ -208,17 +208,23 @@ WITH "total_stats" AS (
 )
 SELECT id, total_goals, total_assists, total_yellow_cards, total_red_cards, total_own_goals, appearances, season, goals_rank, assists_rank
 FROM "total_rank_stats"
-WHERE "total_rank_stats".id = $1::INTEGER
+WHERE
+    CASE
+        WHEN $1::bool
+        THEN "total_rank_stats".id = $2::INTEGER
+        ELSE true
+    END
 `
 
-type FindPlayerSeasonPerformanceParams struct {
-	ID           int32
-	Season       string
-	FilterClubID bool
-	ClubID       string
+type ListPlayerSeasonPerformanceParams struct {
+	FilterPlayerID bool
+	PlayerID       int32
+	Season         string
+	FilterClubID   bool
+	ClubID         string
 }
 
-type FindPlayerSeasonPerformanceRow struct {
+type ListPlayerSeasonPerformanceRow struct {
 	ID               int32
 	TotalGoals       int64
 	TotalAssists     int64
@@ -231,25 +237,39 @@ type FindPlayerSeasonPerformanceRow struct {
 	AssistsRank      int64
 }
 
-func (q *Queries) FindPlayerSeasonPerformance(ctx context.Context, arg FindPlayerSeasonPerformanceParams) (FindPlayerSeasonPerformanceRow, error) {
-	row := q.db.QueryRow(ctx, findPlayerSeasonPerformance,
-		arg.ID,
+func (q *Queries) ListPlayerSeasonPerformance(ctx context.Context, arg ListPlayerSeasonPerformanceParams) ([]ListPlayerSeasonPerformanceRow, error) {
+	rows, err := q.db.Query(ctx, listPlayerSeasonPerformance,
+		arg.FilterPlayerID,
+		arg.PlayerID,
 		arg.Season,
 		arg.FilterClubID,
 		arg.ClubID,
 	)
-	var i FindPlayerSeasonPerformanceRow
-	err := row.Scan(
-		&i.ID,
-		&i.TotalGoals,
-		&i.TotalAssists,
-		&i.TotalYellowCards,
-		&i.TotalRedCards,
-		&i.TotalOwnGoals,
-		&i.Appearances,
-		&i.Season,
-		&i.GoalsRank,
-		&i.AssistsRank,
-	)
-	return i, err
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListPlayerSeasonPerformanceRow
+	for rows.Next() {
+		var i ListPlayerSeasonPerformanceRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.TotalGoals,
+			&i.TotalAssists,
+			&i.TotalYellowCards,
+			&i.TotalRedCards,
+			&i.TotalOwnGoals,
+			&i.Appearances,
+			&i.Season,
+			&i.GoalsRank,
+			&i.AssistsRank,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
