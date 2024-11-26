@@ -150,6 +150,11 @@ def db_transform(events, match_id, db_client):
     match = db.find_match_by_id(match_id, db_client)
     rows = []
     for tl_event in events:
+        extra = int(tl_event["extra"]) if "extra" in tl_event else None
+        after_half = tl_event["after_half"]
+        if int(tl_event["minutes"]) == 45 and extra is not None:
+            after_half = False
+
         for home_event in tl_event["home"]:
             rows.append(
                 {
@@ -159,7 +164,7 @@ def db_transform(events, match_id, db_client):
                         else match["away_lineup_id"]
                     ),
                     "minutes": int(tl_event["minutes"]),
-                    "extra": int(tl_event["extra"]) if "extra" in tl_event else None,
+                    "extra": extra,
                     "event": home_event["event"],
                     "player_id1": db.find_player_id_by_fullname(
                         home_event["player1"], db_client
@@ -169,7 +174,7 @@ def db_transform(events, match_id, db_client):
                         if "player2" in home_event
                         else None
                     ),
-                    "after_half": tl_event["after_half"],
+                    "after_half": after_half,
                 }
             )
 
@@ -182,7 +187,7 @@ def db_transform(events, match_id, db_client):
                         else match["home_lineup_id"]
                     ),
                     "minutes": int(tl_event["minutes"]),
-                    "extra": int(tl_event["extra"]) if "extra" in tl_event else None,
+                    "extra": extra,
                     "event": away_event["event"],
                     "player_id1": db.find_player_id_by_fullname(
                         away_event["player1"], db_client
@@ -192,7 +197,7 @@ def db_transform(events, match_id, db_client):
                         if "player2" in away_event
                         else None
                     ),
-                    "after_half": tl_event["after_half"],
+                    "after_half": after_half,
                 }
             )
     return rows
