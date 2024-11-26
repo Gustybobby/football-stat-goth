@@ -62,6 +62,7 @@ def scrape_player(page_source: str, client) -> tuple[dict | None, dict | None]:
 
     if db.player_exists(data, client):
         random_sleep = random.randint(0, 1)
+        print(data)
         print("PLAYER EXISTS, sleeping for", random_sleep, "s")
         time.sleep(random_sleep)
         return None, None
