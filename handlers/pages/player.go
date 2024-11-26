@@ -39,6 +39,7 @@ func HandlePlayerPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 		PlayerID:       player.ID,
 		FilterClubID:   false,
 		ClubID:         "",
+		Limit:          1,
 	})
 	if err != nil {
 		return err

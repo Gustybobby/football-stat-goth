@@ -176,28 +176,28 @@ WITH "total_stats" AS (
         "player".id = "lineup_event".player_id2
     LEFT JOIN "match"
     ON
-        "match".season = $3::TEXT AND (
+        "match".season = $4::TEXT AND (
             "lineup_event".lineup_id = "match".home_lineup_id OR
             "lineup_event".lineup_id = "match".away_lineup_id
         )
     GROUP BY "player".id
     HAVING
         CASE
-            WHEN $4::bool
+            WHEN $5::bool
             THEN EXISTS (
                 SELECT 1
                 FROM "club_player"
                 WHERE
                     "club_player".player_id = "player".id AND
-                    "club_player".club_id = $5::TEXT AND
-                    "club_player".season = $3::TEXT
+                    "club_player".club_id = $6::TEXT AND
+                    "club_player".season = $4::TEXT
             )
             ELSE true
         END
 ), "total_rank_stats" AS (
     SELECT
         total_stats.id, total_stats.total_goals, total_stats.total_assists, total_stats.total_yellow_cards, total_stats.total_red_cards, total_stats.total_own_goals, total_stats.appearances,
-        $3::TEXT AS season,
+        $4::TEXT AS season,
         RANK() OVER (
             ORDER BY "total_stats".total_goals DESC
         ) AS goals_rank,
@@ -214,11 +214,13 @@ WHERE
         THEN "total_rank_stats".id = $2::INTEGER
         ELSE true
     END
+LIMIT $3::INTEGER
 `
 
 type ListPlayerSeasonPerformanceParams struct {
 	FilterPlayerID bool
 	PlayerID       int32
+	Limit          int32
 	Season         string
 	FilterClubID   bool
 	ClubID         string
@@ -241,6 +243,7 @@ func (q *Queries) ListPlayerSeasonPerformance(ctx context.Context, arg ListPlaye
 	rows, err := q.db.Query(ctx, listPlayerSeasonPerformance,
 		arg.FilterPlayerID,
 		arg.PlayerID,
+		arg.Limit,
 		arg.Season,
 		arg.FilterClubID,
 		arg.ClubID,

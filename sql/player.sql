@@ -134,4 +134,5 @@ WHERE
         WHEN sqlc.arg('filter_player_id')::bool
         THEN "total_rank_stats".id = sqlc.arg('player_id')::INTEGER
         ELSE true
-    END;
+    END
+LIMIT sqlc.arg('limit')::INTEGER;
