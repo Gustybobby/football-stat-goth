@@ -10,7 +10,7 @@ import (
 templ Fantasy(
 	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
-	players []queries.GetPlayerInfoForFantasyRow,
+	players []queries.GetFantasy_PlayerInfoForFantasyRow,
 ) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
@@ -32,24 +32,25 @@ templ Fantasy(
 							// make 3 section for each row instead, then make section within thos.
 							<div class="absolute inset-0 flex items-center px-14">
 								<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11 -translate-y-11">
-									<div class="flex h-full justify-center">
-										@playercard_components.PlayerCard()
+									<div class="flex h-full justify-center" onclick="SetFilter('GK')">
+										for range(1) {
+											@playercard_components.BlankPlayerCard()
+										}
 									</div>
-									<section class="flex h-full justify-center -translate-y-8">
-										@playercard_components.PlayerCard()
-										@playercard_components.PlayerCard()
-										@playercard_components.PlayerCard()
-										@playercard_components.PlayerCard()
+									<section class="flex h-full justify-center -translate-y-8" onclick="SetFilter('DEF')">
+										for range(4) {
+											@playercard_components.BlankPlayerCard()
+										}
 									</section>
-									<section class="flex h-full justify-center -translate-y-8">
-										@playercard_components.PlayerCard()
-										@playercard_components.PlayerCard()
-										@playercard_components.PlayerCard()
-										@playercard_components.PlayerCard()
+									<section class="flex h-full justify-center -translate-y-8" onclick="SetFilter('MFD')">
+										for range(4) {
+											@playercard_components.BlankPlayerCard()
+										}
 									</section>
-									<section class="flex h-full space-x-11 justify-center -translate-y-8">
-										@playercard_components.PlayerCard()
-										@playercard_components.PlayerCard()
+									<section class="flex h-full space-x-11 justify-center -translate-y-8" onclick="SetFilter('FWD')">
+										for range(2) {
+											@playercard_components.BlankPlayerCard()
+										}
 									</section>
 								</section>
 							</div>
@@ -68,10 +69,10 @@ templ Fantasy(
 											<option aria-selected="true">All</option>
 										</optgroup>
 										<optgroup label="Position" class="mx-2">
-											<option>GK</option>
-											<option>DEF</option>
-											<option>MFD</option>
-											<option>FWD</option>
+											<option class="pos-option">GK</option>
+											<option class="pos-option">DEF</option>
+											<option class="pos-option">MFD</option>
+											<option class="pos-option">FWD</option>
 										</optgroup>
 									</select>
 								</div>
@@ -92,9 +93,9 @@ templ Fantasy(
 														// back side, user playercard_back
 														@playercard_components.PlayerCard()
 														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
-															<p class="text-primary-foreground font-bold">{ player.Lastname }</p>
+															<p class="text-primary-foreground font-bold player-lname">{ player.Lastname }</p>
 															<p class="font-semibold player-pos">{ string(player.Position) }</p>
-															<p class="font-semibold">{ string(player.ClubID) }</p>
+															<p class="font-semibold player-cost">{ string(player.Cost) }</p>
 														</span>
 													</div>
 												</div>
@@ -103,26 +104,29 @@ templ Fantasy(
 									}
 								</ul>
 								<script>
+									// Init variables for player filter
 									var searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
 										checkedFilter = document.getElementById('checkedFilter').value.toLowerCase(),
 										searchEmpty = (searchFilter.length == 0),
 										checkedAll = (checkedFilter.includes('all'));
 
-									document.getElementById('searchFilter').addEventListener('input', function(){
-										searchFilter = this.value.toLowerCase();
+									function UpdateField() {
+										searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
+										checkedFilter = document.getElementById('checkedFilter').value.toLowerCase()
 										searchEmpty = (searchFilter.length == 0),
 										checkedAll = (checkedFilter.includes('all'));
+									}
+
+									document.getElementById('searchFilter').addEventListener('input', function(){
 										PlayerCardFilter();
 									});
 
 									document.getElementById('checkedFilter').addEventListener('input', function(){
-										checkedFilter = this.value.toLowerCase();
-										searchEmpty = (searchFilter.length == 0),
-										checkedAll = (checkedFilter.includes('all'));
 										PlayerCardFilter()
 									});
 
 									function PlayerCardFilter() {
+										UpdateField()
 										const cards = document.querySelectorAll('.player-card');
 
 										cards.forEach(card => {
@@ -154,6 +158,21 @@ templ Fantasy(
 												}
 											}
 										});
+									}
+
+									// Interactive fantasy section
+									function SetFilter(pos) {
+										const 
+											selector = document.getElementById('checkedFilter'),
+											options = selector.querySelector('optgroup[label="Position"]').querySelectorAll('.pos-option');
+
+										for (let i = 0; i < options.length; i++) {
+											if (options[i].textContent.toLocaleLowerCase() === pos.toLowerCase()) {
+												selector.selectedIndex = options[i].index;
+												PlayerCardFilter();
+												return;
+											}
+										}
 									}
 								</script>
 							</div>
