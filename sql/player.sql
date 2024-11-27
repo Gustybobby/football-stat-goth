@@ -87,30 +87,75 @@ WITH "total_stats" AS (
                 THEN 1 ELSE NULL
             END
         ) AS total_own_goals,
-        (
-            SELECT COUNT(*)
-            FROM "match"
-            WHERE EXISTS (
-                SELECT 1
-                FROM "lineup_player"
-                WHERE
-                    "lineup_player".player_id = "player".id AND (
-                        "match".home_lineup_id = "lineup_player".lineup_id OR
-                        "match".away_lineup_id = "lineup_player".lineup_id
+        COUNT(DISTINCT "lineup_player".lineup_id) AS appearances,
+        CASE
+            WHEN "player".position = 'GK' THEN (
+                SELECT
+                    COUNT(
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM "lineup_player"
+                                WHERE
+                                    "lineup_player".player_id = "player".id AND
+                                    "lineup_player".lineup_id = "match".home_lineup_id
+                            ) THEN
+                                CASE
+                                    WHEN EXISTS (
+                                        SELECT 1
+                                        FROM "lineup_event"
+                                        WHERE (
+                                            "lineup_event".event = 'GOAL' AND
+                                            "lineup_event".lineup_id = "match".away_lineup_id
+                                        ) OR (
+                                            "lineup_event".event = 'OWN_GOAL' AND
+                                            "lineup_event".lineup_id = "match".home_lineup_id
+                                        )
+                                    ) THEN NULL ELSE 1
+                                END
+                            ELSE
+                                CASE
+                                    WHEN EXISTS (
+                                        SELECT 1
+                                        FROM "lineup_event"
+                                        WHERE (
+                                            "lineup_event".event = 'GOAL' AND
+                                            "lineup_event".lineup_id = "match".home_lineup_id
+                                        ) OR (
+                                            "lineup_event".event = 'OWN_GOAL' AND
+                                            "lineup_event".lineup_id = "match".away_lineup_id
+                                        )
+                                    ) THEN NULL ELSE 1
+                                END
+                        END
+                    )
+                FROM "match"
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM "lineup_player"
+                    WHERE
+                        "lineup_player".player_id = "player".id AND (
+                            "lineup_player".lineup_id = "match".home_lineup_id OR
+                            "lineup_player".lineup_id = "match".away_lineup_id
+                        )
                     )
             )
-        ) AS appearances
+            ELSE 0
+        END AS clean_sheets
     FROM "player"
+    LEFT JOIN "lineup_player"
+    ON "player".id = "lineup_player".player_id
     LEFT JOIN "lineup_event"
     ON
-        "player".id = "lineup_event".player_id1 OR
-        "player".id = "lineup_event".player_id2
+        "lineup_player".lineup_id = "lineup_event".lineup_id AND (
+            "lineup_player".player_id = "lineup_event".player_id1 OR
+            "lineup_player".player_id = "lineup_event".player_id2
+        )
     LEFT JOIN "match"
     ON
-        "match".season = sqlc.arg('season')::TEXT AND (
-            "lineup_event".lineup_id = "match".home_lineup_id OR
-            "lineup_event".lineup_id = "match".away_lineup_id
-        )
+        "lineup_player".lineup_id = "match".home_lineup_id OR
+        "lineup_player".lineup_id = "match".away_lineup_id
+    WHERE "match".season = sqlc.arg('season')::TEXT
     GROUP BY "player".id
     HAVING
         CASE

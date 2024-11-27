@@ -202,30 +202,75 @@ WITH "total_stats" AS (
                 THEN 1 ELSE NULL
             END
         ) AS total_own_goals,
-        (
-            SELECT COUNT(*)
-            FROM "match"
-            WHERE EXISTS (
-                SELECT 1
-                FROM "lineup_player"
-                WHERE
-                    "lineup_player".player_id = "player".id AND (
-                        "match".home_lineup_id = "lineup_player".lineup_id OR
-                        "match".away_lineup_id = "lineup_player".lineup_id
+        COUNT(DISTINCT "lineup_player".lineup_id) AS appearances,
+        CASE
+            WHEN "player".position = 'GK' THEN (
+                SELECT
+                    COUNT(
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM "lineup_player"
+                                WHERE
+                                    "lineup_player".player_id = "player".id AND
+                                    "lineup_player".lineup_id = "match".home_lineup_id
+                            ) THEN
+                                CASE
+                                    WHEN EXISTS (
+                                        SELECT 1
+                                        FROM "lineup_event"
+                                        WHERE (
+                                            "lineup_event".event = 'GOAL' AND
+                                            "lineup_event".lineup_id = "match".away_lineup_id
+                                        ) OR (
+                                            "lineup_event".event = 'OWN_GOAL' AND
+                                            "lineup_event".lineup_id = "match".home_lineup_id
+                                        )
+                                    ) THEN NULL ELSE 1
+                                END
+                            ELSE
+                                CASE
+                                    WHEN EXISTS (
+                                        SELECT 1
+                                        FROM "lineup_event"
+                                        WHERE (
+                                            "lineup_event".event = 'GOAL' AND
+                                            "lineup_event".lineup_id = "match".home_lineup_id
+                                        ) OR (
+                                            "lineup_event".event = 'OWN_GOAL' AND
+                                            "lineup_event".lineup_id = "match".away_lineup_id
+                                        )
+                                    ) THEN NULL ELSE 1
+                                END
+                        END
+                    )
+                FROM "match"
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM "lineup_player"
+                    WHERE
+                        "lineup_player".player_id = "player".id AND (
+                            "lineup_player".lineup_id = "match".home_lineup_id OR
+                            "lineup_player".lineup_id = "match".away_lineup_id
+                        )
                     )
             )
-        ) AS appearances
+            ELSE 0
+        END AS clean_sheets
     FROM "player"
+    LEFT JOIN "lineup_player"
+    ON "player".id = "lineup_player".player_id
     LEFT JOIN "lineup_event"
     ON
-        "player".id = "lineup_event".player_id1 OR
-        "player".id = "lineup_event".player_id2
+        "lineup_player".lineup_id = "lineup_event".lineup_id AND (
+            "lineup_player".player_id = "lineup_event".player_id1 OR
+            "lineup_player".player_id = "lineup_event".player_id2
+        )
     LEFT JOIN "match"
     ON
-        "match".season = $4::TEXT AND (
-            "lineup_event".lineup_id = "match".home_lineup_id OR
-            "lineup_event".lineup_id = "match".away_lineup_id
-        )
+        "lineup_player".lineup_id = "match".home_lineup_id OR
+        "lineup_player".lineup_id = "match".away_lineup_id
+    WHERE "match".season = $4::TEXT
     GROUP BY "player".id
     HAVING
         CASE
@@ -242,7 +287,7 @@ WITH "total_stats" AS (
         END
 ), "total_rank_stats" AS (
     SELECT
-        total_stats.id, total_stats.total_goals, total_stats.total_assists, total_stats.total_yellow_cards, total_stats.total_red_cards, total_stats.total_own_goals, total_stats.appearances,
+        total_stats.id, total_stats.total_goals, total_stats.total_assists, total_stats.total_yellow_cards, total_stats.total_red_cards, total_stats.total_own_goals, total_stats.appearances, total_stats.clean_sheets,
         $4::TEXT AS season,
         RANK() OVER (
             ORDER BY "total_stats".total_goals DESC
@@ -252,7 +297,7 @@ WITH "total_stats" AS (
         ) AS assists_rank
     FROM "total_stats"
 )
-SELECT id, total_goals, total_assists, total_yellow_cards, total_red_cards, total_own_goals, appearances, season, goals_rank, assists_rank
+SELECT id, total_goals, total_assists, total_yellow_cards, total_red_cards, total_own_goals, appearances, clean_sheets, season, goals_rank, assists_rank
 FROM "total_rank_stats"
 WHERE
     CASE
@@ -280,6 +325,7 @@ type ListPlayerSeasonPerformanceRow struct {
 	TotalRedCards    int64
 	TotalOwnGoals    int64
 	Appearances      int64
+	CleanSheets      int32
 	Season           string
 	GoalsRank        int64
 	AssistsRank      int64
@@ -309,6 +355,7 @@ func (q *Queries) ListPlayerSeasonPerformance(ctx context.Context, arg ListPlaye
 			&i.TotalRedCards,
 			&i.TotalOwnGoals,
 			&i.Appearances,
+			&i.CleanSheets,
 			&i.Season,
 			&i.GoalsRank,
 			&i.AssistsRank,

@@ -130,6 +130,12 @@ templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
 						</td>
 					</tr>
 					<tr>
+						<td class="font-semibold p-1">Clean Sheets</td>
+						<td class="font-bold p-1">
+							{ strconv.Itoa(int(performance.CleanSheets)) }
+						</td>
+					</tr>
+					<tr>
 						<td class="font-semibold p-1">Yellow Cards</td>
 						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalYellowCards)) }</td>
 					</tr>
