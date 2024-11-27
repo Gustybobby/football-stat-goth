@@ -8,6 +8,23 @@ import (
 	"strconv"
 )
 
+script onDeletePlayerCard(position string, i int) {
+	counter[position] = i - 1;
+}
+
+script onAddPlayerCard(position string, i int) {
+	if (counter[position + '_count'] >= 1) {
+		document.getElementById("card_" + i).dispatchEvent(new Event("htmx:abort"));
+		return;
+	};
+	counter[position] += 1;
+	counter[position + '_count'] += 1;
+	document.getElementById("card_" + i).setAttribute('hx-target', '#' + position + '_'+ counter[position]);
+	if (counter[position] == 3){
+		counter[position] = -1;
+	};
+}
+
 templ Fantasy(
 	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
@@ -16,6 +33,18 @@ templ Fantasy(
 	@layouts.Base() {
 		@components.Fixture(fixtures)
 		@components.Nav(user)
+		<script>
+			const counter = {
+				"GK": -1,
+				"GK_count": 0,
+				"DEF": -1,
+				"DEF_count": 0,
+				"MFD": -1,
+				"MFD_count": 0,
+				"FWD": -1,
+				"FWD_count": 0
+			};
+		</script>
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
 			<div class="max-w-5xl">
 				<section class="w-full flex px-2 py-8 space-x-4 flex-row">
@@ -36,28 +65,48 @@ templ Fantasy(
 								<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11 -translate-y-11">
 									<section class="flex justify-center" onclick="SetFilter('GK')">
 										for i := range(1) {
-											<div id={ "GK_" + strconv.Itoa(i) }>
+											<div
+												id={ "GK_" + strconv.Itoa(i) }
+												hx-trigger="click"
+												hx-get="/cmps/fantasy/player-card?blank=true"
+												onclick={ onDeletePlayerCard("GK", i) }
+											>
 												@playercard_components.BlankPlayerCard()
 											</div>
 										}
 									</section>
 									<section class="flex justify-center -translate-y-8" onclick="SetFilter('DEF')">
 										for i := range(4) {
-											<div id={ "DEF_" + strconv.Itoa(i) }>
+											<div
+												id={ "DEF_" + strconv.Itoa(i) }
+												hx-trigger="click"
+												hx-get="/cmps/fantasy/player-card?blank=true"
+												onclick={ onDeletePlayerCard("DEF", i) }
+											>
 												@playercard_components.BlankPlayerCard()
 											</div>
 										}
 									</section>
 									<section class="flex justify-center -translate-y-8" onclick="SetFilter('MFD')">
 										for i := range(4) {
-											<div id={ "MFD_" + strconv.Itoa(i) }>
+											<div
+												id={ "MFD_" + strconv.Itoa(i) }
+												hx-trigger="click"
+												hx-get="/cmps/fantasy/player-card?blank=true"
+												onclick={ onDeletePlayerCard("MFD", i) }
+											>
 												@playercard_components.BlankPlayerCard()
 											</div>
 										}
 									</section>
 									<section class="flex justify-center -translate-y-8" onclick="SetFilter('FWD')">
 										for i := range(2) {
-											<div id={ "FWD_" + strconv.Itoa(i) }>
+											<div
+												id={ "FWD_" + strconv.Itoa(i) }
+												hx-trigger="click"
+												hx-get="/cmps/fantasy/player-card?blank=true"
+												onclick={ onDeletePlayerCard("FWD", i) }
+											>
 												@playercard_components.BlankPlayerCard()
 											</div>
 										}
@@ -90,11 +139,13 @@ templ Fantasy(
 								<ul class="px-4 size-full overflow-scroll grid grid-cols-2">
 									for _,player := range players {
 										<div
+											id={ "card_" + strconv.Itoa(int(player.ID)) }
 											class="flex justify-center player-card m-2 hover: cursor-pointer"
 											hx-get={ "/cmps/fantasy/player-card?fantasy_player_id=" + strconv.Itoa(int(player.ID)) }
 											hx-trigger="click"
 											hx-target={ "#" + string(player.Position) + "_" + "0" }
 											hx-swap="innerHTML"
+											onclick={ onAddPlayerCard(string(player.Position), int(player.ID)) }
 										>
 											<div class="flip-card w-32 h-40">
 												<div class="flip-card-inner">
@@ -120,7 +171,7 @@ templ Fantasy(
 
 									function UpdateField() {
 										searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
-										checkedFilter = document.getElementById('checkedFilter').value.toLowerCase()
+										checkedFilter = document.getElementById('checkedFilter').value.toLowerCase(),
 										searchEmpty = (searchFilter.length == 0),
 										checkedAll = (checkedFilter.includes('all'));
 									}

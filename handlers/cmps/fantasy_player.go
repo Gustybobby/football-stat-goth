@@ -11,6 +11,12 @@ import (
 )
 
 func HandleFantasyPlayerCard(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	isBlank := r.URL.Query().Get("blank") == "true"
+
+	if isBlank {
+		return handlers.Render(w, r, playercard_components.BlankPlayerCard())
+	}
+
 	fantasy_player_id, err := strconv.Atoi(r.URL.Query().Get("fantasy_player_id"))
 	if err != nil {
 		return err
