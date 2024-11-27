@@ -112,6 +112,158 @@ func (q *Queries) FindPlayerIDByClubNoSeason(ctx context.Context, arg FindPlayer
 	return player_id, err
 }
 
+const findPlayersRankStats = `-- name: FindPlayersRankStats :one
+WITH "player_total_stats" AS (
+    SELECT
+        "player".id,
+        COUNT(
+            CASE
+                WHEN
+                    "lineup_event".event = 'GOAL' AND
+                    "lineup_event".player_id1 = "player".id
+                THEN 1 ELSE NULL
+            END
+        ) AS total_goals,
+        COUNT(
+            CASE
+                WHEN
+                    "lineup_event".event = 'GOAL' AND
+                    "lineup_event".player_id2 = "player".id
+                THEN 1 ELSE NULL
+            END
+        ) AS total_assists,
+        COUNT(
+            CASE
+                WHEN
+                    "lineup_event".event = 'YELLOW' AND
+                    "lineup_event".player_id1 = "player".id
+                THEN 1 ELSE NULL
+            END
+        ) AS total_yellow_cards,
+        COUNT(
+            CASE
+                WHEN
+                    "lineup_event".event = 'RED' AND
+                    "lineup_event".player_id1 = "player".id
+                THEN 1 ELSE NULL
+            END
+        ) AS total_red_cards,
+        COUNT(
+            CASE
+                WHEN
+                    "lineup_event".event = 'OWN_GOAL' AND
+                    "lineup_event".player_id1 = "player".id
+                THEN 1 ELSE NULL
+            END
+        ) AS total_own_goals,
+        COUNT(DISTINCT "lineup_player".lineup_id) AS appearances,
+        CASE
+            WHEN "player".position = 'GK' THEN (
+                SELECT
+                    COUNT(
+                        CASE
+                            WHEN EXISTS (
+                                SELECT 1
+                                FROM "lineup_player"
+                                WHERE
+                                    "lineup_player".player_id = "player".id AND
+                                    "lineup_player".lineup_id = "match".home_lineup_id
+                            ) THEN
+                                CASE
+                                    WHEN EXISTS (
+                                        SELECT 1
+                                        FROM "lineup_event"
+                                        WHERE (
+                                            "lineup_event".event = 'GOAL' AND
+                                            "lineup_event".lineup_id = "match".away_lineup_id
+                                        ) OR (
+                                            "lineup_event".event = 'OWN_GOAL' AND
+                                            "lineup_event".lineup_id = "match".home_lineup_id
+                                        )
+                                    ) THEN NULL ELSE 1
+                                END
+                            ELSE
+                                CASE
+                                    WHEN EXISTS (
+                                        SELECT 1
+                                        FROM "lineup_event"
+                                        WHERE (
+                                            "lineup_event".event = 'GOAL' AND
+                                            "lineup_event".lineup_id = "match".home_lineup_id
+                                        ) OR (
+                                            "lineup_event".event = 'OWN_GOAL' AND
+                                            "lineup_event".lineup_id = "match".away_lineup_id
+                                        )
+                                    ) THEN NULL ELSE 1
+                                END
+                        END
+                    )
+                FROM "match"
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM "lineup_player"
+                    WHERE
+                        "lineup_player".player_id = "player".id AND (
+                            "lineup_player".lineup_id = "match".home_lineup_id OR
+                            "lineup_player".lineup_id = "match".away_lineup_id
+                        )
+                    )
+            )
+            ELSE 0
+        END AS clean_sheets
+    FROM "player"
+    LEFT JOIN "lineup_player"
+    ON "player".id = "lineup_player".player_id
+    LEFT JOIN "lineup_event"
+    ON
+        "lineup_player".lineup_id = "lineup_event".lineup_id AND (
+            "lineup_player".player_id = "lineup_event".player_id1 OR
+            "lineup_player".player_id = "lineup_event".player_id2
+        )
+    LEFT JOIN "match"
+    ON
+        "lineup_player".lineup_id = "match".home_lineup_id OR
+        "lineup_player".lineup_id = "match".away_lineup_id
+    WHERE "match".season = $1::TEXT
+    GROUP BY "player".id
+), "player_ranked_total_stats" AS (
+    SELECT
+        player_total_stats.id, player_total_stats.total_goals, player_total_stats.total_assists, player_total_stats.total_yellow_cards, player_total_stats.total_red_cards, player_total_stats.total_own_goals, player_total_stats.appearances, player_total_stats.clean_sheets,
+        RANK() OVER (
+            ORDER BY "player_total_stats".total_goals DESC
+        ) AS goals_rank,
+        RANK() OVER (
+            ORDER BY "player_total_stats".total_assists DESC
+        ) AS assists_rank,
+        RANK() OVER (
+            ORDER BY (
+                "player_total_stats".total_goals +
+                "player_total_stats".clean_sheets +
+                "player_total_stats".total_assists * 0.75 
+            ) DESC
+        ) AS fantasy_rank
+    FROM "player_total_stats"
+)
+SELECT
+    CAST(SUM("player_ranked_total_stats".fantasy_rank) AS INTEGER) AS rank_sum,
+    CAST(MAX("player_ranked_total_stats".fantasy_rank) AS INTEGER) AS max_rank,
+    COUNT(*) AS player_count
+FROM "player_ranked_total_stats"
+`
+
+type FindPlayersRankStatsRow struct {
+	RankSum     int32
+	MaxRank     int32
+	PlayerCount int64
+}
+
+func (q *Queries) FindPlayersRankStats(ctx context.Context, season string) (FindPlayersRankStatsRow, error) {
+	row := q.db.QueryRow(ctx, findPlayersRankStats, season)
+	var i FindPlayersRankStatsRow
+	err := row.Scan(&i.RankSum, &i.MaxRank, &i.PlayerCount)
+	return i, err
+}
+
 const listPlayerLikeFullname = `-- name: ListPlayerLikeFullname :many
 SELECT id, firstname, lastname, dob, height, nationality, position, image
 FROM "player"
@@ -159,7 +311,7 @@ func (q *Queries) ListPlayerLikeFullname(ctx context.Context, arg ListPlayerLike
 }
 
 const listPlayerSeasonPerformance = `-- name: ListPlayerSeasonPerformance :many
-WITH "total_stats" AS (
+WITH "player_total_stats" AS (
     SELECT
         "player".id,
         COUNT(
@@ -285,31 +437,31 @@ WITH "total_stats" AS (
             )
             ELSE true
         END
-), "total_rank_stats" AS (
+), "player_ranked_total_stats" AS (
     SELECT
-        total_stats.id, total_stats.total_goals, total_stats.total_assists, total_stats.total_yellow_cards, total_stats.total_red_cards, total_stats.total_own_goals, total_stats.appearances, total_stats.clean_sheets,
+        player_total_stats.id, player_total_stats.total_goals, player_total_stats.total_assists, player_total_stats.total_yellow_cards, player_total_stats.total_red_cards, player_total_stats.total_own_goals, player_total_stats.appearances, player_total_stats.clean_sheets,
         $4::TEXT AS season,
         RANK() OVER (
-            ORDER BY "total_stats".total_goals DESC
+            ORDER BY "player_total_stats".total_goals DESC
         ) AS goals_rank,
         RANK() OVER (
-            ORDER BY "total_stats".total_assists DESC
+            ORDER BY "player_total_stats".total_assists DESC
         ) AS assists_rank,
         RANK() OVER (
             ORDER BY (
-                "total_stats".total_goals +
-                "total_stats".clean_sheets +
-                "total_stats".total_assists * 0.75 
+                "player_total_stats".total_goals +
+                "player_total_stats".clean_sheets +
+                "player_total_stats".total_assists * 0.75 
             ) DESC
         ) AS fantasy_rank
-    FROM "total_stats"
+    FROM "player_total_stats"
 )
 SELECT id, total_goals, total_assists, total_yellow_cards, total_red_cards, total_own_goals, appearances, clean_sheets, season, goals_rank, assists_rank, fantasy_rank
-FROM "total_rank_stats"
+FROM "player_ranked_total_stats"
 WHERE
     CASE
         WHEN $1::bool
-        THEN "total_rank_stats".id = $2::INTEGER
+        THEN "player_ranked_total_stats".id = $2::INTEGER
         ELSE true
     END
 LIMIT $3::INTEGER
@@ -318,7 +470,7 @@ LIMIT $3::INTEGER
 type ListPlayerSeasonPerformanceParams struct {
 	FilterPlayerID bool
 	PlayerID       int32
-	Limit          int32
+	Limit          pgtype.Int4
 	Season         string
 	FilterClubID   bool
 	ClubID         string

@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func HandlePlayerPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
@@ -39,7 +40,7 @@ func HandlePlayerPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 		PlayerID:       player.ID,
 		FilterClubID:   false,
 		ClubID:         "",
-		Limit:          1,
+		Limit:          pgtype.Int4{Int32: 1, Valid: true},
 	})
 	if err != nil {
 		return err
