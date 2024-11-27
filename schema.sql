@@ -162,8 +162,8 @@ CREATE TABLE "fatasy_transaction" (
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cost                INT4 NOT NULL,
     type                fantasy_transaction_type NOT NULL,
-    fantasy_team_id     INTEGER,
-    fantasy_player_id   INTEGER,
+    fantasy_team_id     INTEGER NOT NULL,
+    fantasy_player_id   INTEGER NOT NULL,
 
     CONSTRAINT fk_fantasy_team_player_fantasy_team      FOREIGN KEY (fantasy_team_id) REFERENCES "fantasy_team"(id),
     CONSTRAINT fk_fantasy_team_player_fantasy_player    FOREIGN KEY (fantasy_player_id) REFERENCES "fantasy_player"(id)

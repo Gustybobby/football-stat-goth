@@ -14,8 +14,8 @@ import (
 type InsertFantasyTransacionParams struct {
 	Cost            int32
 	Type            FantasyTransactionType
-	FantasyTeamID   pgtype.Int4
-	FantasyPlayerID pgtype.Int4
+	FantasyTeamID   int32
+	FantasyPlayerID int32
 }
 
 const listFantasyPlayers = `-- name: ListFantasyPlayers :many

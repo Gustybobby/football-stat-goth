@@ -6,37 +6,34 @@ import (
 	"football-stat-goth/services/pltime"
 	"net/http"
 	"strconv"
-
-	"github.com/jackc/pgx/v5/pgtype"
+	"strings"
 )
 
 func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
-	// player_0-10
-	var added_player_id []int32
-	var fantasy_players []queries.ListFantasyPlayersRow
+	r.ParseForm()
 
-	for i := range 11 {
-		id, err := strconv.Atoi(r.FormValue("player_" + strconv.Itoa(i)))
+	var fantasy_player_ids []int32
+	for key := range r.Form {
+		fantasy_player_id, err := strconv.Atoi(strings.Split(key, "_")[2])
 		if err != nil {
 			return err
 		}
 
-		added_player_id = append(added_player_id, int32(id))
+		fantasy_player_ids = append(fantasy_player_ids, int32(fantasy_player_id))
 	}
 
 	fantasy_players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
 		MinCost:               1,
 		AvgCost:               9,
 		FilterFantasyPlayerID: true,
-		FantasyPlayerIds:      added_player_id,
+		FantasyPlayerIds:      fantasy_player_ids,
 		Season:                pltime.GetCurrentSeasonString(),
 	})
 	if err != nil {
 		return err
 	}
 
-	var fantasy_transaction []queries.InsertFantasyTransacionParams
-
+	var fantasy_transactions []queries.InsertFantasyTransacionParams
 	for i, fantasy_player := range fantasy_players {
 		FantasyTeamID, err := strconv.Atoi(r.FormValue("player_" + strconv.Itoa(i) + "FantasyTeamID"))
 		if err != nil {
@@ -48,17 +45,17 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 			return err
 		}
 
-		n := queries.InsertFantasyTransacionParams{
+		transaction := queries.InsertFantasyTransacionParams{
 			Cost:            fantasy_player.Cost,
 			Type:            queries.FantasyTransactionTypeBUY,
-			FantasyTeamID:   pgtype.Int4{Int32: int32(FantasyTeamID), Valid: true},
-			FantasyPlayerID: pgtype.Int4{Int32: int32(FantasyPlayerID), Valid: true},
+			FantasyTeamID:   int32(FantasyTeamID),
+			FantasyPlayerID: int32(FantasyPlayerID),
 		}
 
-		fantasy_transaction = append(fantasy_transaction, n)
+		fantasy_transactions = append(fantasy_transactions, transaction)
 	}
 
-	repo.Queries.InsertFantasyTransacion(repo.Ctx, fantasy_transaction)
+	repo.Queries.InsertFantasyTransacion(repo.Ctx, fantasy_transactions)
 
 	return nil
 }
