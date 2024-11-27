@@ -147,6 +147,10 @@ templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
 						<td class="font-semibold p-1">Own Goals</td>
 						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalOwnGoals)) }</td>
 					</tr>
+					<tr>
+						<td class="font-semibold p-1">Fantasy Ranking</td>
+						<td class="font-bold p-1">#{ strconv.Itoa(int(performance.FantasyRank)) }</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

@@ -179,7 +179,14 @@ WITH "total_stats" AS (
         ) AS goals_rank,
         RANK() OVER (
             ORDER BY "total_stats".total_assists DESC
-        ) AS assists_rank
+        ) AS assists_rank,
+        RANK() OVER (
+            ORDER BY (
+                "total_stats".total_goals +
+                "total_stats".clean_sheets +
+                "total_stats".total_assists * 0.75 
+            ) DESC
+        ) AS fantasy_rank
     FROM "total_stats"
 )
 SELECT *
