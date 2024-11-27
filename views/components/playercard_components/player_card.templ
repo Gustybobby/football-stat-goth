@@ -8,8 +8,14 @@ templ PlayerCard() {
 	</div>
 }
 
-templ PlayerCardImg(player queries.GetPlayerInfoForFantasyRow) {
-	<div class="relative">
+templ BlankPlayerCard() {
+	<div class="flex justify-center">
+		<img class="h-full w-full" src="/public/blank-playerCard.png"/>
+	</div>
+}
+
+templ PlayerCardImg(player queries.GetFantasy_PlayerInfoForFantasyRow) {
+	<div class="relative hover: cursor-pointer">
 		@PlayerCard()
 		<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
 			<div class="flex justify-center items-center w-full h-full">

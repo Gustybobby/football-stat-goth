@@ -14,8 +14,8 @@ import (
 const getFantasy_PlayerInfoForFantasy = `-- name: GetFantasy_PlayerInfoForFantasy :many
 SELECT "player".lastname, "player".position, "player".image, "club".id as club_id, "fantasy_player".cost, "fantasy_player".points, "fantasy_player".rating
 FROM "fantasy_player" 
-inner join "player" on "fantasy_player".player_id = "player".id
-inner join "club" on "fantasy_player".club_id = "club".id
+JOIN "player" on "fantasy_player".player_id = "player".id
+JOIN "club" on "fantasy_player".club_id = "club".id
 ORDER BY "player".position ASC, "player".lastname ASC
 `
 
@@ -46,46 +46,6 @@ func (q *Queries) GetFantasy_PlayerInfoForFantasy(ctx context.Context) ([]GetFan
 			&i.Cost,
 			&i.Points,
 			&i.Rating,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getPlayerInfoForFantasy = `-- name: GetPlayerInfoForFantasy :many
-SELECT "player".lastname, "player".position, "player".image, "club".id as club_id
-FROM "player" 
-inner join "club_player" on "player".id = "club_player".player_id
-inner join "club" on "club_player".club_id = "club".id
-ORDER BY "player".position ASC, "player".lastname ASC
-`
-
-type GetPlayerInfoForFantasyRow struct {
-	Lastname string
-	Position PlayerPosition
-	Image    pgtype.Text
-	ClubID   string
-}
-
-func (q *Queries) GetPlayerInfoForFantasy(ctx context.Context) ([]GetPlayerInfoForFantasyRow, error) {
-	rows, err := q.db.Query(ctx, getPlayerInfoForFantasy)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetPlayerInfoForFantasyRow
-	for rows.Next() {
-		var i GetPlayerInfoForFantasyRow
-		if err := rows.Scan(
-			&i.Lastname,
-			&i.Position,
-			&i.Image,
-			&i.ClubID,
 		); err != nil {
 			return nil, err
 		}
