@@ -40,16 +40,11 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 			return err
 		}
 
-		FantasyPlayerID, err := strconv.Atoi(r.FormValue("player_" + strconv.Itoa(i) + "FantasyPlayerID"))
-		if err != nil {
-			return err
-		}
-
 		transaction := queries.InsertFantasyTransacionParams{
 			Cost:            fantasy_player.Cost,
 			Type:            queries.FantasyTransactionTypeBUY,
 			FantasyTeamID:   int32(FantasyTeamID),
-			FantasyPlayerID: int32(FantasyPlayerID),
+			FantasyPlayerID: fantasy_player.ID,
 		}
 
 		fantasy_transactions = append(fantasy_transactions, transaction)

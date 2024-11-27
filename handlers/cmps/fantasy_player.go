@@ -2,6 +2,7 @@ package cmps
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/handlers/api"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/pltime"
@@ -13,6 +14,10 @@ import (
 
 func HandleFantasyPlayersField(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	r.ParseForm()
+
+	if r.Form.Get("submit_team") == "submit" {
+		return api.HandleCreateFantasyTeam(w, r, repo)
+	}
 
 	var fantasy_player_ids []int32
 	for key := range r.Form {
