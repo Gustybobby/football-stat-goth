@@ -24,8 +24,8 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 	}
 
 	players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
-		MinCost: 2,
-		AvgCost: 12,
+		MinCost: 1,
+		AvgCost: 9,
 		Season:  pltime.GetCurrentSeasonString(),
 	})
 

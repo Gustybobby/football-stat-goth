@@ -139,13 +139,13 @@ WITH "player_total_stats" AS (
                 "player_total_stats".total_goals +
                 "player_total_stats".clean_sheets +
                 "player_total_stats".total_assists * 0.75 
-            ) DESC
-        ) AS fantasy_rank
+            ) ASC
+        ) AS fantasy_rev_rank
     FROM "player_total_stats"
 ), "rank_stats" AS (
     SELECT
-        SUM("player_ranked_total_stats".fantasy_rank)/COUNT(*) AS rank_count_ratio,
-        CAST(MAX("player_ranked_total_stats".fantasy_rank) AS INTEGER) AS max_rank
+        SUM("player_ranked_total_stats".fantasy_rev_rank)/COUNT(*) AS rank_count_ratio,
+        CAST(MAX("player_ranked_total_stats".fantasy_rev_rank) AS INTEGER) AS max_rank
     FROM "player_ranked_total_stats"
 )
 SELECT
@@ -162,7 +162,7 @@ SELECT
                     $1::INTEGER + (
                         ($2::INTEGER - $1::INTEGER) /
                         ("rank_stats".rank_count_ratio - 1)
-                    ) * ("rank_stats".max_rank - "player_ranked_total_stats".fantasy_rank)
+                    ) * ("player_ranked_total_stats".fantasy_rev_rank - 1)
                 ) AS INTEGER
             )
         FROM "rank_stats"
