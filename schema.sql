@@ -64,6 +64,8 @@ CREATE TABLE "lineup_player" (
     CONSTRAINT fk_lineup_player_player          FOREIGN KEY (player_id) REFERENCES "player"(id)
 );
 
+CREATE INDEX "idx_lineup_player_player_id" ON "lineup_player" USING BTREE(player_id);
+
 CREATE TABLE "lineup_event" (
     id          SERIAL PRIMARY KEY,
     lineup_id   INTEGER NOT NULL,
