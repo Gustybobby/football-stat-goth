@@ -8,24 +8,6 @@ import (
 	"strconv"
 )
 
-script onDeletePlayerCard(position string, i int) {
-	counter[position] = i - 1;
-	const count_input = document.getElementById(position+"_count");
-	count_input.value = Math.max(Math.min(Number(count_input.value) - 1, posMax[position] - 1), 0);
-}
-
-script onAddPlayerCard(position string, i int) {
-	counter[position] += 1;
-	document.getElementById("card_" + i).setAttribute('hx-target', '#' + position + '_'+ counter[position]);
-	const count_input = document.getElementById(position+"_count");
-	if (Number(count_input.value) <= posMax[position]) {
-		count_input.value = Number(count_input.value) + 1;
-	}
-	if (counter[position] >= posMax[position] - 1){
-		counter[position] = -1;
-	}
-}
-
 templ Fantasy(
 	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
@@ -47,6 +29,27 @@ templ Fantasy(
 				"MFD": 4,
 				"FWD": 2
 			};
+
+			function onDeletePlayerCard(position, element) {
+				const i = Number(element.getAttribute('field-pos'));
+				counter[position] = i - 1;
+				const count_input = document.getElementById(position+"_count");
+				count_input.value = Math.max(Math.min(Number(count_input.value) - 1, posMax[position] - 1), 0);
+			}
+
+			function onAddPlayerCard(element) {
+				const player_id = Number(element.getAttribute("player-id"));
+				const position = element.getAttribute("player-position")
+				counter[position] += 1;
+				document.getElementById("card_" + player_id).setAttribute('hx-target', '#' + position + '_'+ counter[position]);
+				const count_input = document.getElementById(position+"_count");
+				if (Number(count_input.value) <= posMax[position]) {
+					count_input.value = Number(count_input.value) + 1;
+				}
+				if (counter[position] >= posMax[position] - 1){
+					counter[position] = -1;
+				}
+			}
 		</script>
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
 			<div class="max-w-5xl">
@@ -72,7 +75,8 @@ templ Fantasy(
 												id={ "GK_" + strconv.Itoa(i) }
 												hx-trigger="click"
 												hx-post="/cmps/fantasy/player-card?blank=true"
-												onclick={ onDeletePlayerCard("GK", i) }
+												onclick="onDeletePlayerCard('GK',this);"
+												field-pos={ strconv.Itoa(i) }
 											>
 												@playercard_components.BlankPlayerCard()
 											</div>
@@ -84,7 +88,8 @@ templ Fantasy(
 												id={ "DEF_" + strconv.Itoa(i) }
 												hx-trigger="click"
 												hx-post="/cmps/fantasy/player-card?blank=true"
-												onclick={ onDeletePlayerCard("DEF", i) }
+												onclick="onDeletePlayerCard('DEF',this);"
+												field-pos={ strconv.Itoa(i) }
 											>
 												@playercard_components.BlankPlayerCard()
 											</div>
@@ -96,7 +101,8 @@ templ Fantasy(
 												id={ "MFD_" + strconv.Itoa(i) }
 												hx-trigger="click"
 												hx-post="/cmps/fantasy/player-card?blank=true"
-												onclick={ onDeletePlayerCard("MFD", i) }
+												onclick="onDeletePlayerCard('MFD',this);"
+												field-pos={ strconv.Itoa(i) }
 											>
 												@playercard_components.BlankPlayerCard()
 											</div>
@@ -108,7 +114,8 @@ templ Fantasy(
 												id={ "FWD_" + strconv.Itoa(i) }
 												hx-trigger="click"
 												hx-post="/cmps/fantasy/player-card?blank=true"
-												onclick={ onDeletePlayerCard("FWD", i) }
+												onclick="onDeletePlayerCard('FWD',this);"
+												field-pos={ strconv.Itoa(i) }
 											>
 												@playercard_components.BlankPlayerCard()
 											</div>
@@ -156,7 +163,9 @@ templ Fantasy(
 											hx-trigger="click"
 											hx-target={ "#" + string(player.Position) + "_" + "0" }
 											hx-swap="innerHTML"
-											onclick={ onAddPlayerCard(string(player.Position), int(player.ID)) }
+											onclick="onAddPlayerCard(this);"
+											player-id={ strconv.Itoa(int(player.ID)) }
+											player-position={ string(player.Position) }
 										>
 											<div class="flip-card w-32 h-40">
 												<div class="flip-card-inner">
