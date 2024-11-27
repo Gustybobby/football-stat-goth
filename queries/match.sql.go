@@ -502,10 +502,10 @@ ON "match".away_lineup_id = "away_lineup".id
 INNER JOIN "club" as "away_club"
 ON "away_lineup".club_id = "away_club".id
 INNER JOIN "lineup_player"
-ON (
+ON "lineup_player".player_id = $1::INTEGER AND (
     "lineup_player".lineup_id = "home_lineup".id OR
     "lineup_player".lineup_id = "away_lineup".id
-) AND "lineup_player".player_id = $1::INTEGER
+)
 WHERE is_finished = true
 ORDER BY "match".start_at DESC
 `
