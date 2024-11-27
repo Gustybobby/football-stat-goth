@@ -11,6 +11,13 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type InsertFantasyTransacionParams struct {
+	Cost            int32
+	Type            FantasyTransactionType
+	FantasyTeamID   pgtype.Int4
+	FantasyPlayerID pgtype.Int4
+}
+
 const listFantasyPlayers = `-- name: ListFantasyPlayers :many
 WITH "player_total_stats" AS (
     SELECT
