@@ -170,3 +170,7 @@ WHERE
 ORDER BY
     "player".position ASC,
     "player".lastname ASC;
+
+-- name: InsertFantasyTransacion :copyfrom
+INSERT INTO "fatasy_transaction" (cost, type, fantasy_team_id, fantasy_player_id)
+    VALUES ($1, $2, $3, $4);
