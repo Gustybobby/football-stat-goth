@@ -123,7 +123,7 @@ WITH "player_total_stats" AS (
     ON
         "lineup_player".lineup_id = "match".home_lineup_id OR
         "lineup_player".lineup_id = "match".away_lineup_id
-    WHERE "match".season = $3::TEXT
+    WHERE "match".season = $5::TEXT
     GROUP BY "player".id
 ), "player_ranked_total_stats" AS (
     SELECT
@@ -174,15 +174,23 @@ INNER JOIN "player"
 ON "fantasy_player".player_id = "player".id
 INNER JOIN "club"
 ON "fantasy_player".club_id = "club".id
+WHERE
+    CASE
+        WHEN $3::bool
+        THEN "fantasy_player".id = $4::INTEGER
+        ELSE true
+    END
 ORDER BY
     "player".position ASC,
     "player".lastname ASC
 `
 
 type ListFantasyPlayersParams struct {
-	MinCost int32
-	AvgCost int32
-	Season  string
+	MinCost               int32
+	AvgCost               int32
+	FilterFantasyPlayerID bool
+	FantasyPlayerID       int32
+	Season                string
 }
 
 type ListFantasyPlayersRow struct {
@@ -196,7 +204,13 @@ type ListFantasyPlayersRow struct {
 }
 
 func (q *Queries) ListFantasyPlayers(ctx context.Context, arg ListFantasyPlayersParams) ([]ListFantasyPlayersRow, error) {
-	rows, err := q.db.Query(ctx, listFantasyPlayers, arg.MinCost, arg.AvgCost, arg.Season)
+	rows, err := q.db.Query(ctx, listFantasyPlayers,
+		arg.MinCost,
+		arg.AvgCost,
+		arg.FilterFantasyPlayerID,
+		arg.FantasyPlayerID,
+		arg.Season,
+	)
 	if err != nil {
 		return nil, err
 	}

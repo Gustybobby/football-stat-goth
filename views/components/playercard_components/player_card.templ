@@ -1,6 +1,9 @@
 package playercard_components
 
-import "football-stat-goth/queries"
+import (
+	"football-stat-goth/queries"
+	"strconv"
+)
 
 templ PlayerCard() {
 	<div class="flex justify-center">
@@ -15,14 +18,29 @@ templ BlankPlayerCard() {
 }
 
 templ PlayerCardImg(player queries.ListFantasyPlayersRow) {
-	<div class="relative hover: cursor-pointer">
-		@PlayerCard()
-		<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
-			<div class="flex justify-center items-center w-full h-full">
-				<object class="size-3/4" data={ player.Image.String } type="image/png">
-					<img class="size-full  opacity-75" src="/public/blank-player.png"/>
-				</object>
-			</div>
-		</span>
+	<div class="flex justify-center">
+		<div class="relative size-full">
+			@PlayerCard()
+			<span class="absolute inset-0 p-4 translate-y-6 size-full justify-center">
+				<img class="" src={ player.Image.String } onerror=" this.src = '/public/blank-player.png'"/>
+			</span>
+			<span class="absolute inset-0 p-4 size-full align-text-top text-center">
+				<p class="text-primary-foreground font-bold player-name">{ player.Lastname }</p>
+				<p class=" hidden player-club">{ player.ClubID } </p>
+			</span>
+		</div>
+	</div>
+}
+
+templ PlayerCardInfo(player queries.ListFantasyPlayersRow) {
+	<div class="flex justify-center">
+		<div class="relative size-full">
+			@PlayerCard()
+			<span class="absolute inset-0 size-full align-text-top text-center p-4 translate-y-1">
+				<p class="text-primary-foreground font-bold">{ player.Lastname }</p>
+				<p class="font-semibold player-pos">{ string(player.Position) }</p>
+				<p class="font-semibold player-cost">Cost: { strconv.Itoa(int(player.Cost)) }</p>
+			</span>
+		</div>
 	</div>
 }

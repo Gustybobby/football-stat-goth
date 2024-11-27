@@ -19,6 +19,7 @@ templ Fantasy(
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
 			<div class="max-w-5xl">
 				<section class="w-full flex px-2 py-8 space-x-4 flex-row">
+					// Field Area
 					<section class="basis-2/3 overflow-hidden">
 						<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg border border-t-primary">
 							Your Team
@@ -33,30 +34,39 @@ templ Fantasy(
 							// make 3 section for each row instead, then make section within thos.
 							<div class="absolute inset-0 flex items-center px-14">
 								<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11 -translate-y-11">
-									<div class="flex h-full justify-center" onclick="SetFilter('GK')">
-										for range(1) {
-											@playercard_components.BlankPlayerCard()
+									<div class="h-full justify-center" onclick="SetFilter('GK')">
+										for i := range(1) {
+											<div id={ "gk" + strconv.Itoa(i) } class="flex justify-center size-full">
+												@playercard_components.BlankPlayerCard()
+											</div>
 										}
 									</div>
-									<section class="flex h-full justify-center -translate-y-8" onclick="SetFilter('DEF')">
-										for range(4) {
-											@playercard_components.BlankPlayerCard()
+									<section class="grid grid-cols-4 h-full justify-center -translate-y-8" onclick="SetFilter('DEF')">
+										for i := range(4) {
+											<div id={ "def" + strconv.Itoa(i) } class="flex justify-center size-full">
+												@playercard_components.BlankPlayerCard()
+											</div>
 										}
 									</section>
-									<section class="flex h-full justify-center -translate-y-8" onclick="SetFilter('MFD')">
-										for range(4) {
-											@playercard_components.BlankPlayerCard()
+									<section class="grid grid-cols-4 h-full justify-center -translate-y-8" onclick="SetFilter('MFD')">
+										for i := range(4) {
+											<div id={ "mfd" + strconv.Itoa(i) } class="flex justify-center size-full">
+												@playercard_components.BlankPlayerCard()
+											</div>
 										}
 									</section>
-									<section class="flex h-full space-x-11 justify-center -translate-y-8" onclick="SetFilter('FWD')">
-										for range(2) {
-											@playercard_components.BlankPlayerCard()
+									<section class="grid grid-cols-2 h-full space-x-11 justify-center -translate-y-8" onclick="SetFilter('FWD')">
+										for i := range(2) {
+											<div id={ "fwd" + strconv.Itoa(i) } class="flex justify-center size-full">
+												@playercard_components.BlankPlayerCard()
+											</div>
 										}
 									</section>
 								</section>
 							</div>
 						</div>
 					</section>
+					// Select Player Area
 					<div class="basis-1/3 flex flex-col space-y-4 transition-all">
 						<section class="rounded-lg border border-primary shadow-lg w-full">
 							<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
@@ -77,34 +87,28 @@ templ Fantasy(
 										</optgroup>
 									</select>
 								</div>
-								<ul class="px-4 size-full overflow-scroll">
+								<ul class="px-4 size-full overflow-scroll grid grid-cols-2">
 									for _,player := range players {
-										<a
-											href=""
-											class="flex justify-center py-8 player-card"
+										<div
+											class="flex justify-center player-card m-2 hover: cursor-pointer"
+											hx-get={ "/cmps/fantasy/player-card?fantasy_player_id=" + strconv.Itoa(int(player.ID)) }
+											hx-trigger="click"
+											hx-target="#gk0"
+											hx-swap="innerHTML"
 										>
 											<div class="flip-card w-32 h-40">
-												<div class="flip-card-inner ">
-													<div class="flip-card-front relative h-full">
+												<div class="flip-card-inner">
+													<div class="flip-card-front relative">
 														// front side, user playercard_front
 														@playercard_components.PlayerCardImg(player)
-														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
-															<p class="text-primary-foreground font-bold player-name">{ player.Lastname }</p>
-															<p class=" hidden player-club">{ player.ClubID } </p>
-														</span>
 													</div>
 													<div class="flip-card-back relative">
 														// back side, user playercard_back
-														@playercard_components.PlayerCard()
-														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
-															<p class="text-primary-foreground font-bold player-lname">{ player.Lastname }</p>
-															<p class="font-semibold player-pos">{ string(player.Position) }</p>
-															<p class="font-semibold player-cost">{ strconv.Itoa(int(player.Cost)) }</p>
-														</span>
+														@playercard_components.PlayerCardInfo(player)
 													</div>
 												</div>
 											</div>
-										</a>
+										</div>
 									}
 								</ul>
 								<script>

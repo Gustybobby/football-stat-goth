@@ -161,6 +161,12 @@ INNER JOIN "player"
 ON "fantasy_player".player_id = "player".id
 INNER JOIN "club"
 ON "fantasy_player".club_id = "club".id
+WHERE
+    CASE
+        WHEN sqlc.arg('filter_fantasy_player_id')::bool
+        THEN "fantasy_player".id = sqlc.arg('fantasy_player_id')::INTEGER
+        ELSE true
+    END
 ORDER BY
     "player".position ASC,
     "player".lastname ASC;
