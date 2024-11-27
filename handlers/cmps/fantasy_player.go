@@ -15,7 +15,6 @@ func HandleFantasyPlayersField(w http.ResponseWriter, r *http.Request, repo *rep
 	r.ParseForm()
 
 	var fantasy_player_ids []int32
-
 	for key := range r.Form {
 		fantasy_player_id, err := strconv.Atoi(strings.Split(key, "_")[2])
 		if err != nil {
@@ -65,7 +64,12 @@ func HandleFantasyPlayersField(w http.ResponseWriter, r *http.Request, repo *rep
 		return nil
 	}
 
-	return handlers.Render(w, r, fantasy_components.FantasyTeamField(gk_fantasy_players, def_fantasy_players, mfd_fantasy_players, fwd_fantasy_players, cost))
+	return handlers.Render(w, r, fantasy_components.FantasyTeamField(fantasy_components.FantasyTeamFieldPlayersParams{
+		GK:  gk_fantasy_players,
+		DEF: def_fantasy_players,
+		MFD: mfd_fantasy_players,
+		FWD: fwd_fantasy_players,
+	}, cost))
 }
 
 func filterFantasyPlayersByPosition(position queries.PlayerPosition, fantasy_players []queries.ListFantasyPlayersRow) []queries.ListFantasyPlayersRow {

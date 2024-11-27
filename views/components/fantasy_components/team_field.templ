@@ -5,11 +5,15 @@ import (
 	"strconv"
 )
 
+type FantasyTeamFieldPlayersParams struct {
+	GK  []queries.ListFantasyPlayersRow
+	DEF []queries.ListFantasyPlayersRow
+	MFD []queries.ListFantasyPlayersRow
+	FWD []queries.ListFantasyPlayersRow
+}
+
 templ FantasyTeamField(
-	gk_players []queries.ListFantasyPlayersRow,
-	def_players []queries.ListFantasyPlayersRow,
-	mfd_players []queries.ListFantasyPlayersRow,
-	fwd_players []queries.ListFantasyPlayersRow,
+	players FantasyTeamFieldPlayersParams,
 	cost int,
 ) {
 	<section id="team_field" class="basis-2/3 flex flex-col overflow-hidden">
@@ -36,10 +40,10 @@ templ FantasyTeamField(
 					<section class="flex justify-center" onclick="SetFilter('GK')">
 						for i := range(1) {
 							<div>
-								if i >= len(gk_players) {
+								if i >= len(players.GK) {
 									@BlankPlayerCard(queries.PlayerPositionGK)
 								} else {
-									@PlayerCardImg(gk_players[i])
+									@PlayerCardImg(players.GK[i])
 								}
 							</div>
 						}
@@ -47,10 +51,10 @@ templ FantasyTeamField(
 					<section class="flex justify-center -translate-y-8" onclick="SetFilter('DEF')">
 						for i := range(4) {
 							<div>
-								if i >= len(def_players) {
+								if i >= len(players.DEF) {
 									@BlankPlayerCard(queries.PlayerPositionDEF)
 								} else {
-									@PlayerCardImg(def_players[i])
+									@PlayerCardImg(players.DEF[i])
 								}
 							</div>
 						}
@@ -58,10 +62,10 @@ templ FantasyTeamField(
 					<section class="flex justify-center -translate-y-8" onclick="SetFilter('MFD')">
 						for i := range(4) {
 							<div>
-								if i >= len(mfd_players) {
+								if i >= len(players.MFD) {
 									@BlankPlayerCard(queries.PlayerPositionMFD)
 								} else {
-									@PlayerCardImg(mfd_players[i])
+									@PlayerCardImg(players.MFD[i])
 								}
 							</div>
 						}
@@ -69,10 +73,10 @@ templ FantasyTeamField(
 					<section class="flex justify-center -translate-y-8" onclick="SetFilter('FWD')">
 						for i := range(2) {
 							<div>
-								if i >= len(fwd_players) {
+								if i >= len(players.FWD) {
 									@BlankPlayerCard(queries.PlayerPositionFWD)
 								} else {
-									@PlayerCardImg(fwd_players[i])
+									@PlayerCardImg(players.FWD[i])
 								}
 							</div>
 						}
