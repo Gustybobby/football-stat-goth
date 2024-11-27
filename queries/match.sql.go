@@ -490,22 +490,8 @@ SELECT
             "lineup_event".lineup_id = "match".home_lineup_id
         )
     ) AS away_goals,
-    (
-        SELECT "lineup_player".position
-        FROM "lineup_player"
-        WHERE (
-            "lineup_player".lineup_id = "home_lineup".id OR
-            "lineup_player".lineup_id = "away_lineup".id
-        ) AND "lineup_player".player_id = $1::INTEGER
-    ) AS player_position,
-    (
-        SELECT "lineup_player".no
-        FROM "lineup_player"
-        WHERE (
-            "lineup_player".lineup_id = "home_lineup".id OR
-            "lineup_player".lineup_id = "away_lineup".id
-        ) AND "lineup_player".player_id = $1::INTEGER
-    ) AS player_no
+    "lineup_player".position AS player_position,
+    "lineup_player".no AS player_no
 FROM "match"
 INNER JOIN "lineup" as "home_lineup"
 ON "match".home_lineup_id = "home_lineup".id
@@ -515,16 +501,12 @@ INNER JOIN "lineup" as "away_lineup"
 ON "match".away_lineup_id = "away_lineup".id
 INNER JOIN "club" as "away_club"
 ON "away_lineup".club_id = "away_club".id
-WHERE
-    is_finished = true AND
-    EXISTS (
-        SELECT 1
-        FROM "lineup_player"
-        WHERE (
-            "lineup_player".lineup_id = "home_lineup".id OR
-            "lineup_player".lineup_id = "away_lineup".id
-        ) AND "lineup_player".player_id = $1::INTEGER
-    )
+INNER JOIN "lineup_player"
+ON (
+    "lineup_player".lineup_id = "home_lineup".id OR
+    "lineup_player".lineup_id = "away_lineup".id
+) AND "lineup_player".player_id = $1::INTEGER
+WHERE is_finished = true
 ORDER BY "match".start_at DESC
 `
 
