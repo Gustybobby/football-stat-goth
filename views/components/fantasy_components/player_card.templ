@@ -9,8 +9,8 @@ templ PlayerCard() {
 	<img class="h-full w-full" src="/public/playerCard.png"/>
 }
 
-templ BlankPlayerCard() {
-	<img class="h-full w-full" src="/public/blank-playerCard.png"/>
+templ BlankPlayerCard(position queries.PlayerPosition) {
+	<img class="h-full w-full" src="/public/blank-playerCard.png" blank="true" pos={ string(position) }/>
 }
 
 templ PlayerCardImg(player queries.ListFantasyPlayersRow) {

@@ -16,56 +16,24 @@ templ Fantasy(
 	@layouts.Base() {
 		@components.Fixture(fixtures)
 		@components.Nav(user)
+		<script>
+			function countBlankPositionCard(position) {
+				const blankCards = document.querySelectorAll(`img[blank="true"][pos='${position}']`)
+				return blankCards.length
+			}
+		</script>
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
 			<div class="max-w-5xl">
-				<section class="w-full flex px-2 py-8 space-x-4 flex-row">
+				<form
+					id="fantasy_player_selection_form"
+					hx-post="/cmps/fantasy/player-card"
+					hx-trigger="change"
+					hx-target="#team_field"
+					hx-swap="outerHTML"
+					class="w-full flex px-2 py-8 space-x-4 flex-row"
+				>
 					// Field Area
-					<section class="basis-2/3 flex flex-col overflow-hidden">
-						<div class="bg-gradient-to-br from-secondary-foreground to-secondary-background p-2 rounded-t-lg grid grid-cols-3 text-primary-background">
-							<div></div>
-							<h1 class="text-xl text-center font-bold ">
-								Your Team
-							</h1>
-							<span class="font-semibold flex items-center justify-end space-x-2">
-								<p>Current Cost:</p>
-								<p id="team_cost">0/100</p>
-							</span>
-						</div>
-						<div class="relative w-full h-[700px] items-center bg-gradient-to-tr from-secondary-foreground from-20% via-sky-500 via-50% to-emerald-500 to-90%">
-							<img
-								class="w-full h-full"
-								src="/public/1-1-football-pitch.png"
-							/>
-							// make 3 section for each row instead, then make section within thos.
-							<div class="absolute inset-0 flex items-center px-14">
-								<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11 -translate-y-11">
-									<section class="flex justify-center" onclick="SetFilter('GK')">
-										for range(1) {
-											@fantasy_components.BlankPlayerCard()
-										}
-									</section>
-									<section class="flex justify-center -translate-y-8" onclick="SetFilter('DEF')">
-										for range(4) {
-											@fantasy_components.BlankPlayerCard()
-										}
-									</section>
-									<section class="flex justify-center -translate-y-8" onclick="SetFilter('MFD')">
-										for range(4) {
-											@fantasy_components.BlankPlayerCard()
-										}
-									</section>
-									<section class="flex justify-center -translate-y-8" onclick="SetFilter('FWD')">
-										for range(2) {
-											@fantasy_components.BlankPlayerCard()
-										}
-									</section>
-								</section>
-							</div>
-						</div>
-						<div class="flex w-full h-11 items-center justify-center rounded-b-lg text-center bg-secondary-background">
-							<button type="submit" class="w-1/2 h-1/2 bg-secondary-foreground shadow-lg rounded-sm text-xs text-primary-foreground font-semibold">Save Team</button>
-						</div>
-					</section>
+					@fantasy_components.FantasyTeamField(nil, nil, nil, nil, 0)
 					// Select Player Area
 					<div class="basis-1/3 flex flex-col space-y-4 transition-all">
 						<section class="rounded-lg border border-primary shadow-lg size-full">
@@ -87,17 +55,11 @@ templ Fantasy(
 										</optgroup>
 									</select>
 								</div>
-								<form
-									id="fantasy_player_selection_form"
-									class="px-4 size-full overflow-scroll grid grid-cols-2"
-									hx-post="/cmps/fantasy/player-card"
-									hx-trigger="change"
-									hx-swap="none"
-								>
+								<div class="px-4 size-full overflow-scroll grid grid-cols-2">
 									for _,player := range players {
-										<div class="flex flex-col justify-center items-center">
+										<div class="flex flex-col justify-center items-center player-card">
 											<label
-												class="flex justify-center player-card m-2 hover: cursor-pointer"
+												class="flex justify-center m-2 hover:cursor-pointer"
 												for={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
 											>
 												<div class="flip-card w-32 h-40">
@@ -118,10 +80,16 @@ templ Fantasy(
 												id={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
 												name={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
 												type="checkbox"
+												position={ string(player.Position) }
+												onclick="
+													if (countBlankPositionCard(this.getAttribute('position')) <= 0) {
+														this.checked = false;
+													}
+												"
 											/>
 										</div>
 									}
-								</form>
+								</div>
 								<script>
 									// Init variables for player filter
 									var searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
@@ -197,7 +165,7 @@ templ Fantasy(
 							</div>
 						</section>
 					</div>
-				</section>
+				</form>
 			</div>
 		</main>
 	}

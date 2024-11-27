@@ -177,7 +177,7 @@ ON "fantasy_player".club_id = "club".id
 WHERE
     CASE
         WHEN $3::bool
-        THEN "fantasy_player".id IN ($4)
+        THEN "fantasy_player".id = ANY($4::INTEGER[])
         ELSE true
     END
 ORDER BY
