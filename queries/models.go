@@ -163,9 +163,6 @@ type FantasyPlayer struct {
 	ID       int32
 	ClubID   pgtype.Text
 	PlayerID pgtype.Int4
-	Cost     int32
-	Points   pgtype.Int4
-	Rating   pgtype.Int4
 }
 
 type Lineup struct {

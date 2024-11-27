@@ -5,12 +5,13 @@ import (
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/components/playercard_components"
 	"football-stat-goth/views/layouts"
+	"strconv"
 )
 
 templ Fantasy(
 	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
-	players []queries.GetFantasy_PlayerInfoForFantasyRow,
+	players []queries.ListFantasyPlayersRow,
 ) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
@@ -78,7 +79,10 @@ templ Fantasy(
 								</div>
 								<ul class="px-4 size-full overflow-scroll">
 									for _,player := range players {
-										<a href="" class="flex justify-center py-8 player-card">
+										<a
+											href=""
+											class="flex justify-center py-8 player-card"
+										>
 											<div class="flip-card w-32 h-40">
 												<div class="flip-card-inner ">
 													<div class="flip-card-front relative h-full">
@@ -95,7 +99,7 @@ templ Fantasy(
 														<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
 															<p class="text-primary-foreground font-bold player-lname">{ player.Lastname }</p>
 															<p class="font-semibold player-pos">{ string(player.Position) }</p>
-															<p class="font-semibold player-cost">{ string(player.Cost) }</p>
+															<p class="font-semibold player-cost">{ strconv.Itoa(int(player.Cost)) }</p>
 														</span>
 													</div>
 												</div>

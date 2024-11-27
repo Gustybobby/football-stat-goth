@@ -117,9 +117,6 @@ CREATE TABLE "fantasy_player" (
     id          SERIAL PRIMARY KEY,
     club_id     CHAR(3),
     player_id   INTEGER,
-    cost        INTEGER NOT NULL,
-    points      INTEGER,
-    rating      INTEGER,
     
     CONSTRAINT fk_fantasy_player_club      FOREIGN KEY (club_id) REFERENCES "club"(id),
     CONSTRAINT fk_fantasy_player_player    FOREIGN KEY (player_id) REFERENCES "player"(id)

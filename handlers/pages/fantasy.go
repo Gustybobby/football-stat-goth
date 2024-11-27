@@ -5,6 +5,7 @@ import (
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
+	"football-stat-goth/services/pltime"
 	"football-stat-goth/views"
 	"net/http"
 )
@@ -22,7 +23,11 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		return err
 	}
 
-	players, err := repo.Queries.GetFantasy_PlayerInfoForFantasy(repo.Ctx)
+	players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
+		MinCost: 2,
+		AvgCost: 12,
+		Season:  pltime.GetCurrentSeasonString(),
+	})
 
 	if err != nil {
 		return err

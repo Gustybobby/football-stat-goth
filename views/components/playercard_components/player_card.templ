@@ -14,7 +14,7 @@ templ BlankPlayerCard() {
 	</div>
 }
 
-templ PlayerCardImg(player queries.GetFantasy_PlayerInfoForFantasyRow) {
+templ PlayerCardImg(player queries.ListFantasyPlayersRow) {
 	<div class="relative hover: cursor-pointer">
 		@PlayerCard()
 		<span class="absolute inset-0 w-full h-full py-8 align-text-top text-center">
