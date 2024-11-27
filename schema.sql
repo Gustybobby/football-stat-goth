@@ -1,6 +1,7 @@
 CREATE TYPE "user_role" AS ENUM ('USER','ADMIN');
 CREATE TYPE "player_position" AS ENUM ('GK','DEF','MFD','FWD','SUB');
 CREATE TYPE "event_type" AS ENUM ('GOAL','OWN_GOAL','YELLOW','RED','SUB');
+CREATE TYPE "fantasy_transaction_type" AS ENUM ('BUY','SELL');
 
 CREATE TABLE "club" (
     id          CHAR(3) PRIMARY KEY,
@@ -120,4 +121,35 @@ CREATE TABLE "fantasy_player" (
     
     CONSTRAINT fk_fantasy_player_club      FOREIGN KEY (club_id) REFERENCES "club"(id),
     CONSTRAINT fk_fantasy_player_player    FOREIGN KEY (player_id) REFERENCES "player"(id)
+);
+
+CREATE TABLE "fantasy_team" (
+    id          SERIAL PRIMARY KEY,
+    username    VARCHAR(128) NOT NULL,
+    season      VARCHAR(16) NOT NULL,
+    budget      INT4 NOT NULL,
+
+    CONSTRAINT unique_username_season   UNIQUE (username, season),
+    CONSTRAINT fk_fantasy_team_user     FOREIGN KEY (username) REFERENCES "user"(username)
+);
+
+CREATE TABLE "fantasy_team_player" (
+    fantasy_team_id     INTEGER,
+    fantasy_player_id   INTEGER,
+
+    CONSTRAINT pk_fantasy_team_player                   PRIMARY KEY (fantasy_team_id, fantasy_player_id),
+    CONSTRAINT fk_fantasy_team_player_fantasy_team      FOREIGN KEY (fantasy_team_id) REFERENCES "fantasy_team"(id),
+    CONSTRAINT fk_fantasy_team_player_fantasy_player    FOREIGN KEY (fantasy_player_id) REFERENCES "fantasy_player"(id)
+);
+
+CREATE TABLE "fatasy_transaction" (
+    id                  SERIAL PRIMARY KEY,
+    created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    cost                INT4 NOT NULL,
+    type                fantasy_transaction_type NOT NULL,
+    fantasy_team_id     INTEGER,
+    fantasy_player_id   INTEGER,
+
+    CONSTRAINT fk_fantasy_team_player_fantasy_team      FOREIGN KEY (fantasy_team_id) REFERENCES "fantasy_team"(id),
+    CONSTRAINT fk_fantasy_team_player_fantasy_player    FOREIGN KEY (fantasy_player_id) REFERENCES "fantasy_player"(id)
 );

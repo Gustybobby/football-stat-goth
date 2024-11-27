@@ -56,6 +56,48 @@ func (ns NullEventType) Value() (driver.Value, error) {
 	return string(ns.EventType), nil
 }
 
+type FantasyTransactionType string
+
+const (
+	FantasyTransactionTypeBUY  FantasyTransactionType = "BUY"
+	FantasyTransactionTypeSELL FantasyTransactionType = "SELL"
+)
+
+func (e *FantasyTransactionType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = FantasyTransactionType(s)
+	case string:
+		*e = FantasyTransactionType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for FantasyTransactionType: %T", src)
+	}
+	return nil
+}
+
+type NullFantasyTransactionType struct {
+	FantasyTransactionType FantasyTransactionType
+	Valid                  bool // Valid is true if FantasyTransactionType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullFantasyTransactionType) Scan(value interface{}) error {
+	if value == nil {
+		ns.FantasyTransactionType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.FantasyTransactionType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullFantasyTransactionType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.FantasyTransactionType), nil
+}
+
 type PlayerPosition string
 
 const (
@@ -163,6 +205,27 @@ type FantasyPlayer struct {
 	ID       int32
 	ClubID   pgtype.Text
 	PlayerID pgtype.Int4
+}
+
+type FantasyTeam struct {
+	ID       int32
+	Username string
+	Season   string
+	Budget   int32
+}
+
+type FantasyTeamPlayer struct {
+	FantasyTeamID   int32
+	FantasyPlayerID int32
+}
+
+type FatasyTransaction struct {
+	ID              int32
+	CreatedAt       pgtype.Timestamp
+	Cost            int32
+	Type            FantasyTransactionType
+	FantasyTeamID   pgtype.Int4
+	FantasyPlayerID pgtype.Int4
 }
 
 type Lineup struct {

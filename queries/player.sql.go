@@ -296,6 +296,9 @@ WITH "player_total_stats" AS (
             ORDER BY "player_total_stats".total_assists DESC
         ) AS assists_rank,
         RANK() OVER (
+            ORDER BY "player_total_stats".clean_sheets DESC
+        ) AS clean_sheets_rank,
+        RANK() OVER (
             ORDER BY (
                 "player_total_stats".total_goals +
                 "player_total_stats".clean_sheets +
@@ -304,7 +307,7 @@ WITH "player_total_stats" AS (
         ) AS fantasy_rank
     FROM "player_total_stats"
 )
-SELECT id, total_goals, total_assists, total_yellow_cards, total_red_cards, total_own_goals, appearances, clean_sheets, season, goals_rank, assists_rank, fantasy_rank
+SELECT id, total_goals, total_assists, total_yellow_cards, total_red_cards, total_own_goals, appearances, clean_sheets, season, goals_rank, assists_rank, clean_sheets_rank, fantasy_rank
 FROM "player_ranked_total_stats"
 WHERE
     CASE
@@ -336,6 +339,7 @@ type ListPlayerSeasonPerformanceRow struct {
 	Season           string
 	GoalsRank        int64
 	AssistsRank      int64
+	CleanSheetsRank  int64
 	FantasyRank      int64
 }
 
@@ -367,6 +371,7 @@ func (q *Queries) ListPlayerSeasonPerformance(ctx context.Context, arg ListPlaye
 			&i.Season,
 			&i.GoalsRank,
 			&i.AssistsRank,
+			&i.CleanSheetsRank,
 			&i.FantasyRank,
 		); err != nil {
 			return nil, err
