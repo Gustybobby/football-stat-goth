@@ -10,19 +10,20 @@ import (
 
 script onDeletePlayerCard(position string, i int) {
 	counter[position] = i - 1;
+	const count_input = document.getElementById(position+"_count");
+	count_input.value = Math.max(Math.min(Number(count_input.value) - 1, posMax[position] - 1), 0);
 }
 
 script onAddPlayerCard(position string, i int) {
-	if (counter[position + '_count'] >= 1) {
-		document.getElementById("card_" + i).dispatchEvent(new Event("htmx:abort"));
-		return;
-	};
 	counter[position] += 1;
-	counter[position + '_count'] += 1;
 	document.getElementById("card_" + i).setAttribute('hx-target', '#' + position + '_'+ counter[position]);
-	if (counter[position] == 3){
+	const count_input = document.getElementById(position+"_count");
+	if (Number(count_input.value) <= posMax[position]) {
+		count_input.value = Number(count_input.value) + 1;
+	}
+	if (counter[position] >= posMax[position] - 1){
 		counter[position] = -1;
-	};
+	}
 }
 
 templ Fantasy(
@@ -36,13 +37,15 @@ templ Fantasy(
 		<script>
 			const counter = {
 				"GK": -1,
-				"GK_count": 0,
 				"DEF": -1,
-				"DEF_count": 0,
 				"MFD": -1,
-				"MFD_count": 0,
 				"FWD": -1,
-				"FWD_count": 0
+			};
+			const posMax = {
+				"GK": 1,
+				"DEF": 4,
+				"MFD": 4,
+				"FWD": 2
 			};
 		</script>
 		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
@@ -68,7 +71,7 @@ templ Fantasy(
 											<div
 												id={ "GK_" + strconv.Itoa(i) }
 												hx-trigger="click"
-												hx-get="/cmps/fantasy/player-card?blank=true"
+												hx-post="/cmps/fantasy/player-card?blank=true"
 												onclick={ onDeletePlayerCard("GK", i) }
 											>
 												@playercard_components.BlankPlayerCard()
@@ -80,7 +83,7 @@ templ Fantasy(
 											<div
 												id={ "DEF_" + strconv.Itoa(i) }
 												hx-trigger="click"
-												hx-get="/cmps/fantasy/player-card?blank=true"
+												hx-post="/cmps/fantasy/player-card?blank=true"
 												onclick={ onDeletePlayerCard("DEF", i) }
 											>
 												@playercard_components.BlankPlayerCard()
@@ -92,7 +95,7 @@ templ Fantasy(
 											<div
 												id={ "MFD_" + strconv.Itoa(i) }
 												hx-trigger="click"
-												hx-get="/cmps/fantasy/player-card?blank=true"
+												hx-post="/cmps/fantasy/player-card?blank=true"
 												onclick={ onDeletePlayerCard("MFD", i) }
 											>
 												@playercard_components.BlankPlayerCard()
@@ -104,7 +107,7 @@ templ Fantasy(
 											<div
 												id={ "FWD_" + strconv.Itoa(i) }
 												hx-trigger="click"
-												hx-get="/cmps/fantasy/player-card?blank=true"
+												hx-post="/cmps/fantasy/player-card?blank=true"
 												onclick={ onDeletePlayerCard("FWD", i) }
 											>
 												@playercard_components.BlankPlayerCard()
@@ -113,6 +116,10 @@ templ Fantasy(
 									</section>
 								</section>
 							</div>
+							<input id="GK_count" name="GK_count" value="0" hidden/>
+							<input id="DEF_count" name="DEF_count" value="0" hidden/>
+							<input id="MFD_count" name="MFD_count" value="0" hidden/>
+							<input id="FWD_count" name="FWD_count" value="0" hidden/>
 						</div>
 					</section>
 					// Select Player Area
@@ -141,7 +148,8 @@ templ Fantasy(
 										<div
 											id={ "card_" + strconv.Itoa(int(player.ID)) }
 											class="flex justify-center player-card m-2 hover: cursor-pointer"
-											hx-get={ "/cmps/fantasy/player-card?fantasy_player_id=" + strconv.Itoa(int(player.ID)) }
+											hx-post={ "/cmps/fantasy/player-card?fantasy_player_id=" + strconv.Itoa(int(player.ID)) + "&position=" + string(player.Position) }
+											hx-include={ "#" + string(player.Position) + "_count" }
 											hx-trigger="click"
 											hx-target={ "#" + string(player.Position) + "_" + "0" }
 											hx-swap="innerHTML"

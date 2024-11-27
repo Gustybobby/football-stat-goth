@@ -22,6 +22,22 @@ func HandleFantasyPlayerCard(w http.ResponseWriter, r *http.Request, repo *repos
 		return err
 	}
 
+	total_count, err := strconv.Atoi(r.FormValue(r.URL.Query().Get("position") + "_count"))
+	if err != nil {
+		return err
+	}
+
+	pos_max := map[string]int{
+		"GK":  1,
+		"DEF": 4,
+		"MFD": 4,
+		"FWD": 2,
+	}
+	if total_count > pos_max[r.URL.Query().Get("position")] {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return nil
+	}
+
 	fantasy_players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
 		FilterFantasyPlayerID: true,
 		FantasyPlayerID:       int32(fantasy_player_id),
