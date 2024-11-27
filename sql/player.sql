@@ -181,6 +181,9 @@ WITH "player_total_stats" AS (
             ORDER BY "player_total_stats".total_assists DESC
         ) AS assists_rank,
         RANK() OVER (
+            ORDER BY "player_total_stats".clean_sheets DESC
+        ) AS clean_sheets_rank,
+        RANK() OVER (
             ORDER BY (
                 "player_total_stats".total_goals +
                 "player_total_stats".clean_sheets +

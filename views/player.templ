@@ -24,7 +24,7 @@ templ Player(
 				<div class="grid grid-cols-1 lg:grid-cols-3 p-4 gap-4">
 					<div class="flex flex-col space-y-4">
 						@clubRecords(club_players)
-						@seasonPerformance(performance)
+						@seasonPerformance(performance, player.Position)
 					</div>
 					<div class="col-span-2">
 						@matchHistory(matches)
@@ -108,7 +108,7 @@ templ clubRecords(club_players []queries.ListClubPlayerByPlayerIDRow) {
 	}
 }
 
-templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
+templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow, position queries.PlayerPosition) {
 	@components.BaseCard(performance.Season + " Performance") {
 		<div class="p-2">
 			<table class="w-full text-left text-lg">
@@ -129,12 +129,14 @@ templ seasonPerformance(performance queries.ListPlayerSeasonPerformanceRow) {
 							{ strconv.Itoa(int(performance.TotalAssists)) } (League #{ strconv.Itoa(int(performance.AssistsRank)) })
 						</td>
 					</tr>
-					<tr>
-						<td class="font-semibold p-1">Clean Sheets</td>
-						<td class="font-bold p-1">
-							{ strconv.Itoa(int(performance.CleanSheets)) }
-						</td>
-					</tr>
+					if position == queries.PlayerPositionGK {
+						<tr>
+							<td class="font-semibold p-1">Clean Sheets</td>
+							<td class="font-bold p-1">
+								{ strconv.Itoa(int(performance.CleanSheets)) } (League #{ strconv.Itoa(int(performance.CleanSheetsRank)) })
+							</td>
+						</tr>
+					}
 					<tr>
 						<td class="font-semibold p-1">Yellow Cards</td>
 						<td class="font-bold p-1">{ strconv.Itoa(int(performance.TotalYellowCards)) }</td>
