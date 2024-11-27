@@ -164,7 +164,7 @@ ON "fantasy_player".club_id = "club".id
 WHERE
     CASE
         WHEN sqlc.arg('filter_fantasy_player_id')::bool
-        THEN "fantasy_player".id = sqlc.arg('fantasy_player_id')::INTEGER
+        THEN "fantasy_player".id IN (sqlc.slice('fantasy_player_ids'))
         ELSE true
     END
 ORDER BY

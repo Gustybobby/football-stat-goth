@@ -177,7 +177,7 @@ ON "fantasy_player".club_id = "club".id
 WHERE
     CASE
         WHEN $3::bool
-        THEN "fantasy_player".id = $4::INTEGER
+        THEN "fantasy_player".id IN ($4)
         ELSE true
     END
 ORDER BY
@@ -189,7 +189,7 @@ type ListFantasyPlayersParams struct {
 	MinCost               int32
 	AvgCost               int32
 	FilterFantasyPlayerID bool
-	FantasyPlayerID       int32
+	FantasyPlayerIds      []int32
 	Season                string
 }
 
@@ -208,7 +208,7 @@ func (q *Queries) ListFantasyPlayers(ctx context.Context, arg ListFantasyPlayers
 		arg.MinCost,
 		arg.AvgCost,
 		arg.FilterFantasyPlayerID,
-		arg.FantasyPlayerID,
+		arg.FantasyPlayerIds,
 		arg.Season,
 	)
 	if err != nil {
