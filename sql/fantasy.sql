@@ -138,6 +138,7 @@ WITH "player_total_stats" AS (
 SELECT
     "fantasy_player".id,
     "player".id AS player_id,
+    "player".firstname,
     "player".lastname,
     "player".position,
     "player".image,
@@ -178,16 +179,11 @@ WHERE
     "fantasy_team".username = $1 AND
     "fantasy_team".season = $2;
 
--- name: ListFantasyTeamPlayersByUsernameSeason :many
-SELECT
-    "fantasy_team_player".*,
-    "fantasy_team".budget
+-- name: ListFantasyTeamPlayersByFantasyTeamID :many
+SELECT *
 FROM "fantasy_team_player"
-INNER JOIN "fantasy_team"
-ON "fantasy_team_player".fantasy_team_id = "fantasy_team".id
-WHERE
-    "fantasy_team".username = $1 AND
-    "fantasy_team".season = $2;
+WHERE "fantasy_team_player".fantasy_team_id = $1;
+
 
 -- name: CreateFantasyTeam :one
 INSERT INTO "fantasy_team" (

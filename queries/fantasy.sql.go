@@ -214,6 +214,7 @@ WITH "player_total_stats" AS (
 SELECT
     "fantasy_player".id,
     "player".id AS player_id,
+    "player".firstname,
     "player".lastname,
     "player".position,
     "player".image,
@@ -257,13 +258,14 @@ type ListFantasyPlayersParams struct {
 }
 
 type ListFantasyPlayersRow struct {
-	ID       int32
-	PlayerID int32
-	Lastname string
-	Position PlayerPosition
-	Image    pgtype.Text
-	ClubID   string
-	Cost     int32
+	ID        int32
+	PlayerID  int32
+	Firstname string
+	Lastname  string
+	Position  PlayerPosition
+	Image     pgtype.Text
+	ClubID    string
+	Cost      int32
 }
 
 func (q *Queries) ListFantasyPlayers(ctx context.Context, arg ListFantasyPlayersParams) ([]ListFantasyPlayersRow, error) {
@@ -284,6 +286,7 @@ func (q *Queries) ListFantasyPlayers(ctx context.Context, arg ListFantasyPlayers
 		if err := rows.Scan(
 			&i.ID,
 			&i.PlayerID,
+			&i.Firstname,
 			&i.Lastname,
 			&i.Position,
 			&i.Image,
@@ -300,39 +303,22 @@ func (q *Queries) ListFantasyPlayers(ctx context.Context, arg ListFantasyPlayers
 	return items, nil
 }
 
-const listFantasyTeamPlayersByUsernameSeason = `-- name: ListFantasyTeamPlayersByUsernameSeason :many
-SELECT
-    fantasy_team_player.fantasy_team_id, fantasy_team_player.fantasy_player_id,
-    "fantasy_team".budget
+const listFantasyTeamPlayersByFantasyTeamID = `-- name: ListFantasyTeamPlayersByFantasyTeamID :many
+SELECT fantasy_team_id, fantasy_player_id
 FROM "fantasy_team_player"
-INNER JOIN "fantasy_team"
-ON "fantasy_team_player".fantasy_team_id = "fantasy_team".id
-WHERE
-    "fantasy_team".username = $1 AND
-    "fantasy_team".season = $2
+WHERE "fantasy_team_player".fantasy_team_id = $1
 `
 
-type ListFantasyTeamPlayersByUsernameSeasonParams struct {
-	Username string
-	Season   string
-}
-
-type ListFantasyTeamPlayersByUsernameSeasonRow struct {
-	FantasyTeamID   int32
-	FantasyPlayerID int32
-	Budget          int32
-}
-
-func (q *Queries) ListFantasyTeamPlayersByUsernameSeason(ctx context.Context, arg ListFantasyTeamPlayersByUsernameSeasonParams) ([]ListFantasyTeamPlayersByUsernameSeasonRow, error) {
-	rows, err := q.db.Query(ctx, listFantasyTeamPlayersByUsernameSeason, arg.Username, arg.Season)
+func (q *Queries) ListFantasyTeamPlayersByFantasyTeamID(ctx context.Context, fantasyTeamID int32) ([]FantasyTeamPlayer, error) {
+	rows, err := q.db.Query(ctx, listFantasyTeamPlayersByFantasyTeamID, fantasyTeamID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListFantasyTeamPlayersByUsernameSeasonRow
+	var items []FantasyTeamPlayer
 	for rows.Next() {
-		var i ListFantasyTeamPlayersByUsernameSeasonRow
-		if err := rows.Scan(&i.FantasyTeamID, &i.FantasyPlayerID, &i.Budget); err != nil {
+		var i FantasyTeamPlayer
+		if err := rows.Scan(&i.FantasyTeamID, &i.FantasyPlayerID); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
