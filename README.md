@@ -25,6 +25,14 @@ npm install -d tailwindcss
 npm install -d tailwindcss-motion
 ```
 
+## PostgreSQL
+
+### Schema
+Create tables, enums, and triggers with [schema.sql](schema.sql)
+
+### Seed (Optional)
+Optionally, you can seed the database with [seed.sql](seed.sql). The seed contains all matches data from 2024/25 Premier League week 1 - 9.
+
 ## Environment Variables
 See [env example](.env.example)
 
