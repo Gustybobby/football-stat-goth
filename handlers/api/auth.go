@@ -27,7 +27,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 
 	plauth.SetSessionTokenCookie(w, token, session.ExpiresAt.Time, os.Getenv("ENV") == "production")
 
-	w.Header().Add("Hx-Redirect", "/")
+	w.Header().Add("HX-Redirect", "/")
 	return nil
 }
 
@@ -74,13 +74,13 @@ func HandleSignin(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 
 	plauth.SetSessionTokenCookie(w, token, session.ExpiresAt.Time, os.Getenv("ENV") == "production")
 
-	w.Header().Add("Hx-Redirect", redirect_url)
+	w.Header().Add("HX-Redirect", redirect_url)
 	return nil
 }
 
 func HandleSignout(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	plauth.DeleteSessionTokenCookie(w, os.Getenv("ENV") == "production")
-	w.Header().Add("Hx-Redirect", "/")
+	w.Header().Add("X-Redirect", "/")
 	return nil
 }
 
