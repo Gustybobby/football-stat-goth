@@ -177,12 +177,35 @@ SELECT *
 FROM "fantasy_team"
 WHERE
     "fantasy_team".username = $1 AND
-    "fantasy_team".season = $2;
+    "fantasy_team".season = $2
+LIMIT 1;
 
 -- name: ListFantasyTeamPlayersByFantasyTeamID :many
 SELECT *
 FROM "fantasy_team_player"
 WHERE "fantasy_team_player".fantasy_team_id = $1;
+
+-- name: CountFantasyTeamPlayersByFantasyTeamID :one
+SELECT
+    COUNT(CASE WHEN "player".position = 'GK' THEN 1 ELSE NULL END) AS GK_count,
+    COUNT(CASE WHEN "player".position = 'DEF' THEN 1 ELSE NULL END) AS DEF_count,
+    COUNT(CASE WHEN "player".position = 'MFD' THEN 1 ELSE NULL END) AS MFD_count,
+    COUNT(CASE WHEN "player".position = 'FWD' THEN 1 ELSE NULL END) AS FWD_count
+FROM "fantasy_team_player"
+INNER JOIN "fantasy_player"
+ON "fantasy_team_player".fantasy_player_id = "fantasy_player".id
+INNER JOIN "player"
+ON "fantasy_player".player_id = "player".id
+WHERE "fantasy_team_player".fantasy_team_id = $1;
+
+-- name: FindLastestTransaction :one
+SELECT *
+FROM "fantasy_transaction"
+WHERE
+    "fantasy_transaction".fantasy_team_id = $1 AND
+    "fantasy_transaction".fantasy_player_id = $2
+ORDER BY "fantasy_transaction".created_at DESC
+LIMIT 1;
 
 
 -- name: CreateFantasyTeam :one

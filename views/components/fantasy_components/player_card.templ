@@ -2,6 +2,7 @@ package fantasy_components
 
 import (
 	"football-stat-goth/queries"
+	"football-stat-goth/views/components"
 	"strconv"
 )
 
@@ -35,6 +36,65 @@ templ PlayerCardInfo(player queries.ListFantasyPlayersRow) {
 			<p class="font-semibold player-cost">Cost: { strconv.Itoa(int(player.Cost)) }</p>
 		</span>
 	</div>
+}
+
+templ PlayerCardDetails(player queries.ListFantasyPlayersRow, is_owned bool, bought_cost int32, buyable bool) {
+	@components.BaseCard("Player Details") {
+		<div class="p-2 flex justify-between">
+			<div class="flex space-x-4">
+				<div class="w-32 h-40 text-center">
+					@PlayerCardImg(player, false)
+				</div>
+				<div class="p-4 flex flex-col space-y-1">
+					<a href={ templ.SafeURL("/players/" + strconv.Itoa(int(player.PlayerID))) } class="hover:underline">
+						<h1 class="font-semibold text-3xl space-x-1 flex">
+							<p>{ player.Firstname }</p>
+							<p class="font-bold">
+								{ player.Lastname }
+							</p>
+						</h1>
+					</a>
+					<span class="font-bold text-xl">Cost: { strconv.Itoa(int(player.Cost)) }</span>
+					if is_owned {
+						<span class="font-bold text-xl">Bought Cost: { strconv.Itoa(int(bought_cost)) }</span>
+						if bought_cost > player.Cost {
+							<span class="font-bold text-xl text-red-600">
+								{ strconv.FormatFloat((float64(player.Cost) - float64(bought_cost))/float64(bought_cost)*100, 'f',2,32) }%
+							</span>
+						} else if bought_cost == player.Cost {
+							<span class="font-bold text-xl">
+								{ strconv.FormatFloat((float64(player.Cost) - float64(bought_cost))/float64(bought_cost)*100, 'f',2,32) }%
+							</span>
+						} else {
+							<span class="font-bold text-xl text-green-600">
+								+{ strconv.FormatFloat((float64(player.Cost) - float64(bought_cost))/float64(bought_cost)*100, 'f',2,32) }%
+							</span>
+						}
+					}
+				</div>
+			</div>
+			if is_owned {
+				<div class="flex items-end justify-end">
+					<button
+						hx-delete={ "/api/fantasy/players/" + strconv.Itoa(int(player.ID)) }
+						class="bg-red-600 text-primary-background px-8 py-4 rounded-lg hover:bg-red-500 font-semibold text-2xl"
+					>
+						Sell
+					</button>
+				</div>
+			}
+			if buyable {
+				<div class="flex items-end justify-end">
+					<button
+						hx-post={ "/api/fantasy/players/" + strconv.Itoa(int(player.ID)) }
+						class="bg-green-600 text-primary-background px-8 py-4 rounded-lg hover:bg-green-500 font-semibold text-2xl"
+					>
+						Buy
+					</button>
+				</div>
+			}
+		</div>
+	}
 }
 
 func playerCardVariant(is_small bool) string {

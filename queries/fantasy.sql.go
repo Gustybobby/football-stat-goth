@@ -11,6 +11,39 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const countFantasyTeamPlayersByFantasyTeamID = `-- name: CountFantasyTeamPlayersByFantasyTeamID :one
+SELECT
+    COUNT(CASE WHEN "player".position = 'GK' THEN 1 ELSE NULL END) AS GK_count,
+    COUNT(CASE WHEN "player".position = 'DEF' THEN 1 ELSE NULL END) AS DEF_count,
+    COUNT(CASE WHEN "player".position = 'MFD' THEN 1 ELSE NULL END) AS MFD_count,
+    COUNT(CASE WHEN "player".position = 'FWD' THEN 1 ELSE NULL END) AS FWD_count
+FROM "fantasy_team_player"
+INNER JOIN "fantasy_player"
+ON "fantasy_team_player".fantasy_player_id = "fantasy_player".id
+INNER JOIN "player"
+ON "fantasy_player".player_id = "player".id
+WHERE "fantasy_team_player".fantasy_team_id = $1
+`
+
+type CountFantasyTeamPlayersByFantasyTeamIDRow struct {
+	GkCount  int64
+	DefCount int64
+	MfdCount int64
+	FwdCount int64
+}
+
+func (q *Queries) CountFantasyTeamPlayersByFantasyTeamID(ctx context.Context, fantasyTeamID int32) (CountFantasyTeamPlayersByFantasyTeamIDRow, error) {
+	row := q.db.QueryRow(ctx, countFantasyTeamPlayersByFantasyTeamID, fantasyTeamID)
+	var i CountFantasyTeamPlayersByFantasyTeamIDRow
+	err := row.Scan(
+		&i.GkCount,
+		&i.DefCount,
+		&i.MfdCount,
+		&i.FwdCount,
+	)
+	return i, err
+}
+
 const createFantasyTeam = `-- name: CreateFantasyTeam :one
 INSERT INTO "fantasy_team" (
     username,
@@ -55,6 +88,7 @@ FROM "fantasy_team"
 WHERE
     "fantasy_team".username = $1 AND
     "fantasy_team".season = $2
+LIMIT 1
 `
 
 type FindFantasyTeamByUsernameSeasonParams struct {
@@ -70,6 +104,35 @@ func (q *Queries) FindFantasyTeamByUsernameSeason(ctx context.Context, arg FindF
 		&i.Username,
 		&i.Season,
 		&i.Budget,
+	)
+	return i, err
+}
+
+const findLastestTransaction = `-- name: FindLastestTransaction :one
+SELECT id, created_at, cost, type, fantasy_team_id, fantasy_player_id
+FROM "fantasy_transaction"
+WHERE
+    "fantasy_transaction".fantasy_team_id = $1 AND
+    "fantasy_transaction".fantasy_player_id = $2
+ORDER BY "fantasy_transaction".created_at DESC
+LIMIT 1
+`
+
+type FindLastestTransactionParams struct {
+	FantasyTeamID   int32
+	FantasyPlayerID int32
+}
+
+func (q *Queries) FindLastestTransaction(ctx context.Context, arg FindLastestTransactionParams) (FantasyTransaction, error) {
+	row := q.db.QueryRow(ctx, findLastestTransaction, arg.FantasyTeamID, arg.FantasyPlayerID)
+	var i FantasyTransaction
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.Cost,
+		&i.Type,
+		&i.FantasyTeamID,
+		&i.FantasyPlayerID,
 	)
 	return i, err
 }

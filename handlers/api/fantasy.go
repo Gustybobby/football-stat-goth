@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
@@ -128,10 +130,11 @@ func GetFantasyTeamFieldParams(fantasy_players []queries.ListFantasyPlayersRow) 
 	}
 
 	return &fantasy_components.FantasyTeamFieldPlayersParams{
-		GK:  gk_fantasy_players,
-		DEF: def_fantasy_players,
-		MFD: mfd_fantasy_players,
-		FWD: fwd_fantasy_players,
+		GK:      gk_fantasy_players,
+		DEF:     def_fantasy_players,
+		MFD:     mfd_fantasy_players,
+		FWD:     fwd_fantasy_players,
+		HasTeam: len(fantasy_players) > 0,
 	}, cost, nil
 }
 
@@ -143,4 +146,146 @@ func filterFantasyPlayersByPosition(position queries.PlayerPosition, fantasy_pla
 		}
 	}
 	return filtered_fantasy_players
+}
+
+func HandleSellFantasyPlayer(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	user := plauth.GetContextUser(r)
+	if user == nil {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return nil
+	}
+
+	playerID, err := strconv.Atoi(chi.URLParam(r, "playerID"))
+	if err != nil {
+		return err
+	}
+
+	fantasy_team, err := repo.Queries.FindFantasyTeamByUsernameSeason(repo.Ctx, queries.FindFantasyTeamByUsernameSeasonParams{
+		Username: user.Username,
+		Season:   pltime.GetCurrentSeasonString(),
+	})
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return err
+	}
+
+	transaction, err := repo.Queries.FindLastestTransaction(repo.Ctx, queries.FindLastestTransactionParams{
+		FantasyTeamID:   fantasy_team.ID,
+		FantasyPlayerID: int32(playerID),
+	})
+	if err != nil || transaction.Type == queries.FantasyTransactionTypeSELL {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return err
+	}
+
+	fantasy_players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
+		MinCost:               plconstant.FantasyPlayerMinCost,
+		AvgCost:               plconstant.FantasyPlayerAverageCost,
+		FilterFantasyPlayerID: true,
+		FantasyPlayerIds:      []int32{int32(playerID)},
+		Season:                pltime.GetCurrentSeasonString(),
+	})
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return err
+	}
+	fantasy_player := fantasy_players[0]
+
+	repo.Queries.CreateFantasyTransaction(repo.Ctx, []queries.CreateFantasyTransactionParams{{
+		Cost:            fantasy_player.Cost,
+		Type:            queries.FantasyTransactionTypeSELL,
+		FantasyTeamID:   fantasy_team.ID,
+		FantasyPlayerID: fantasy_player.ID,
+	}})
+
+	w.Header().Add("HX-Refresh", "true")
+	return nil
+}
+
+func HandleBuyFantasyPlayer(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	user := plauth.GetContextUser(r)
+	if user == nil {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return nil
+	}
+
+	playerID, err := strconv.Atoi(chi.URLParam(r, "playerID"))
+	if err != nil {
+		return err
+	}
+
+	fantasy_team, err := repo.Queries.FindFantasyTeamByUsernameSeason(repo.Ctx, queries.FindFantasyTeamByUsernameSeasonParams{
+		Username: user.Username,
+		Season:   pltime.GetCurrentSeasonString(),
+	})
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return err
+	}
+
+	transaction, err := repo.Queries.FindLastestTransaction(repo.Ctx, queries.FindLastestTransactionParams{
+		FantasyTeamID:   fantasy_team.ID,
+		FantasyPlayerID: int32(playerID),
+	})
+	if err == nil && transaction.Type == queries.FantasyTransactionTypeBUY {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return err
+	}
+
+	fantasy_players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
+		MinCost:               plconstant.FantasyPlayerMinCost,
+		AvgCost:               plconstant.FantasyPlayerAverageCost,
+		FilterFantasyPlayerID: true,
+		FantasyPlayerIds:      []int32{int32(playerID)},
+		Season:                pltime.GetCurrentSeasonString(),
+	})
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return err
+	}
+	fantasy_player := fantasy_players[0]
+
+	is_valid_count, err := IsValidPositionCount(fantasy_player.Position, fantasy_team.ID, repo)
+	if err != nil {
+		return err
+	}
+	if !is_valid_count {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return nil
+	}
+
+	repo.Queries.CreateFantasyTransaction(repo.Ctx, []queries.CreateFantasyTransactionParams{{
+		Cost:            fantasy_player.Cost,
+		Type:            queries.FantasyTransactionTypeBUY,
+		FantasyTeamID:   fantasy_team.ID,
+		FantasyPlayerID: fantasy_player.ID,
+	}})
+
+	w.Header().Add("HX-Refresh", "true")
+	return nil
+}
+
+func IsValidPositionCount(position_to_add queries.PlayerPosition, fantasy_team_id int32, repo *repos.Repository) (bool, error) {
+	players_count, err := repo.Queries.CountFantasyTeamPlayersByFantasyTeamID(repo.Ctx, fantasy_team_id)
+	if err != nil {
+		return false, err
+	}
+
+	if position_to_add == queries.PlayerPositionGK && players_count.GkCount < 1 {
+		return true, nil
+	}
+
+	if position_to_add == queries.PlayerPositionDEF && players_count.DefCount < 4 {
+		return true, nil
+	}
+
+	if position_to_add == queries.PlayerPositionMFD && players_count.MfdCount < 4 {
+		return true, nil
+	}
+
+	if position_to_add == queries.PlayerPositionFWD && players_count.FwdCount < 2 {
+		return true, nil
+	}
+
+	return false, nil
 }

@@ -40,12 +40,18 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		return err
 	}
 
-	fantasy_team_player_refs, err := repo.Queries.ListFantasyTeamPlayersByUsernameSeason(repo.Ctx, queries.ListFantasyTeamPlayersByUsernameSeasonParams{
+	var fantasy_team_player_refs []queries.FantasyTeamPlayer
+	fantasy_team, err := repo.Queries.FindFantasyTeamByUsernameSeason(repo.Ctx, queries.FindFantasyTeamByUsernameSeasonParams{
 		Username: user.Username,
 		Season:   pltime.GetCurrentSeasonString(),
 	})
-	if err != nil {
-		return err
+	if err == nil {
+		fantasy_team_player_refs, err = repo.Queries.ListFantasyTeamPlayersByFantasyTeamID(repo.Ctx, fantasy_team.ID)
+		if err != nil {
+			return err
+		}
+	} else {
+		fantasy_team.Budget = plconstant.FantasyTeamMaxBudget
 	}
 
 	var fantasy_team_players []queries.ListFantasyPlayersRow
@@ -63,10 +69,5 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		return err
 	}
 
-	budget := plconstant.FantasyTeamMaxBudget
-	if len(fantasy_team_player_refs) > 0 {
-		budget = int(fantasy_team_player_refs[0].Budget)
-	}
-
-	return handlers.Render(w, r, views.Fantasy(user, fixtures, players, *players_params, budget))
+	return handlers.Render(w, r, views.Fantasy(user, fixtures, players, *players_params, int(fantasy_team.Budget)))
 }

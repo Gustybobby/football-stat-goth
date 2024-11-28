@@ -13,8 +13,11 @@ func SetupApiRoutes(r_api chi.Router, repo *repos.Repository) {
 	r_api.Post("/signup", handlers.Make(HandleSignup, repo))
 	r_api.Post("/signin", handlers.Make(HandleSignin, repo))
 	r_api.Delete("/signout", handlers.Make(HandleSignout, repo))
-	r_api.Post("/fantasy/teams", handlers.Make(HandleCreateFantasyTeam, repo))
 	r_api.Patch("/password", handlers.Make(HandleUpdatePassword, repo))
+
+	r_api.Post("/fantasy/teams", handlers.Make(HandleCreateFantasyTeam, repo))
+	r_api.Post("/fantasy/players/{playerID}", handlers.Make(HandleBuyFantasyPlayer, repo))
+	r_api.Delete("/fantasy/players/{playerID}", handlers.Make(HandleSellFantasyPlayer, repo))
 
 	r_api.Route("/admin", func(r_api_admin chi.Router) {
 		SetupAdminApiRoutes(r_api_admin, repo)

@@ -24,150 +24,159 @@ templ Fantasy(
 				return blankCards.length
 			}
 		</script>
-		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-initial place-content-center">
-			<div class="max-w-5xl">
+		<main class="w-full p-4 bg-primary-background min-h-screen flex justify-center">
+			<div class="max-w-5xl space-y-4">
 				<form
 					id="fantasy_player_selection_form"
 					hx-post="/api/fantasy/teams"
 					hx-trigger="change,submit"
 					hx-target="#team_field"
 					hx-swap="outerHTML"
-					class="w-full flex px-2 py-8 space-x-4 flex-row"
+					class="w-full grid grid-cols-3 gap-4"
 				>
 					// Field Area
 					@fantasy_components.FantasyTeamField(players_params, budget)
 					// Select Player Area
-					<div class="basis-1/3 flex flex-col space-y-4 transition-all">
-						<section class="rounded-lg border border-primary shadow-lg size-full">
-							<h1 class="text-xl text-center font-bold p-2 bg-gradient-to-br from-secondary-foreground to-secondary-background text-primary-background rounded-t-lg">
-								Players
-							</h1>
-							<div class="flex flex-col h-[700px]">
-								<div class="flex h-10 m-4 border border-gray-300 rounded">
-									<input type="text" id="searchFilter" placeholder="Name | Club" class="h-full w-2/3 px-2"/>
-									<select id="checkedFilter" class="h-full w-1/3 border-l" title="Option">
-										<optgroup label="All">
-											<option aria-selected="true">All</option>
-										</optgroup>
-										<optgroup label="Position" class="mx-2">
-											<option class="pos-option">GK</option>
-											<option class="pos-option">DEF</option>
-											<option class="pos-option">MFD</option>
-											<option class="pos-option">FWD</option>
-										</optgroup>
-									</select>
-								</div>
-								<div class="px-4 size-full overflow-scroll grid grid-cols-2 content-start">
-									for _,player := range players {
-										<div class="flex flex-col justify-center items-center player-card">
-											<label
-												class="flex justify-center m-2 hover:cursor-pointer"
-												for={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
-											>
-												<div class="flip-card w-32 h-40">
-													<div class="flip-card-inner">
-														<div class="flip-card-front relative">
-															// front side, user playercard_front
-															@fantasy_components.PlayerCardImg(player, false)
-														</div>
-														<div class="flip-card-back relative">
-															// back side, user playercard_back
-															@fantasy_components.PlayerCardInfo(player)
-														</div>
+					@components.BaseCard("Players") {
+						<div class="flex flex-col h-[742px]">
+							<div class="flex h-10 m-4 border border-gray-300 rounded">
+								<input type="text" id="searchFilter" placeholder="Name | Club" class="h-full w-2/3 px-2"/>
+								<select id="checkedFilter" class="h-full w-1/3 border-l" title="Option">
+									<optgroup label="All">
+										<option aria-selected="true">All</option>
+									</optgroup>
+									<optgroup label="Position" class="mx-2">
+										<option class="pos-option">GK</option>
+										<option class="pos-option">DEF</option>
+										<option class="pos-option">MFD</option>
+										<option class="pos-option">FWD</option>
+									</optgroup>
+								</select>
+							</div>
+							<div class="px-4 size-full overflow-scroll grid grid-cols-2 content-start">
+								for _,player := range players {
+									<div class="flex flex-col justify-center items-center player-card">
+										<label
+											class="flex justify-center m-2 hover:cursor-pointer"
+											for={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
+										>
+											<div class="flip-card w-32 h-40">
+												<div class="flip-card-inner">
+													<div class="flip-card-front relative">
+														// front side, user playercard_front
+														@fantasy_components.PlayerCardImg(player, false)
+													</div>
+													<div class="flip-card-back relative">
+														// back side, user playercard_back
+														@fantasy_components.PlayerCardInfo(player)
 													</div>
 												</div>
-											</label>
+											</div>
+										</label>
+										if players_params.HasTeam {
+											<button
+												id={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
+												hx-get={ "/cmps/fantasy/players/" + strconv.Itoa(int(player.ID)) }
+												hx-target="#player_details_container"
+												hx-swap="innerHTML"
+											></button>
+										} else {
 											<input
 												class="accent-secondary-background"
 												id={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
 												name={ "fantasy_player_" + strconv.Itoa(int(player.ID)) }
 												type="checkbox"
 												position={ string(player.Position) }
+												hx-get={ "/cmps/fantasy/players/" + strconv.Itoa(int(player.ID)) }
+												hx-target="#player_details_container"
+												hx-trigger="click"
+												hx-swap="innerHTML"
 												onclick="
 													if (countBlankPositionCard(this.getAttribute('position')) <= 0) {
 														this.checked = false;
 													}
 												"
 											/>
-										</div>
-									}
-								</div>
-								<script>
-									// Init variables for player filter
-									var searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
-										checkedFilter = document.getElementById('checkedFilter').value.toLowerCase(),
-										searchEmpty = (searchFilter.length == 0),
-										checkedAll = (checkedFilter.includes('all'));
+										}
+									</div>
+								}
+							</div>
+							<script>
+								// Init variables for player filter
+								var searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
+									checkedFilter = document.getElementById('checkedFilter').value.toLowerCase(),
+									searchEmpty = (searchFilter.length == 0),
+									checkedAll = (checkedFilter.includes('all'));
 
-									function UpdateField() {
-										searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
-										checkedFilter = document.getElementById('checkedFilter').value.toLowerCase(),
-										searchEmpty = (searchFilter.length == 0),
-										checkedAll = (checkedFilter.includes('all'));
-									}
+								function UpdateField() {
+									searchFilter = document.getElementById('searchFilter').value.toLowerCase(), 
+									checkedFilter = document.getElementById('checkedFilter').value.toLowerCase(),
+									searchEmpty = (searchFilter.length == 0),
+									checkedAll = (checkedFilter.includes('all'));
+								}
 
-									document.getElementById('searchFilter').addEventListener('input', function(){
-										PlayerCardFilter();
-									});
+								document.getElementById('searchFilter').addEventListener('input', function(){
+									PlayerCardFilter();
+								});
 
-									document.getElementById('checkedFilter').addEventListener('input', function(){
-										PlayerCardFilter()
-									});
+								document.getElementById('checkedFilter').addEventListener('input', function(){
+									PlayerCardFilter()
+								});
 
-									function PlayerCardFilter() {
-										UpdateField()
-										const cards = document.querySelectorAll('.player-card');
+								function PlayerCardFilter() {
+									UpdateField()
+									const cards = document.querySelectorAll('.player-card');
 
-										cards.forEach(card => {
-											const name = card.querySelector('.player-name').textContent.toLowerCase();
-											const club = card.querySelector('.player-club').textContent.toLowerCase();
-											const pos = card.querySelector('.player-pos').textContent.toLowerCase();
-											if ( searchEmpty && checkedAll ) {
+									cards.forEach(card => {
+										const name = card.querySelector('.player-name').textContent.toLowerCase();
+										const club = card.querySelector('.player-club').textContent.toLowerCase();
+										const pos = card.querySelector('.player-pos').textContent.toLowerCase();
+										if ( searchEmpty && checkedAll ) {
+											card.style.display = '';
+										}
+										else if ( searchEmpty && !checkedAll) { // search empty
+											if ( pos.includes(checkedFilter) ) {
 												card.style.display = '';
-											}
-											else if ( searchEmpty && !checkedAll) { // search empty
-												if ( pos.includes(checkedFilter) ) {
-													card.style.display = '';
-												} else {
-													card.style.display = 'none';
-												}
-											}
-											else if ( !searchEmpty && checkedAll ) { // all checked
-												if ( (name.includes(searchFilter) || club.includes(searchFilter)) ) {
-													card.style.display = '';
-												} else {
-													card.style.display = 'none';
-												}
-											}
-											else {
-												if ( (name.includes(searchFilter) || club.includes(searchFilter)) && (pos.includes(checkedFilter)) ) {
-													card.style.display = '';
-												} else {
-													card.style.display = 'none';
-												}
-											}
-										});
-									}
-
-									// Interactive fantasy section
-									function SetFilter(pos) {
-										const 
-											selector = document.getElementById('checkedFilter'),
-											options = selector.querySelector('optgroup[label="Position"]').querySelectorAll('.pos-option');
-
-										for (let i = 0; i < options.length; i++) {
-											if (options[i].textContent.toLocaleLowerCase() === pos.toLowerCase()) {
-												selector.selectedIndex = options[i].index;
-												PlayerCardFilter();
-												return;
+											} else {
+												card.style.display = 'none';
 											}
 										}
+										else if ( !searchEmpty && checkedAll ) { // all checked
+											if ( (name.includes(searchFilter) || club.includes(searchFilter)) ) {
+												card.style.display = '';
+											} else {
+												card.style.display = 'none';
+											}
+										}
+										else {
+											if ( (name.includes(searchFilter) || club.includes(searchFilter)) && (pos.includes(checkedFilter)) ) {
+												card.style.display = '';
+											} else {
+												card.style.display = 'none';
+											}
+										}
+									});
+								}
+
+								// Interactive fantasy section
+								function SetFilter(pos) {
+									const 
+										selector = document.getElementById('checkedFilter'),
+										options = selector.querySelector('optgroup[label="Position"]').querySelectorAll('.pos-option');
+
+									for (let i = 0; i < options.length; i++) {
+										if (options[i].textContent.toLocaleLowerCase() === pos.toLowerCase()) {
+											selector.selectedIndex = options[i].index;
+											PlayerCardFilter();
+											return;
+										}
 									}
-								</script>
-							</div>
-						</section>
-					</div>
+								}
+							</script>
+						</div>
+					}
 				</form>
+				<div id="player_details_container"></div>
 			</div>
 		</main>
 	}

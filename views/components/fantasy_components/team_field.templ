@@ -6,17 +6,18 @@ import (
 )
 
 type FantasyTeamFieldPlayersParams struct {
-	GK  []queries.ListFantasyPlayersRow
-	DEF []queries.ListFantasyPlayersRow
-	MFD []queries.ListFantasyPlayersRow
-	FWD []queries.ListFantasyPlayersRow
+	GK      []queries.ListFantasyPlayersRow
+	DEF     []queries.ListFantasyPlayersRow
+	MFD     []queries.ListFantasyPlayersRow
+	FWD     []queries.ListFantasyPlayersRow
+	HasTeam bool
 }
 
 templ FantasyTeamField(
 	players FantasyTeamFieldPlayersParams,
 	budget int,
 ) {
-	<section id="team_field" class="basis-2/3 flex flex-col overflow-hidden">
+	<section id="team_field" class="col-span-2 flex flex-col overflow-hidden">
 		<div class="bg-gradient-to-br from-secondary-foreground to-secondary-background p-2 rounded-t-lg grid grid-cols-3 text-primary-background">
 			<div></div>
 			<h1 class="text-xl text-center font-bold ">
@@ -39,61 +40,91 @@ templ FantasyTeamField(
 				<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11 -translate-y-11">
 					<section class="flex justify-center" onclick="SetFilter('GK')">
 						for i := range(1) {
-							<div>
-								if i >= len(players.GK) {
+							if i >= len(players.GK) {
+								<div>
 									@BlankPlayerCard(queries.PlayerPositionGK)
-								} else {
+								</div>
+							} else {
+								<div
+									hx-get={ "/cmps/fantasy/players/" + strconv.Itoa(int(players.GK[i].ID)) }
+									hx-target="#player_details_container"
+									hx-trigger="click"
+									hx-swap="innerHTML"
+								>
 									@PlayerCardImg(players.GK[i], true)
-								}
-							</div>
+								</div>
+							}
 						}
 					</section>
 					<section class="flex justify-center -translate-y-8" onclick="SetFilter('DEF')">
 						for i := range(4) {
-							<div>
-								if i >= len(players.DEF) {
+							if i >= len(players.DEF) {
+								<div>
 									@BlankPlayerCard(queries.PlayerPositionDEF)
-								} else {
+								</div>
+							} else {
+								<div
+									hx-get={ "/cmps/fantasy/players/" + strconv.Itoa(int(players.DEF[i].ID)) }
+									hx-target="#player_details_container"
+									hx-trigger="click"
+									hx-swap="innerHTML"
+								>
 									@PlayerCardImg(players.DEF[i], true)
-								}
-							</div>
+								</div>
+							}
 						}
 					</section>
 					<section class="flex justify-center -translate-y-8" onclick="SetFilter('MFD')">
 						for i := range(4) {
-							<div>
-								if i >= len(players.MFD) {
+							if i >= len(players.MFD) {
+								<div>
 									@BlankPlayerCard(queries.PlayerPositionMFD)
-								} else {
+								</div>
+							} else {
+								<div
+									hx-get={ "/cmps/fantasy/players/" + strconv.Itoa(int(players.MFD[i].ID)) }
+									hx-target="#player_details_container"
+									hx-trigger="click"
+									hx-swap="innerHTML"
+								>
 									@PlayerCardImg(players.MFD[i], true)
-								}
-							</div>
+								</div>
+							}
 						}
 					</section>
 					<section class="flex justify-center -translate-y-8" onclick="SetFilter('FWD')">
 						for i := range(2) {
-							<div>
-								if i >= len(players.FWD) {
+							if i >= len(players.FWD) {
+								<div>
 									@BlankPlayerCard(queries.PlayerPositionFWD)
-								} else {
+								</div>
+							} else {
+								<div
+									hx-get={ "/cmps/fantasy/players/" + strconv.Itoa(int(players.FWD[i].ID)) }
+									hx-target="#player_details_container"
+									hx-trigger="click"
+									hx-swap="innerHTML"
+								>
 									@PlayerCardImg(players.FWD[i], true)
-								}
-							</div>
+								</div>
+							}
 						}
 					</section>
 				</section>
 			</div>
 		</div>
 		<div class="flex w-full h-11 items-center justify-center rounded-b-lg text-center bg-secondary-background">
-			<button
-				type="submit"
-				name="submit_team"
-				value="submit"
-				class="w-1/2 h-1/2 bg-secondary-foreground shadow-lg rounded-sm text-xs text-primary-foreground font-semibold disabled:bg-primary"
-				disabled?={ budget < 0 }
-			>
-				Save Team
-			</button>
+			if !players.HasTeam {
+				<button
+					type="submit"
+					name="submit_team"
+					value="submit"
+					class="w-1/2 h-1/2 bg-secondary-foreground shadow-lg rounded-sm text-xs text-primary-foreground font-semibold disabled:bg-primary"
+					disabled?={ budget < 0 }
+				>
+					Save Team
+				</button>
+			}
 		</div>
 	</section>
 }
