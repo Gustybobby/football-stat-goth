@@ -1,0 +1,99 @@
+package fantasy_components
+
+import (
+	"football-stat-goth/queries"
+	"strconv"
+)
+
+type FantasyTeamFieldPlayersParams struct {
+	GK  []queries.ListFantasyPlayersRow
+	DEF []queries.ListFantasyPlayersRow
+	MFD []queries.ListFantasyPlayersRow
+	FWD []queries.ListFantasyPlayersRow
+}
+
+templ FantasyTeamField(
+	players FantasyTeamFieldPlayersParams,
+	budget int,
+) {
+	<section id="team_field" class="basis-2/3 flex flex-col overflow-hidden">
+		<div class="bg-gradient-to-br from-secondary-foreground to-secondary-background p-2 rounded-t-lg grid grid-cols-3 text-primary-background">
+			<div></div>
+			<h1 class="text-xl text-center font-bold ">
+				Your Team
+			</h1>
+			<span class="font-semibold flex items-center justify-end space-x-2">
+				<p>Your Budget:</p>
+				<p>{ strconv.Itoa(budget) }/100</p>
+			</span>
+		</div>
+		<div class="relative w-full h-[700px] items-center bg-gradient-to-tr from-secondary-foreground from-20% via-sky-500 via-50% to-emerald-500 to-90%">
+			<img
+				class="w-full h-full"
+				src="/public/1-1-football-pitch.png"
+			/>
+			// make 3 section for each row instead, then make section within thos.
+			<div
+				class="absolute inset-0 flex items-center px-14"
+			>
+				<section class="w-full h-[80%] grid grid-rows-4 place-content-center gap-y-11 -translate-y-11">
+					<section class="flex justify-center" onclick="SetFilter('GK')">
+						for i := range(1) {
+							<div>
+								if i >= len(players.GK) {
+									@BlankPlayerCard(queries.PlayerPositionGK)
+								} else {
+									@PlayerCardImg(players.GK[i], true)
+								}
+							</div>
+						}
+					</section>
+					<section class="flex justify-center -translate-y-8" onclick="SetFilter('DEF')">
+						for i := range(4) {
+							<div>
+								if i >= len(players.DEF) {
+									@BlankPlayerCard(queries.PlayerPositionDEF)
+								} else {
+									@PlayerCardImg(players.DEF[i], true)
+								}
+							</div>
+						}
+					</section>
+					<section class="flex justify-center -translate-y-8" onclick="SetFilter('MFD')">
+						for i := range(4) {
+							<div>
+								if i >= len(players.MFD) {
+									@BlankPlayerCard(queries.PlayerPositionMFD)
+								} else {
+									@PlayerCardImg(players.MFD[i], true)
+								}
+							</div>
+						}
+					</section>
+					<section class="flex justify-center -translate-y-8" onclick="SetFilter('FWD')">
+						for i := range(2) {
+							<div>
+								if i >= len(players.FWD) {
+									@BlankPlayerCard(queries.PlayerPositionFWD)
+								} else {
+									@PlayerCardImg(players.FWD[i], true)
+								}
+							</div>
+						}
+					</section>
+				</section>
+			</div>
+		</div>
+		<div class="flex w-full h-11 items-center justify-center rounded-b-lg text-center bg-secondary-background">
+			<button
+				type="submit"
+				name="submit_team"
+				value="submit"
+				class="w-1/2 h-1/2 bg-secondary-foreground shadow-lg rounded-sm text-xs text-primary-foreground font-semibold disabled:bg-primary"
+				disabled?={ budget < 0 }
+			>
+				Save Team
+			</button>
+		</div>
+	</section>
+}

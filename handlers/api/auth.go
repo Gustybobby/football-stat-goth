@@ -5,6 +5,7 @@ import (
 	"football-stat-goth/services/plauth"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 )
 
@@ -31,6 +32,14 @@ func HandleSignup(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 }
 
 func HandleSignin(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	redirect_url, err := url.QueryUnescape(r.URL.Query().Get("redirectUrl"))
+	if err != nil {
+		return err
+	}
+	if redirect_url == "" {
+		redirect_url = "/"
+	}
+
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -65,7 +74,7 @@ func HandleSignin(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 
 	plauth.SetSessionTokenCookie(w, token, session.ExpiresAt.Time, os.Getenv("ENV") == "production")
 
-	w.Header().Add("Hx-Redirect", "/")
+	w.Header().Add("Hx-Redirect", redirect_url)
 	return nil
 }
 

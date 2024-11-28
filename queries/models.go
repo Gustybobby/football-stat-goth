@@ -219,13 +219,13 @@ type FantasyTeamPlayer struct {
 	FantasyPlayerID int32
 }
 
-type FatasyTransaction struct {
+type FantasyTransaction struct {
 	ID              int32
 	CreatedAt       pgtype.Timestamp
 	Cost            int32
 	Type            FantasyTransactionType
-	FantasyTeamID   pgtype.Int4
-	FantasyPlayerID pgtype.Int4
+	FantasyTeamID   int32
+	FantasyPlayerID int32
 }
 
 type Lineup struct {

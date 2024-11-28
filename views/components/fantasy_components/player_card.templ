@@ -1,0 +1,46 @@
+package fantasy_components
+
+import (
+	"football-stat-goth/queries"
+	"strconv"
+)
+
+templ PlayerCard() {
+	<img class="h-full w-full" src="/public/playerCard.png"/>
+}
+
+templ BlankPlayerCard(position queries.PlayerPosition) {
+	<img class="h-full w-full hover:cursor-pointer" src="/public/blank-playerCard.png" blank="true" pos={ string(position) }/>
+}
+
+templ PlayerCardImg(player queries.ListFantasyPlayersRow, is_small bool) {
+	<div class={ playerCardVariant(is_small) }>
+		@PlayerCard()
+		<span class="absolute inset-0 p-4 translate-y-6 size-full justify-center">
+			<img src={ player.Image.String } onerror=" this.src = '/public/blank-player.png'"/>
+		</span>
+		<span class="absolute inset-0 p-4 size-full flex flex-col items-center">
+			<p class="text-primary-foreground font-bold player-name">{ player.Lastname }</p>
+			<p class="hidden player-club">{ player.ClubID } </p>
+		</span>
+	</div>
+}
+
+templ PlayerCardInfo(player queries.ListFantasyPlayersRow) {
+	<div class="relative size-full hover:cursor-pointer">
+		@PlayerCard()
+		<span class="absolute inset-0 size-full align-text-top text-center p-4 translate-y-1">
+			<p class="text-primary-foreground font-bold">{ player.Lastname }</p>
+			<p class="font-semibold player-pos">{ string(player.Position) }</p>
+			<p class="font-semibold player-cost">Cost: { strconv.Itoa(int(player.Cost)) }</p>
+		</span>
+	</div>
+}
+
+func playerCardVariant(is_small bool) string {
+	base_class := "relative size-full hover:cursor-pointer"
+	if is_small {
+		base_class += " text-xs"
+	}
+	return base_class
+}

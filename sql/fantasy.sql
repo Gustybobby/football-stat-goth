@@ -161,6 +161,55 @@ INNER JOIN "player"
 ON "fantasy_player".player_id = "player".id
 INNER JOIN "club"
 ON "fantasy_player".club_id = "club".id
+WHERE
+    CASE
+        WHEN sqlc.arg('filter_fantasy_player_id')::bool
+        THEN "fantasy_player".id = ANY(sqlc.arg('fantasy_player_ids')::INTEGER[])
+        ELSE true
+    END
 ORDER BY
     "player".position ASC,
     "player".lastname ASC;
+
+-- name: FindFantasyTeamByUsernameSeason :one
+SELECT *
+FROM "fantasy_team"
+WHERE
+    "fantasy_team".username = $1 AND
+    "fantasy_team".season = $2;
+
+-- name: ListFantasyTeamPlayersByUsernameSeason :many
+SELECT
+    "fantasy_team_player".*,
+    "fantasy_team".budget
+FROM "fantasy_team_player"
+INNER JOIN "fantasy_team"
+ON "fantasy_team_player".fantasy_team_id = "fantasy_team".id
+WHERE
+    "fantasy_team".username = $1 AND
+    "fantasy_team".season = $2;
+
+-- name: CreateFantasyTeam :one
+INSERT INTO "fantasy_team" (
+    username,
+    season,
+    budget
+) VALUES (
+    $1,
+    $2,
+    $3
+)
+RETURNING *;
+
+-- name: CreateFantasyTransaction :copyfrom
+INSERT INTO "fantasy_transaction" (
+    cost,
+    type,
+    fantasy_team_id,
+    fantasy_player_id
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4
+);
