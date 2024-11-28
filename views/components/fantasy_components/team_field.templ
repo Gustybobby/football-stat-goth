@@ -89,7 +89,8 @@ templ FantasyTeamField(
 				type="submit"
 				name="submit_team"
 				value="submit"
-				class="w-1/2 h-1/2 bg-secondary-foreground shadow-lg rounded-sm text-xs text-primary-foreground font-semibold"
+				class="w-1/2 h-1/2 bg-secondary-foreground shadow-lg rounded-sm text-xs text-primary-foreground font-semibold disabled:bg-primary"
+				disabled={ strconv.FormatBool(cost > 100) }
 			>
 				Save Team
 			</button>
