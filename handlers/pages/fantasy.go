@@ -6,6 +6,7 @@ import (
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
+	"football-stat-goth/services/plconstant"
 	"football-stat-goth/services/pltime"
 	"football-stat-goth/views"
 	"net/http"
@@ -31,8 +32,8 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 
 	players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
 		FilterFantasyPlayerID: false,
-		MinCost:               1,
-		AvgCost:               9,
+		MinCost:               plconstant.FantasyPlayerMinCost,
+		AvgCost:               plconstant.FantasyPlayerAverageCost,
 		Season:                pltime.GetCurrentSeasonString(),
 	})
 	if err != nil {
@@ -62,10 +63,10 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		return err
 	}
 
-	cost := 0
+	budget := plconstant.FantasyTeamMaxBudget
 	if len(fantasy_team_player_refs) > 0 {
-		cost = 100 - int(fantasy_team_player_refs[0].Budget)
+		budget = int(fantasy_team_player_refs[0].Budget)
 	}
 
-	return handlers.Render(w, r, views.Fantasy(user, fixtures, players, *players_params, cost))
+	return handlers.Render(w, r, views.Fantasy(user, fixtures, players, *players_params, budget))
 }

@@ -14,7 +14,7 @@ type FantasyTeamFieldPlayersParams struct {
 
 templ FantasyTeamField(
 	players FantasyTeamFieldPlayersParams,
-	cost int,
+	budget int,
 ) {
 	<section id="team_field" class="basis-2/3 flex flex-col overflow-hidden">
 		<div class="bg-gradient-to-br from-secondary-foreground to-secondary-background p-2 rounded-t-lg grid grid-cols-3 text-primary-background">
@@ -23,8 +23,8 @@ templ FantasyTeamField(
 				Your Team
 			</h1>
 			<span class="font-semibold flex items-center justify-end space-x-2">
-				<p>Current Cost:</p>
-				<p>{ strconv.Itoa(cost) }/100</p>
+				<p>Your Budget:</p>
+				<p>{ strconv.Itoa(budget) }/100</p>
 			</span>
 		</div>
 		<div class="relative w-full h-[700px] items-center bg-gradient-to-tr from-secondary-foreground from-20% via-sky-500 via-50% to-emerald-500 to-90%">
@@ -90,7 +90,7 @@ templ FantasyTeamField(
 				name="submit_team"
 				value="submit"
 				class="w-1/2 h-1/2 bg-secondary-foreground shadow-lg rounded-sm text-xs text-primary-foreground font-semibold disabled:bg-primary"
-				disabled?={ cost > 100 }
+				disabled?={ budget < 0 }
 			>
 				Save Team
 			</button>

@@ -6,6 +6,7 @@ import (
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
+	"football-stat-goth/services/plconstant"
 	"football-stat-goth/services/pltime"
 	"football-stat-goth/views/components/fantasy_components"
 	"net/http"
@@ -37,8 +38,8 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 	}
 
 	fantasy_players, err := repo.Queries.ListFantasyPlayers(repo.Ctx, queries.ListFantasyPlayersParams{
-		MinCost:               1,
-		AvgCost:               9,
+		MinCost:               plconstant.FantasyPlayerMinCost,
+		AvgCost:               plconstant.FantasyPlayerAverageCost,
 		FilterFantasyPlayerID: true,
 		FantasyPlayerIds:      fantasy_player_ids,
 		Season:                pltime.GetCurrentSeasonString(),
@@ -53,7 +54,7 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 	}
 
 	if r.Form.Get("submit_team") == "submit" {
-		if cost > 100 {
+		if cost > plconstant.FantasyTeamMaxBudget {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return nil
 		}
@@ -61,7 +62,7 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 		fantasy_team, err := repo.Queries.CreateFantasyTeam(repo.Ctx, queries.CreateFantasyTeamParams{
 			Username: user.Username,
 			Season:   pltime.GetCurrentSeasonString(),
-			Budget:   100,
+			Budget:   plconstant.FantasyTeamMaxBudget,
 		})
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -88,7 +89,7 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 		return err
 	}
 
-	return handlers.Render(w, r, fantasy_components.FantasyTeamField(*players_params, cost))
+	return handlers.Render(w, r, fantasy_components.FantasyTeamField(*players_params, plconstant.FantasyTeamMaxBudget-cost))
 }
 
 func GetFantasyTeamFieldParams(fantasy_players []queries.ListFantasyPlayersRow) (*fantasy_components.FantasyTeamFieldPlayersParams, int, error) {
