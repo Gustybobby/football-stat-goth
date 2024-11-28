@@ -1,0 +1,20 @@
+package views
+
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/views/components"
+	"football-stat-goth/views/components/profile_components"
+	"football-stat-goth/views/layouts"
+)
+
+templ Profile(user *queries.FindUserByUsernameRow) {
+	@layouts.Base() {
+		@components.Nav(user)
+		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col items-center">
+			<div class="my-8 w-1/2 flex flex-col items-center space-y-8">
+				@components.PlaymakerTitle()
+				@profile_components.ProfileBox(user)
+			</div>
+		</main>
+	}
+}

@@ -87,3 +87,20 @@ func (q *Queries) FindUserByUsername(ctx context.Context, username string) (Find
 	)
 	return i, err
 }
+
+const updatePasswordByUsername = `-- name: UpdatePasswordByUsername :exec
+UPDATE 
+    "user" 
+SET password_hash = $2
+WHERE "user".username = $1
+`
+
+type UpdatePasswordByUsernameParams struct {
+	Username     string
+	PasswordHash string
+}
+
+func (q *Queries) UpdatePasswordByUsername(ctx context.Context, arg UpdatePasswordByUsernameParams) error {
+	_, err := q.db.Exec(ctx, updatePasswordByUsername, arg.Username, arg.PasswordHash)
+	return err
+}
