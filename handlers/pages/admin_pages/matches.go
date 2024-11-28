@@ -37,5 +37,5 @@ func HandleAdminEditMatchPage(w http.ResponseWriter, r *http.Request, repo *repo
 		return err
 	}
 
-	return handlers.Render(w, r, admin_views.EditLineups(match, events, homeLineupPlayers, awayLineupPlayers))
+	return handlers.Render(w, r, admin_views.EditMatch(match, events, homeLineupPlayers, awayLineupPlayers))
 }
