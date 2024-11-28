@@ -1,0 +1,181 @@
+package admin_views
+
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/views/admin/admin_components"
+	"football-stat-goth/views/layouts"
+	"github.com/jackc/pgx/v5/pgtype"
+	"strconv"
+	"time"
+)
+
+templ CreatePlayers() {
+	@layouts.Base() {
+		@admin_components.AdminNav()
+		<script>
+			function onChangeImage(imageUrl) {
+				document.getElementById("image_preview").src = imageUrl
+			}
+		</script>
+		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col">
+			<h1 class="font-bold text-3xl mb-4">Add New Player</h1>
+			<form
+				class="grid grid-cols-2 gap-4 md:w-1/2"
+				hx-post="/api/admin/players"
+			>
+				@formField(queries.Player{
+					Firstname:   "",
+					Lastname:    "",
+					Dob:         pgtype.Timestamp{Time: time.Now(), Valid: true},
+					Height:      0,
+					Nationality: "",
+					Position:    queries.PlayerPositionGK,
+					Image:       pgtype.Text{String: "", Valid: true},
+				})
+			</form>
+		</main>
+	}
+}
+
+templ EditPlayers(player queries.Player) {
+	@layouts.Base() {
+		@admin_components.AdminNav()
+		<script>
+			function onChangeImage(imageUrl) {
+				document.getElementById("image_preview").src = imageUrl
+			}
+		</script>
+		<main class="w-full p-4 bg-primary-background min-h-screen flex flex-col">
+			<h1 class="font-bold text-3xl">Edit Player ID { strconv.Itoa(int(player.ID)) }</h1>
+			<a
+				href={ templ.SafeURL("/players/" + strconv.Itoa(int(player.ID))) }
+				class="underline text-lg font-semibold mb-4"
+			>
+				View player public profile
+			</a>
+			<form
+				class="grid grid-cols-2 gap-4 md:w-1/2"
+				hx-patch={ "/api/admin/players/" + strconv.Itoa(int(player.ID)) }
+			>
+				@formField(player)
+			</form>
+			<form hx-delete={ "/api/admin/players/" + strconv.Itoa(int(player.ID)) } class="flex flex-col items-start space-y-2">
+				<h1 class="font-bold text-xl">Delete Player</h1>
+				<input
+					name="confirm"
+					type="text"
+					class="p-1 rounded-md border border-primary w-72"
+					placeholder="Type the ID to confirm delete"
+					autocomplete="off"
+				/>
+				<input
+					type="submit"
+					value="Delete"
+					class="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-500 font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
+				/>
+			</form>
+		</main>
+	}
+}
+
+templ formField(player queries.Player) {
+	<div>
+		<span>First Name</span>
+		<input
+			name="firstname"
+			type="text"
+			class="p-1 rounded-md border border-primary w-full"
+			value={ player.Firstname }
+			placeholder="First Name"
+			autocomplete="off"
+		/>
+	</div>
+	<div>
+		<span>Last Name</span>
+		<input
+			name="lastname"
+			type="text"
+			class="p-1 rounded-md border border-primary w-full"
+			value={ player.Lastname }
+			placeholder="Last Name"
+			autocomplete="off"
+			required
+		/>
+	</div>
+	<div>
+		<label for="dob">Date of Birth</label>
+		<input
+			id="dob"
+			name="dob"
+			type="date"
+			class="p-1 rounded-md border border-primary w-full"
+			value={ player.Dob.Time.Format("2006-01-02") }
+			required
+		/>
+	</div>
+	<div>
+		<span>Height (cm)</span>
+		<input
+			name="height"
+			type="number"
+			class="p-1 rounded-md border border-primary w-full"
+			placeholder="Height"
+			value={ strconv.Itoa(int(player.Height)) }
+			required
+		/>
+	</div>
+	<div>
+		<span>Nationality</span>
+		<input
+			name="nationality"
+			type="text"
+			class="p-1 rounded-md border border-primary w-full"
+			placeholder="Nationality"
+			value={ player.Nationality }
+			required
+		/>
+	</div>
+	<div>
+		<label for="position">Position</label>
+		<select
+			id="position"
+			name="position"
+			class="p-1 rounded-md border border-primary w-full"
+			required
+		>
+			<option selected?={ player.Position == queries.PlayerPositionGK }>GK</option>
+			<option selected?={ player.Position == queries.PlayerPositionDEF }>DEF</option>
+			<option selected?={ player.Position == queries.PlayerPositionMFD }>MFD</option>
+			<option selected?={ player.Position == queries.PlayerPositionFWD }>FWD</option>
+		</select>
+	</div>
+	<div class="col-span-full">
+		<span>Image URL</span>
+		<input
+			name="image"
+			type="text"
+			class="p-1 rounded-md border border-primary w-full"
+			placeholder="Image URL"
+			onchange="onChangeImage(this.value)"
+			onkeyup="onChangeImage(this.value)"
+			value={ player.Image.String }
+			autocomplete="off"
+			required
+		/>
+	</div>
+	<img
+		id="image_preview"
+		src={ player.Image.String }
+		width="512px"
+		height="512px"
+		class="col-span-full size-52 border border-primary"
+		onerror="this.src='/public/missing_portrait.webp';"
+	/>
+	<div class="col-span-full flex justify-center">
+		<input
+			type="submit"
+			value="Submit"
+			class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
+		/>
+	</div>
+}

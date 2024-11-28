@@ -66,6 +66,16 @@ func (q *Queries) CreatePlayer(ctx context.Context, arg CreatePlayerParams) (Pla
 	return i, err
 }
 
+const deletePlayerByID = `-- name: DeletePlayerByID :exec
+DELETE FROM "player"
+WHERE "player".id = $1
+`
+
+func (q *Queries) DeletePlayerByID(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deletePlayerByID, id)
+	return err
+}
+
 const findPlayerByID = `-- name: FindPlayerByID :one
 SELECT id, firstname, lastname, dob, height, nationality, position, image
 FROM "player"
@@ -87,29 +97,6 @@ func (q *Queries) FindPlayerByID(ctx context.Context, id int32) (Player, error) 
 		&i.Image,
 	)
 	return i, err
-}
-
-const findPlayerIDByClubNoSeason = `-- name: FindPlayerIDByClubNoSeason :one
-SELECT
-    "club_player".player_id
-FROM "club_player"
-WHERE
-    "club_player".club_id = $1 AND
-    "club_player".no = $2 AND
-    "club_player".season = $3
-`
-
-type FindPlayerIDByClubNoSeasonParams struct {
-	ClubID string
-	No     int16
-	Season string
-}
-
-func (q *Queries) FindPlayerIDByClubNoSeason(ctx context.Context, arg FindPlayerIDByClubNoSeasonParams) (int32, error) {
-	row := q.db.QueryRow(ctx, findPlayerIDByClubNoSeason, arg.ClubID, arg.No, arg.Season)
-	var player_id int32
-	err := row.Scan(&player_id)
-	return player_id, err
 }
 
 const listPlayerLikeFullname = `-- name: ListPlayerLikeFullname :many
@@ -396,4 +383,53 @@ func (q *Queries) ListPlayerSeasonPerformance(ctx context.Context, arg ListPlaye
 		return nil, err
 	}
 	return items, nil
+}
+
+const updatePlayerByID = `-- name: UpdatePlayerByID :one
+UPDATE "player" SET
+    firstname = $1,
+    lastname = $2,
+    dob = $3,
+    height = $4,
+    nationality = $5,
+    position = $6,
+    image = $7
+WHERE "player".id = $8
+RETURNING id, firstname, lastname, dob, height, nationality, position, image
+`
+
+type UpdatePlayerByIDParams struct {
+	Firstname   string
+	Lastname    string
+	Dob         pgtype.Timestamp
+	Height      int16
+	Nationality string
+	Position    PlayerPosition
+	Image       pgtype.Text
+	ID          int32
+}
+
+func (q *Queries) UpdatePlayerByID(ctx context.Context, arg UpdatePlayerByIDParams) (Player, error) {
+	row := q.db.QueryRow(ctx, updatePlayerByID,
+		arg.Firstname,
+		arg.Lastname,
+		arg.Dob,
+		arg.Height,
+		arg.Nationality,
+		arg.Position,
+		arg.Image,
+		arg.ID,
+	)
+	var i Player
+	err := row.Scan(
+		&i.ID,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Dob,
+		&i.Height,
+		&i.Nationality,
+		&i.Position,
+		&i.Image,
+	)
+	return i, err
 }

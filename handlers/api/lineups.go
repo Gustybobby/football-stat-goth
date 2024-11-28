@@ -4,7 +4,6 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
-	"football-stat-goth/services/pltime"
 	"football-stat-goth/views/admin/admin_components/admin_lineup_components"
 	"net/http"
 	"strconv"
@@ -19,16 +18,12 @@ func HandleCreateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 		return err
 	}
 
-	no, err := strconv.Atoi(r.FormValue("no"))
+	player_id, err := strconv.Atoi(r.FormValue("player_id"))
 	if err != nil {
 		return err
 	}
 
-	player_id, err := repo.Queries.FindPlayerIDByClubNoSeason(repo.Ctx, queries.FindPlayerIDByClubNoSeasonParams{
-		ClubID: r.FormValue("club_id"),
-		No:     int16(no),
-		Season: pltime.GetCurrentSeasonString(),
-	})
+	no, err := strconv.Atoi(r.FormValue("no"))
 	if err != nil {
 		return err
 	}
@@ -40,7 +35,8 @@ func HandleCreateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 
 	lineupPlayer, err := repo.Queries.CreateLineupPlayer(repo.Ctx, queries.CreateLineupPlayerParams{
 		LineupID:   int32(lineupID),
-		PlayerID:   player_id,
+		PlayerID:   int32(player_id),
+		No:         int16(no),
 		PositionNo: int16(position_no),
 		Position:   queries.PlayerPosition(r.FormValue("position")),
 	})
@@ -95,6 +91,25 @@ func HandleUpdateLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repo
 	}
 
 	return handleFormResponse(lineupPlayer.LineupID, w, r, repo)
+}
+
+func HandleDeleteLineupPlayer(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	lineupID, err := strconv.Atoi(chi.URLParam(r, "lineupID"))
+	if err != nil {
+		return err
+	}
+
+	playerID, err := strconv.Atoi(chi.URLParam(r, "playerID"))
+	if err != nil {
+		return err
+	}
+
+	repo.Queries.DeleteLineupPlayer(repo.Ctx, queries.DeleteLineupPlayerParams{
+		LineupID: int32(lineupID),
+		PlayerID: int32(playerID),
+	})
+
+	return handleFormResponse(int32(lineupID), w, r, repo)
 }
 
 func handleFormResponse(lineupID int32, w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {

@@ -15,13 +15,15 @@ const createLineupPlayer = `-- name: CreateLineupPlayer :one
 INSERT INTO "lineup_player" (
     lineup_id,
     player_id,
+    no,
     position_no,
     position
 ) VALUES (
     $1,
     $2,
     $3,
-    $4
+    $4,
+    $5
 )
 RETURNING lineup_id, player_id, no, position_no, position
 `
@@ -29,6 +31,7 @@ RETURNING lineup_id, player_id, no, position_no, position
 type CreateLineupPlayerParams struct {
 	LineupID   int32
 	PlayerID   int32
+	No         int16
 	PositionNo int16
 	Position   PlayerPosition
 }
@@ -37,6 +40,7 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 	row := q.db.QueryRow(ctx, createLineupPlayer,
 		arg.LineupID,
 		arg.PlayerID,
+		arg.No,
 		arg.PositionNo,
 		arg.Position,
 	)
@@ -49,6 +53,23 @@ func (q *Queries) CreateLineupPlayer(ctx context.Context, arg CreateLineupPlayer
 		&i.Position,
 	)
 	return i, err
+}
+
+const deleteLineupPlayer = `-- name: DeleteLineupPlayer :exec
+DELETE FROM "lineup_player"
+WHERE
+    "lineup_player".lineup_id = $1 AND
+    "lineup_player".player_id = $2
+`
+
+type DeleteLineupPlayerParams struct {
+	LineupID int32
+	PlayerID int32
+}
+
+func (q *Queries) DeleteLineupPlayer(ctx context.Context, arg DeleteLineupPlayerParams) error {
+	_, err := q.db.Exec(ctx, deleteLineupPlayer, arg.LineupID, arg.PlayerID)
+	return err
 }
 
 const findLineupPlayerByLineupIDAndPositionNo = `-- name: FindLineupPlayerByLineupIDAndPositionNo :one

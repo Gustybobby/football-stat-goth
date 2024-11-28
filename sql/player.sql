@@ -4,25 +4,6 @@ FROM "player"
 WHERE "player".id = $1
 LIMIT 1;
 
--- name: FindPlayerIDByClubNoSeason :one
-SELECT
-    "club_player".player_id
-FROM "club_player"
-WHERE
-    "club_player".club_id = $1 AND
-    "club_player".no = $2 AND
-    "club_player".season = $3;
-
--- name: ListPlayerLikeFullname :many
-SELECT *
-FROM "player"
-WHERE
-    CONCAT("player".firstname,' ',"player".lastname)
-    LIKE sqlc.arg('fullname_like')::TEXT
-ORDER BY "player".id ASC
-OFFSET sqlc.arg('offset')::INTEGER
-LIMIT sqlc.arg('limit')::INTEGER;
-
 -- name: CreatePlayer :one
 INSERT INTO "player" (
     firstname,
@@ -42,6 +23,32 @@ INSERT INTO "player" (
     $7
 )
 RETURNING *;
+
+-- name: UpdatePlayerByID :one
+UPDATE "player" SET
+    firstname = $1,
+    lastname = $2,
+    dob = $3,
+    height = $4,
+    nationality = $5,
+    position = $6,
+    image = $7
+WHERE "player".id = $8
+RETURNING *;
+
+-- name: DeletePlayerByID :exec
+DELETE FROM "player"
+WHERE "player".id = $1;
+
+-- name: ListPlayerLikeFullname :many
+SELECT *
+FROM "player"
+WHERE
+    CONCAT("player".firstname,' ',"player".lastname)
+    LIKE sqlc.arg('fullname_like')::TEXT
+ORDER BY "player".id ASC
+OFFSET sqlc.arg('offset')::INTEGER
+LIMIT sqlc.arg('limit')::INTEGER;
 
 -- name: ListPlayerSeasonPerformance :many
 WITH "player_total_stats" AS (

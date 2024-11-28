@@ -10,7 +10,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func HandleAdminEditLineupsPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+func HandleAdminEditMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	matchID, err := strconv.Atoi(chi.URLParam(r, "matchID"))
 	if err != nil {
 		return err
@@ -18,6 +18,7 @@ func HandleAdminEditLineupsPage(w http.ResponseWriter, r *http.Request, repo *re
 
 	match, err := repo.Queries.FindMatchByID(repo.Ctx, int32(matchID))
 	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return err
 	}
 

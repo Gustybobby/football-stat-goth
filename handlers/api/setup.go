@@ -29,7 +29,10 @@ func SetupAdminApiRoutes(r_api_admin chi.Router, repo *repos.Repository) {
 	r_api_admin.Use(plmiddleware.AuthAdmin)
 
 	r_api_admin.Post("/players", handlers.Make(HandleCreatePlayer, repo))
+	r_api_admin.Patch("/players/{playerID}", handlers.Make(HandleUpdatePlayer, repo))
+	r_api_admin.Delete("/players/{playerID}", handlers.Make(HandleDeletePlayer, repo))
 
 	r_api_admin.Post("/lineups/{lineupID}/lineup_players", handlers.Make(HandleCreateLineupPlayer, repo))
 	r_api_admin.Patch("/lineups/{lineupID}/lineup_players/{playerID}", handlers.Make(HandleUpdateLineupPlayer, repo))
+	r_api_admin.Delete("/lineups/{lineupID}/lineup_players/{playerID}", handlers.Make(HandleDeleteLineupPlayer, repo))
 }

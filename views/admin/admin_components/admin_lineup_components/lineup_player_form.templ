@@ -27,7 +27,15 @@ templ AddLineupPlayerForm(params AddPlayerFormParams) {
 				hx-post={ "/api/admin/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
 			>
 				<h1 class="font-semibold text-lg">Add { params.ClubID } Player at Position No. { params.PositionNo }</h1>
-				<span>No.</span>
+				<span>Player ID</span>
+				<input
+					type="text"
+					name="player_id"
+					class="p-1 rounded-md border border-primary w-full"
+					required
+					autocomplete="off"
+				/>
+				<span>No</span>
 				<input
 					type="text"
 					name="no"
@@ -75,11 +83,19 @@ templ AddLineupSubstituteForm(params AddPlayerFormParams) {
 				hx-post={ "/api/admin/lineups/" + strconv.Itoa(params.LineupID) + "/lineup_players" }
 			>
 				<h1 class="font-semibold text-lg">Add { params.ClubID } Player as Substitute No. { params.PositionNo }</h1>
-				<span>No.</span>
+				<span>Player ID</span>
+				<input
+					type="text"
+					name="player_id"
+					class="p-1 rounded-md border border-primary w-full mb-2"
+					required
+					autocomplete="off"
+				/>
+				<span>No</span>
 				<input
 					type="text"
 					name="no"
-					class="p-1 rounded-md border border-primary w-full mb-2"
+					class="p-1 rounded-md border border-primary w-full"
 					required
 					autocomplete="off"
 				/>
@@ -129,6 +145,15 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 					{ strconv.Itoa(int(lineupPlayer.PositionNo)) +"." } Edit { lineupPlayer.Firstname } { lineupPlayer.Lastname }({ strconv.Itoa(int(lineupPlayer.No)) })
 				</h1>
 				<p>Player ID: { strconv.Itoa(int(lineupPlayer.PlayerID)) }</p>
+				<span>No</span>
+				<input
+					type="text"
+					name="no"
+					class="p-1 rounded-md border border-primary w-full"
+					required
+					autocomplete="off"
+					value={ strconv.Itoa(int(lineupPlayer.No)) }
+				/>
 				<span>Position</span>
 				<select
 					name="position"
@@ -143,18 +168,27 @@ templ EditLineupPlayerForm(lineupPlayer queries.FindLineupPlayerByLineupIDAndPos
 						}
 					}
 				</select>
-				<div class="flex space-x-1">
+				<div class="flex justify-between w-full">
+					<div class="flex space-x-1">
+						<button
+							type="submit"
+							class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
+						>
+							Edit
+						</button>
+						<button
+							class="bg-primary px-4 py-2 rounded-lg hover:bg-primary/80 font-bold text-black hover:cursor-pointer transition-colors w-fit"
+							onclick={ removeForm("edit_lineup_player_form_" + strconv.Itoa(int(lineupPlayer.LineupID)) + "_" + strconv.Itoa(int(lineupPlayer.PositionNo))) }
+						>
+							Cancel
+						</button>
+					</div>
 					<button
-						type="submit"
-						class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
+						type="button"
+						hx-delete={ "/api/admin/lineups/" + strconv.Itoa(int(lineupPlayer.LineupID)) + "/lineup_players/" + strconv.Itoa(int(lineupPlayer.PlayerID)) }
+						class="bg-red-600 px-4 py-2 rounded-lg hover:bg-red-500 font-bold text-primary-background hover:cursor-pointer transition-colors w-fit"
 					>
-						Edit
-					</button>
-					<button
-						class="bg-primary px-4 py-2 rounded-lg hover:bg-primary/80 font-bold text-black hover:cursor-pointer transition-colors w-fit"
-						onclick={ removeForm("edit_lineup_player_form_" + strconv.Itoa(int(lineupPlayer.LineupID)) + "_" + strconv.Itoa(int(lineupPlayer.PositionNo))) }
-					>
-						Cancel
+						Delete
 					</button>
 				</div>
 			</form>
