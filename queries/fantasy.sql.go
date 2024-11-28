@@ -282,19 +282,24 @@ SELECT
     "player".position,
     "player".image,
     "club".id AS club_id,
-    (
-        SELECT
-            CAST(
-                ROUND(
-                    $1::INTEGER + (
-                        ($2::INTEGER - $1::INTEGER) /
-                        ("rank_stats".rank_count_ratio - 1)
-                    ) * ("player_ranked_total_stats".fantasy_rev_rank - 1)
-                ) AS INTEGER
-            )
-        FROM "rank_stats"
-        INNER JOIN "player_ranked_total_stats"
-        ON "player_ranked_total_stats".id = "player".id
+    CAST(
+        COALESCE(
+            (
+                SELECT
+                    CAST(
+                        ROUND(
+                            $1::INTEGER + (
+                                ($2::INTEGER - $1::INTEGER) /
+                                ("rank_stats".rank_count_ratio - 1)
+                            ) * ("player_ranked_total_stats".fantasy_rev_rank - 1)
+                        ) AS INTEGER
+                    )
+                FROM "rank_stats"
+                INNER JOIN "player_ranked_total_stats"
+                ON "player_ranked_total_stats".id = "player".id
+            ),
+            $1::INTEGER
+        ) AS INTEGER
     ) AS cost
 FROM "fantasy_player" 
 INNER JOIN "player"
