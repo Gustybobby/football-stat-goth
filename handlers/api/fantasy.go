@@ -99,6 +99,7 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return err
 	}
+	players_params.HasTeam = false
 
 	return handlers.Render(w, r, fantasy_components.FantasyTeamField(*players_params, plconstant.FantasyTeamMaxBudget-cost))
 }
