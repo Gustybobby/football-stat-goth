@@ -25,6 +25,7 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: true,
 		ClubID:       clubID,
+		FilterWeek:   false,
 		IsFinished:   false,
 		Order:        "ASC",
 	})
@@ -35,6 +36,7 @@ func HandleClubPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 	matches, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: true,
 		ClubID:       clubID,
+		FilterWeek:   false,
 		IsFinished:   true,
 		Order:        "DESC",
 	})

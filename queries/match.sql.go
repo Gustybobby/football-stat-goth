@@ -11,6 +11,21 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const findLatestFinishedMatchweek = `-- name: FindLatestFinishedMatchweek :one
+SELECT
+    "match".week
+FROM "match"
+WHERE "match".is_finished = true
+ORDER BY "match".start_at ASC
+`
+
+func (q *Queries) FindLatestFinishedMatchweek(ctx context.Context) (int16, error) {
+	row := q.db.QueryRow(ctx, findLatestFinishedMatchweek)
+	var week int16
+	err := row.Scan(&week)
+	return week, err
+}
+
 const findMatchByID = `-- name: FindMatchByID :one
 SELECT
     match.id, match.home_lineup_id, match.away_lineup_id, match.season, match.week, match.location, match.start_at, match.is_finished,
@@ -388,19 +403,26 @@ WHERE
     CASE
         WHEN $2::bool
         THEN
-            "home_club".id = $3::text OR
-            "away_club".id = $3::text
+            "home_club".id = $3::TEXT OR
+            "away_club".id = $3::TEXT
+        ELSE true
+    END AND
+    CASE
+        WHEN $4::bool
+        THEN "match".week = $5::INTEGER
         ELSE true
     END
 ORDER BY
-    CASE WHEN $4::text = 'ASC' THEN "match".start_at END ASC,
-    CASE WHEN $4::text = 'DESC' THEN "match".start_at END DESC
+    CASE WHEN $6::TEXT = 'ASC' THEN "match".start_at END ASC,
+    CASE WHEN $6::TEXT = 'DESC' THEN "match".start_at END DESC
 `
 
 type ListMatchesWithClubsAndGoalsParams struct {
 	IsFinished   bool
 	FilterClubID bool
 	ClubID       string
+	FilterWeek   bool
+	Week         int32
 	Order        string
 }
 
@@ -426,6 +448,8 @@ func (q *Queries) ListMatchesWithClubsAndGoals(ctx context.Context, arg ListMatc
 		arg.IsFinished,
 		arg.FilterClubID,
 		arg.ClubID,
+		arg.FilterWeek,
+		arg.Week,
 		arg.Order,
 	)
 	if err != nil {

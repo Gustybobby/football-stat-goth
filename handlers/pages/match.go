@@ -22,7 +22,7 @@ func HandleMatchPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposit
 
 	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: false,
-		ClubID:       "",
+		FilterWeek:   false,
 		IsFinished:   false,
 		Order:        "ASC",
 	})

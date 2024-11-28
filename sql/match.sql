@@ -41,13 +41,25 @@ WHERE
     CASE
         WHEN sqlc.arg('filter_club_id')::bool
         THEN
-            "home_club".id = sqlc.arg('club_id')::text OR
-            "away_club".id = sqlc.arg('club_id')::text
+            "home_club".id = sqlc.arg('club_id')::TEXT OR
+            "away_club".id = sqlc.arg('club_id')::TEXT
+        ELSE true
+    END AND
+    CASE
+        WHEN sqlc.arg('filter_week')::bool
+        THEN "match".week = sqlc.arg('week')::INTEGER
         ELSE true
     END
 ORDER BY
-    CASE WHEN sqlc.arg('order')::text = 'ASC' THEN "match".start_at END ASC,
-    CASE WHEN sqlc.arg('order')::text = 'DESC' THEN "match".start_at END DESC;
+    CASE WHEN sqlc.arg('order')::TEXT = 'ASC' THEN "match".start_at END ASC,
+    CASE WHEN sqlc.arg('order')::TEXT = 'DESC' THEN "match".start_at END DESC;
+
+-- name: FindLatestFinishedMatchweek :one
+SELECT
+    "match".week
+FROM "match"
+WHERE "match".is_finished = true
+ORDER BY "match".start_at ASC;
 
 -- name: FindMatchByID :one
 SELECT
