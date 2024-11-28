@@ -1,6 +1,7 @@
 package api
 
 import (
+	"crypto/subtle"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
@@ -25,7 +26,11 @@ func HandleUpdatePassword(w http.ResponseWriter, r *http.Request, repo *repos.Re
 		return err
 	}
 
-	if userPasswordHash == currentPasswordHash {
+	if subtle.ConstantTimeCompare([]byte(currentPasswordHash), []byte(newPasswordHash)) == 1 {
+		return nil
+	}
+
+	if subtle.ConstantTimeCompare([]byte(userPasswordHash), []byte(currentPasswordHash)) == 1 {
 		repo.Queries.UpdatePasswordByUsername(repo.Ctx, queries.UpdatePasswordByUsernameParams{
 			Username:     user.Username,
 			PasswordHash: newPasswordHash,
