@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"football-stat-goth/handlers"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
@@ -81,36 +82,47 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 		repo.Queries.CreateFantasyTransaction(repo.Ctx, fantasy_transactions)
 	}
 
+	players_params, cost, err := GetFantasyTeamFieldParams(fantasy_players)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return err
+	}
+
+	return handlers.Render(w, r, fantasy_components.FantasyTeamField(*players_params, cost))
+}
+
+func GetFantasyTeamFieldParams(fantasy_players []queries.ListFantasyPlayersRow) (*fantasy_components.FantasyTeamFieldPlayersParams, int, error) {
 	gk_fantasy_players := filterFantasyPlayersByPosition(queries.PlayerPositionGK, fantasy_players)
 	if len(gk_fantasy_players) > 1 {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return nil
+		return nil, 0, errors.New("GK players count exceed maximum")
 	}
 
 	def_fantasy_players := filterFantasyPlayersByPosition(queries.PlayerPositionDEF, fantasy_players)
 	if len(def_fantasy_players) > 4 {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return nil
+		return nil, 0, errors.New("DEF players count exceed maximum")
 	}
 
 	mfd_fantasy_players := filterFantasyPlayersByPosition(queries.PlayerPositionMFD, fantasy_players)
 	if len(mfd_fantasy_players) > 4 {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return nil
+		return nil, 0, errors.New("MFD players count exceed maximum")
 	}
 
 	fwd_fantasy_players := filterFantasyPlayersByPosition(queries.PlayerPositionFWD, fantasy_players)
 	if len(fwd_fantasy_players) > 2 {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return nil
+		return nil, 0, errors.New("FWD players count exceed maximum")
 	}
 
-	return handlers.Render(w, r, fantasy_components.FantasyTeamField(fantasy_components.FantasyTeamFieldPlayersParams{
+	cost := 0
+	for _, fantasy_player := range fantasy_players {
+		cost += int(fantasy_player.Cost)
+	}
+
+	return &fantasy_components.FantasyTeamFieldPlayersParams{
 		GK:  gk_fantasy_players,
 		DEF: def_fantasy_players,
 		MFD: mfd_fantasy_players,
 		FWD: fwd_fantasy_players,
-	}, cost))
+	}, cost, nil
 }
 
 func filterFantasyPlayersByPosition(position queries.PlayerPosition, fantasy_players []queries.ListFantasyPlayersRow) []queries.ListFantasyPlayersRow {

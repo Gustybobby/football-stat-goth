@@ -2,6 +2,7 @@ package pages
 
 import (
 	"football-stat-goth/handlers"
+	"football-stat-goth/handlers/api"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
@@ -34,10 +35,32 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		AvgCost:               9,
 		Season:                pltime.GetCurrentSeasonString(),
 	})
-
 	if err != nil {
 		return err
 	}
 
-	return handlers.Render(w, r, views.Fantasy(user, fixtures, players))
+	fantasy_team_player_refs, err := repo.Queries.ListFantasyTeamPlayersByUsernameSeason(repo.Ctx, queries.ListFantasyTeamPlayersByUsernameSeasonParams{
+		Username: user.Username,
+		Season:   pltime.GetCurrentSeasonString(),
+	})
+	if err != nil {
+		return err
+	}
+
+	var fantasy_team_players []queries.ListFantasyPlayersRow
+	for _, player := range players {
+		for _, team_player_ref := range fantasy_team_player_refs {
+			if player.ID == team_player_ref.FantasyPlayerID {
+				fantasy_team_players = append(fantasy_team_players, player)
+				break
+			}
+		}
+	}
+
+	players_params, cost, err := api.GetFantasyTeamFieldParams(fantasy_team_players)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Fantasy(user, fixtures, players, *players_params, cost))
 }

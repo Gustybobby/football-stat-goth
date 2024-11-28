@@ -49,31 +49,6 @@ type CreateFantasyTransactionParams struct {
 	FantasyPlayerID int32
 }
 
-const findFantasyTeamByUsernameSeason = `-- name: FindFantasyTeamByUsernameSeason :one
-SELECT id, username, season, budget
-FROM "fantasy_team"
-WHERE
-    "fantasy_team".username = $1 AND
-    "fantasy_team".season = $2
-`
-
-type FindFantasyTeamByUsernameSeasonParams struct {
-	Username string
-	Season   string
-}
-
-func (q *Queries) FindFantasyTeamByUsernameSeason(ctx context.Context, arg FindFantasyTeamByUsernameSeasonParams) (FantasyTeam, error) {
-	row := q.db.QueryRow(ctx, findFantasyTeamByUsernameSeason, arg.Username, arg.Season)
-	var i FantasyTeam
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Season,
-		&i.Budget,
-	)
-	return i, err
-}
-
 const listFantasyPlayers = `-- name: ListFantasyPlayers :many
 WITH "player_total_stats" AS (
     SELECT
@@ -290,6 +265,42 @@ func (q *Queries) ListFantasyPlayers(ctx context.Context, arg ListFantasyPlayers
 			&i.ClubID,
 			&i.Cost,
 		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFantasyTeamPlayersByUsernameSeason = `-- name: ListFantasyTeamPlayersByUsernameSeason :many
+SELECT
+    fantasy_team_player.fantasy_team_id, fantasy_team_player.fantasy_player_id
+FROM "fantasy_team_player"
+INNER JOIN "fantasy_team"
+ON "fantasy_team_player".fantasy_team_id = "fantasy_team".id
+WHERE
+    "fantasy_team".username = $1 AND
+    "fantasy_team".season = $2
+`
+
+type ListFantasyTeamPlayersByUsernameSeasonParams struct {
+	Username string
+	Season   string
+}
+
+func (q *Queries) ListFantasyTeamPlayersByUsernameSeason(ctx context.Context, arg ListFantasyTeamPlayersByUsernameSeasonParams) ([]FantasyTeamPlayer, error) {
+	rows, err := q.db.Query(ctx, listFantasyTeamPlayersByUsernameSeason, arg.Username, arg.Season)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FantasyTeamPlayer
+	for rows.Next() {
+		var i FantasyTeamPlayer
+		if err := rows.Scan(&i.FantasyTeamID, &i.FantasyPlayerID); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

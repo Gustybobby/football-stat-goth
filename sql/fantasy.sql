@@ -171,9 +171,12 @@ ORDER BY
     "player".position ASC,
     "player".lastname ASC;
 
--- name: FindFantasyTeamByUsernameSeason :one
-SELECT *
-FROM "fantasy_team"
+-- name: ListFantasyTeamPlayersByUsernameSeason :many
+SELECT
+    "fantasy_team_player".*
+FROM "fantasy_team_player"
+INNER JOIN "fantasy_team"
+ON "fantasy_team_player".fantasy_team_id = "fantasy_team".id
 WHERE
     "fantasy_team".username = $1 AND
     "fantasy_team".season = $2;
