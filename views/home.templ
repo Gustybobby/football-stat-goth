@@ -39,7 +39,7 @@ templ Home(
 					</div>
 					<section class="w-full col-span-3">
 						@table_components.HorizontalMatchTable(match_table.Week, match_table.Matches)
-						<div class="mt-4">
+						<div class="mt-4 border-b border-primary pb-4">
 							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Scorers</h1>
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
 								for _, top_player := range(top_players.Goal) {
@@ -47,7 +47,7 @@ templ Home(
 								}
 							</div>
 						</div>
-						<div class="mt-4">
+						<div class="mt-4 border-b border-primary pb-4">
 							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Assists</h1>
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
 								for _, top_player := range(top_players.Assist) {
