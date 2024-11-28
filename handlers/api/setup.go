@@ -14,6 +14,7 @@ func SetupApiRoutes(r_api chi.Router, repo *repos.Repository) {
 	r_api.Post("/signin", handlers.Make(HandleSignin, repo))
 	r_api.Delete("/signout", handlers.Make(HandleSignout, repo))
 	r_api.Post("/fantasy/teams", handlers.Make(HandleCreateFantasyTeam, repo))
+	r_api.Post("/password", handlers.Make(HandleUpdatePassword, repo))
 
 	r_api.Route("/admin", func(r_api_admin chi.Router) {
 		SetupAdminApiRoutes(r_api_admin, repo)
