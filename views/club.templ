@@ -24,11 +24,11 @@ templ Club(
 			<div class="max-w-[96rem]">
 				@club_components.ClubProfile(club)
 				<section class="grid grid-cols-1 xl:grid-cols-4 gap-4 px-2 py-8">
-					<div class="space-y-4">
+					<div class="space-y-4 order-2 xl:order-1">
 						@table_components.FixtureTable(fixtures)
 						@table_components.ResultTable(results)
 					</div>
-					<div class="col-span-3 space-y-4">
+					<div class="col-span-3 space-y-4 order-1 xl:order-2">
 						@club_components.ClubStanding(standing, position)
 						@club_components.ClubStatistics(averageStats)
 						<div class="mt-4">
