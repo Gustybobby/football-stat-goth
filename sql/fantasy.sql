@@ -173,7 +173,8 @@ ORDER BY
 
 -- name: ListFantasyTeamPlayersByUsernameSeason :many
 SELECT
-    "fantasy_team_player".*
+    "fantasy_team_player".*,
+    "fantasy_team".budget
 FROM "fantasy_team_player"
 INNER JOIN "fantasy_team"
 ON "fantasy_team_player".fantasy_team_id = "fantasy_team".id

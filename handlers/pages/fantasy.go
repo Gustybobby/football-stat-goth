@@ -57,9 +57,14 @@ func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repos
 		}
 	}
 
-	players_params, cost, err := api.GetFantasyTeamFieldParams(fantasy_team_players)
+	players_params, _, err := api.GetFantasyTeamFieldParams(fantasy_team_players)
 	if err != nil {
 		return err
+	}
+
+	cost := 0
+	if len(fantasy_team_player_refs) > 0 {
+		cost = 100 - int(fantasy_team_player_refs[0].Budget)
 	}
 
 	return handlers.Render(w, r, views.Fantasy(user, fixtures, players, *players_params, cost))

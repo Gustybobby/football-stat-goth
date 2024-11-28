@@ -277,7 +277,8 @@ func (q *Queries) ListFantasyPlayers(ctx context.Context, arg ListFantasyPlayers
 
 const listFantasyTeamPlayersByUsernameSeason = `-- name: ListFantasyTeamPlayersByUsernameSeason :many
 SELECT
-    fantasy_team_player.fantasy_team_id, fantasy_team_player.fantasy_player_id
+    fantasy_team_player.fantasy_team_id, fantasy_team_player.fantasy_player_id,
+    "fantasy_team".budget
 FROM "fantasy_team_player"
 INNER JOIN "fantasy_team"
 ON "fantasy_team_player".fantasy_team_id = "fantasy_team".id
@@ -291,16 +292,22 @@ type ListFantasyTeamPlayersByUsernameSeasonParams struct {
 	Season   string
 }
 
-func (q *Queries) ListFantasyTeamPlayersByUsernameSeason(ctx context.Context, arg ListFantasyTeamPlayersByUsernameSeasonParams) ([]FantasyTeamPlayer, error) {
+type ListFantasyTeamPlayersByUsernameSeasonRow struct {
+	FantasyTeamID   int32
+	FantasyPlayerID int32
+	Budget          int32
+}
+
+func (q *Queries) ListFantasyTeamPlayersByUsernameSeason(ctx context.Context, arg ListFantasyTeamPlayersByUsernameSeasonParams) ([]ListFantasyTeamPlayersByUsernameSeasonRow, error) {
 	rows, err := q.db.Query(ctx, listFantasyTeamPlayersByUsernameSeason, arg.Username, arg.Season)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []FantasyTeamPlayer
+	var items []ListFantasyTeamPlayersByUsernameSeasonRow
 	for rows.Next() {
-		var i FantasyTeamPlayer
-		if err := rows.Scan(&i.FantasyTeamID, &i.FantasyPlayerID); err != nil {
+		var i ListFantasyTeamPlayersByUsernameSeasonRow
+		if err := rows.Scan(&i.FantasyTeamID, &i.FantasyPlayerID, &i.Budget); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
