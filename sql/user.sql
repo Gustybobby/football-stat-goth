@@ -22,3 +22,9 @@ INSERT INTO "user" (
     $1, $2, $3, $4
 )
 RETURNING *;
+
+-- name: UpdatePasswordByUsername :exec
+UPDATE 
+    "user" 
+SET password_hash = $2
+WHERE "user".username = $1;
