@@ -20,35 +20,35 @@ type PlayerPerformanceCardParams struct {
 	ClubPlayer  queries.ListClubPlayerByPlayerIDRow
 }
 
-templ PlayerPerformanceCard(cardParams PlayerPerformanceCardParams, rank_type string, main_rank int64) {
+templ PlayerPerformanceCard(card_params PlayerPerformanceCardParams, main_rank int64) {
 	<section class="rounded-lg shadow-lg bg-gradient-to-br from-secondary-foreground to-secondary-background w-80 h-96">
-		<a href={ templ.SafeURL("/players/" + strconv.Itoa(int(cardParams.Player.ID))) }>
+		<a href={ templ.SafeURL("/players/" + strconv.Itoa(int(card_params.Player.ID))) }>
 			<div class="relative border border-primary rounded-t-lg w-full h-72 border-b-0">
 				<div class="relative bg-primary-foreground/85 z-10 w-1/3 h-full p-4 flex flex-col font-bold text-xl">
 					<span class="text-3xl">#{ strconv.Itoa(int(main_rank)) }</span>
-					if rank_type == "CLEANSHEET" {
+					if card_params.Player.Position == queries.PlayerPositionGK {
 						<span class="mt-2">Clean Sheets</span>
-						<span>{ strconv.Itoa(int(cardParams.Performance.CleanSheets)) }</span>
+						<span>{ strconv.Itoa(int(card_params.Performance.CleanSheets)) }</span>
 					} else {
 						<span class="mt-2">Goals</span>
-						<span>{ strconv.Itoa(int(cardParams.Performance.TotalGoals)) }</span>
+						<span>{ strconv.Itoa(int(card_params.Performance.TotalGoals)) }</span>
 						<span class="mt-2">Assists</span>
-						<span>{ strconv.Itoa(int(cardParams.Performance.TotalAssists)) }</span>
+						<span>{ strconv.Itoa(int(card_params.Performance.TotalAssists)) }</span>
 					}
 				</div>
 				<img
-					src={ cardParams.Player.Image.String }
+					src={ card_params.Player.Image.String }
 					onerror="this.src='/public/missing_portrait.webp';"
 					class="absolute size-4/5 bottom-0 right-0"
 				/>
 			</div>
 			<div class="bg-primary-foreground w-full h-24 rounded-b-lg border border-t-0 border-primary grid grid-cols-3 place-content-center place-items-center">
-				<img src={ cardParams.ClubPlayer.ClubLogo } class="size-12"/>
+				<img src={ card_params.ClubPlayer.ClubLogo } class="size-12"/>
 				<div class="flex flex-col justify-center w-full">
-					<span class="font-semibold text-xl">{ cardParams.Player.Firstname }</span>
-					<span class="font-bold text-2xl">{ cardParams.Player.Lastname }</span>
+					<span class="font-semibold text-xl">{ card_params.Player.Firstname }</span>
+					<span class="font-bold text-2xl">{ card_params.Player.Lastname }</span>
 				</div>
-				<div class="text-4xl font-extrabold">{ strconv.Itoa(int(cardParams.ClubPlayer.No)) }</div>
+				<div class="text-4xl font-extrabold">{ strconv.Itoa(int(card_params.ClubPlayer.No)) }</div>
 			</div>
 		</a>
 	</section>

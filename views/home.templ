@@ -43,7 +43,7 @@ templ Home(
 							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Scorers</h1>
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
 								for _, top_player := range(top_players.Goal) {
-									@components.PlayerPerformanceCard(top_player, "GOAL", top_player.Performance.GoalsRank)
+									@components.PlayerPerformanceCard(top_player, top_player.Performance.GoalsRank)
 								}
 							</div>
 						</div>
@@ -51,7 +51,7 @@ templ Home(
 							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Assists</h1>
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
 								for _, top_player := range(top_players.Assist) {
-									@components.PlayerPerformanceCard(top_player, "ASSIST", top_player.Performance.AssistsRank)
+									@components.PlayerPerformanceCard(top_player, top_player.Performance.AssistsRank)
 								}
 							</div>
 						</div>
@@ -59,7 +59,7 @@ templ Home(
 							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Clean Sheets</h1>
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
 								for _, top_player := range(top_players.CleanSheet) {
-									@components.PlayerPerformanceCard(top_player, "CLEANSHEET", top_player.Performance.CleanSheetsRank)
+									@components.PlayerPerformanceCard(top_player, top_player.Performance.CleanSheetsRank)
 								}
 							</div>
 						</div>

@@ -16,13 +16,14 @@ templ Club(
 	standing queries.ListClubStandingsRow,
 	position int,
 	averageStats queries.ClubAverageStatisticsRow,
+	top_player_cards []components.PlayerPerformanceCardParams,
 ) {
 	@layouts.Base() {
 		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background flex flex-col items-center">
-			<div class="max-w-5xl">
+			<div class="max-w-[96rem]">
 				@club_components.ClubProfile(club)
-				<section class="grid grid-cols-4 gap-4 px-2 py-8">
+				<section class="grid grid-cols-1 xl:grid-cols-4 gap-4 px-2 py-8">
 					<div class="space-y-4">
 						@table_components.FixtureTable(fixtures)
 						@table_components.ResultTable(results)
@@ -30,6 +31,14 @@ templ Club(
 					<div class="col-span-3 space-y-4">
 						@club_components.ClubStanding(standing, position)
 						@club_components.ClubStatistics(averageStats)
+						<div class="mt-4">
+							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Players</h1>
+							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+								for _, top_player := range(top_player_cards) {
+									@components.PlayerPerformanceCard(top_player, top_player.Performance.FantasyRank)
+								}
+							</div>
+						</div>
 					</div>
 				</section>
 			</div>
