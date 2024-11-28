@@ -114,21 +114,6 @@ CREATE TABLE "session" (
     CONSTRAINT fk_session_user FOREIGN KEY (username) REFERENCES "user"(username)
 );
 
--- CHATGPT GENERATED
-CREATE OR REPLACE FUNCTION fantasy_player_team_transaction()
-RETURNS TRIGGER AS $$
-BEGIN
-    INSERT INTO fantasy_team_player (fantasy_team_id, fantasy_player_id)
-    VALUES (NEW.fantasy_team_id, NEW.fantasy_player_id);
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER fantasy_player_team_transaction
-AFTER INSERT ON fantasy_transaction
-FOR EACH ROW
-EXECUTE FUNCTION fantasy_player_team_transaction();
-
 CREATE TABLE "fantasy_player" (
     id          SERIAL PRIMARY KEY,
     club_id     CHAR(3),
@@ -157,7 +142,7 @@ CREATE TABLE "fantasy_team_player" (
     CONSTRAINT fk_fantasy_team_player_fantasy_player    FOREIGN KEY (fantasy_player_id) REFERENCES "fantasy_player"(id)
 );
 
-CREATE TABLE "fatasy_transaction" (
+CREATE TABLE "fantasy_transaction" (
     id                  SERIAL PRIMARY KEY,
     created_at          TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     cost                INT4 NOT NULL,
@@ -168,3 +153,22 @@ CREATE TABLE "fatasy_transaction" (
     CONSTRAINT fk_fantasy_team_player_fantasy_team      FOREIGN KEY (fantasy_team_id) REFERENCES "fantasy_team"(id),
     CONSTRAINT fk_fantasy_team_player_fantasy_player    FOREIGN KEY (fantasy_player_id) REFERENCES "fantasy_player"(id)
 );
+
+CREATE OR REPLACE FUNCTION fantasy_player_team_transaction()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO fantasy_team_player (
+        fantasy_team_id,
+        fantasy_player_id
+    ) VALUES (
+        NEW.fantasy_team_id,
+        NEW.fantasy_player_id
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER fantasy_player_team_transaction
+AFTER INSERT ON fantasy_transaction
+FOR EACH ROW
+EXECUTE FUNCTION fantasy_player_team_transaction();

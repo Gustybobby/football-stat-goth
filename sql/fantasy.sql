@@ -172,7 +172,7 @@ ORDER BY
     "player".lastname ASC;
 
 -- name: InsertFantasyTransacion :copyfrom
-INSERT INTO "fatasy_transaction" (
+INSERT INTO "fantasy_transaction" (
     cost,
     type,
     fantasy_team_id,

@@ -219,7 +219,7 @@ type FantasyTeamPlayer struct {
 	FantasyPlayerID int32
 }
 
-type FatasyTransaction struct {
+type FantasyTransaction struct {
 	ID              int32
 	CreatedAt       pgtype.Timestamp
 	Cost            int32

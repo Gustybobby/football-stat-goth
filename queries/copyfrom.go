@@ -41,5 +41,5 @@ func (r iteratorForInsertFantasyTransacion) Err() error {
 }
 
 func (q *Queries) InsertFantasyTransacion(ctx context.Context, arg []InsertFantasyTransacionParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"fatasy_transaction"}, []string{"cost", "type", "fantasy_team_id", "fantasy_player_id"}, &iteratorForInsertFantasyTransacion{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"fantasy_transaction"}, []string{"cost", "type", "fantasy_team_id", "fantasy_player_id"}, &iteratorForInsertFantasyTransacion{rows: arg})
 }
