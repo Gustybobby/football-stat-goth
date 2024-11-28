@@ -15,7 +15,7 @@ templ FixtureTable(fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
 					<li class="border-b border-primary">
 						<div class="w-full text-center p-2">{ plformat.FormatTimestamp(match.StartAt.Time.Local()) }</div>
 						<a
-							class="grid grid-cols-5 text-secondary-background font-bold gap-2 place-items-center p-2 hover:bg-primary-foreground"
+							class="grid grid-cols-5 text-secondary-background font-bold gap-1.5 place-items-center p-2 hover:bg-primary-foreground"
 							href={ templ.SafeURL("/matches/" + strconv.Itoa(int(match.ID))) }
 						>
 							<span>{ match.HomeClubID }</span>
