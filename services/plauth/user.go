@@ -7,6 +7,10 @@ import (
 )
 
 func CreateUser(username string, password string, firstName string, lastName string, db *queries.Queries, ctx context.Context) (*queries.User, error) {
+	if password == "" {
+		return nil, errors.New("password cannot be empty")
+	}
+
 	passwordHash, err := HashPassword(password)
 	if err != nil {
 		return nil, err
