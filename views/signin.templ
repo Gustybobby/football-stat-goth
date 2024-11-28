@@ -13,14 +13,7 @@ templ Signin(user *queries.FindUserByUsernameRow, redirect_url string) {
 			<div class="my-8 w-full flex flex-col items-center">
 				@components.PlaymakerTitle()
 				<h1 class="text-4xl font-extrabold my-8">Sign in</h1>
-				<form
-					class="flex flex-col items-center space-y-2 mb-2"
-					hx-post={ "/api/signin?redirectUrl=" + redirect_url }
-				>
-					<input type="text" name="username" placeholder="Username" required class="p-1 rounded-md border border-primary"/>
-					<input type="password" name="password" placeholder="Password" required class="p-1 rounded-md border border-primary"/>
-					<input type="submit" value="Sign in" class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors"/>
-				</form>
+				@SigninForm(redirect_url, "")
 				<div>
 					No account? 
 					<a href="/signup" class="inline text-secondary underline">sign up</a>
@@ -29,4 +22,35 @@ templ Signin(user *queries.FindUserByUsernameRow, redirect_url string) {
 			</div>
 		</main>
 	}
+}
+
+templ SigninForm(redirect_url string, error_message string) {
+	<form
+		id="signin_form"
+		hx-post={ "/api/signin?redirectUrl=" + redirect_url }
+		class="flex flex-col items-center space-y-2 mb-2"
+	>
+		<input
+			type="text"
+			name="username"
+			placeholder="Username"
+			required
+			class="p-1 rounded-md border border-primary"
+		/>
+		<input
+			type="password"
+			name="password"
+			placeholder="Password"
+			required
+			class="p-1 rounded-md border border-primary"
+		/>
+		<input
+			type="submit"
+			value="Sign in"
+			class="bg-secondary-background px-4 py-2 rounded-lg hover:bg-secondary-foreground font-bold text-primary-background hover:cursor-pointer transition-colors"
+		/>
+		if error_message != "" {
+			<span class="text-red-600">{ error_message }</span>
+		}
+	</form>
 }

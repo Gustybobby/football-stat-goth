@@ -1,8 +1,10 @@
 package api
 
 import (
+	"football-stat-goth/handlers"
 	"football-stat-goth/repos"
 	"football-stat-goth/services/plauth"
+	"football-stat-goth/views"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -12,7 +14,8 @@ import (
 func HandleSignup(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	user, err := plauth.CreateUser(r.FormValue("username"), r.FormValue("password"), r.FormValue("first_name"), r.FormValue("last_name"), repo.Queries, repo.Ctx)
 	if err != nil {
-		return err
+		slog.Error(err.Error())
+		return handlers.Render(w, r, views.SignupForm("Username already existed"))
 	}
 
 	token, err := plauth.GenerateSessionToken()
@@ -46,8 +49,7 @@ func HandleSignin(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 	passwordHash, err := plauth.FindPasswordHash(username, repo.Queries, repo.Ctx)
 	if err != nil {
 		slog.Error("username not found")
-		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-		return err
+		return handlers.Render(w, r, views.SigninForm(url.QueryEscape(redirect_url), "Invalid username or password"))
 	}
 
 	valid, err := plauth.VerifyPassword(password, passwordHash)
@@ -57,8 +59,7 @@ func HandleSignin(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 
 	if !valid {
 		slog.Error("invalid password")
-		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-		return nil
+		return handlers.Render(w, r, views.SigninForm(url.QueryEscape(redirect_url), "Invalid username or password"))
 	}
 
 	token, err := plauth.GenerateSessionToken()
