@@ -8,10 +8,15 @@ import (
 	"football-stat-goth/services/pltime"
 	"football-stat-goth/views"
 	"net/http"
+	"net/url"
 )
 
 func HandleFantasyPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	user := plauth.GetContextUser(r)
+	if user == nil {
+		http.Redirect(w, r, "/signin?redirectUrl="+url.QueryEscape("/fantasy"), http.StatusFound)
+		return nil
+	}
 
 	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: false,

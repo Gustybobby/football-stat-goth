@@ -6,6 +6,7 @@ import (
 	"football-stat-goth/services/plauth"
 	"football-stat-goth/views"
 	"net/http"
+	"net/url"
 )
 
 func HandleSigninPage(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
@@ -15,5 +16,10 @@ func HandleSigninPage(w http.ResponseWriter, r *http.Request, repo *repos.Reposi
 		http.Redirect(w, r, "/", http.StatusFound)
 	}
 
-	return handlers.Render(w, r, views.Signin(user))
+	redirect_url := r.URL.Query().Get("redirectUrl")
+	if redirect_url == "" {
+		redirect_url = "/"
+	}
+
+	return handlers.Render(w, r, views.Signin(user, url.QueryEscape(redirect_url)))
 }
