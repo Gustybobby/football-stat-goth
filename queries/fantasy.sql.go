@@ -49,6 +49,31 @@ type CreateFantasyTransactionParams struct {
 	FantasyPlayerID int32
 }
 
+const findFantasyTeamByUsernameSeason = `-- name: FindFantasyTeamByUsernameSeason :one
+SELECT id, username, season, budget
+FROM "fantasy_team"
+WHERE
+    "fantasy_team".username = $1 AND
+    "fantasy_team".season = $2
+`
+
+type FindFantasyTeamByUsernameSeasonParams struct {
+	Username string
+	Season   string
+}
+
+func (q *Queries) FindFantasyTeamByUsernameSeason(ctx context.Context, arg FindFantasyTeamByUsernameSeasonParams) (FantasyTeam, error) {
+	row := q.db.QueryRow(ctx, findFantasyTeamByUsernameSeason, arg.Username, arg.Season)
+	var i FantasyTeam
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Season,
+		&i.Budget,
+	)
+	return i, err
+}
+
 const listFantasyPlayers = `-- name: ListFantasyPlayers :many
 WITH "player_total_stats" AS (
     SELECT

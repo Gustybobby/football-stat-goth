@@ -21,6 +21,15 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 		return nil
 	}
 
+	_, err := repo.Queries.FindFantasyTeamByUsernameSeason(repo.Ctx, queries.FindFantasyTeamByUsernameSeasonParams{
+		Username: user.Username,
+		Season:   pltime.GetCurrentSeasonString(),
+	})
+	if err == nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return nil
+	}
+
 	r.ParseForm()
 
 	var fantasy_player_ids []int32
@@ -54,7 +63,7 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 	}
 
 	if r.Form.Get("submit_team") == "submit" {
-		if cost > plconstant.FantasyTeamMaxBudget {
+		if cost > plconstant.FantasyTeamMaxBudget || len(fantasy_players) != 11 {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return nil
 		}

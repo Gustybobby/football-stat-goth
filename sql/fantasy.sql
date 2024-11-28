@@ -171,6 +171,13 @@ ORDER BY
     "player".position ASC,
     "player".lastname ASC;
 
+-- name: FindFantasyTeamByUsernameSeason :one
+SELECT *
+FROM "fantasy_team"
+WHERE
+    "fantasy_team".username = $1 AND
+    "fantasy_team".season = $2;
+
 -- name: ListFantasyTeamPlayersByUsernameSeason :many
 SELECT
     "fantasy_team_player".*,
