@@ -253,28 +253,7 @@ WITH "match_score" AS (
                 "lineup_event"."event" = 'OWN_GOAL' AND
                 "lineup_event".lineup_id = "match".home_lineup_id
             )
-        ) AS away_goals,
-        (
-            SELECT COUNT(*)
-            FROM "lineup_event"
-            WHERE (
-                "lineup_event"."event" = 'GOAL' AND
-                "lineup_event".lineup_id = "match".home_lineup_id
-            ) OR (
-                "lineup_event"."event" = 'OWN_GOAL' AND
-                "lineup_event".lineup_id = "match".away_lineup_id
-            )
-        ) - (
-            SELECT COUNT(*)
-            FROM "lineup_event"
-            WHERE (
-                "lineup_event"."event" = 'GOAL' AND
-                "lineup_event".lineup_id = "match".away_lineup_id
-            ) OR (
-                "lineup_event"."event" = 'OWN_GOAL' AND
-                "lineup_event".lineup_id = "match".home_lineup_id
-            )
-        ) AS goals_diff
+        ) AS away_goals
     FROM "match"
     INNER JOIN "lineup" AS "home"
     ON "match".home_lineup_id = "home".id
@@ -296,9 +275,9 @@ FROM (
         "match_score".home_club_id AS club_id,
         SUM("match_score".home_goals) AS goals,
         SUM("match_score".away_goals) AS opp_goals,
-        SUM(CASE WHEN "match_score".goals_diff > 0 THEN 1 ELSE 0 END) AS wins,
-        SUM(CASE WHEN "match_score".goals_diff = 0 THEN 1 ELSE 0 END) AS draws,
-        SUM(CASE WHEN "match_score".goals_diff < 0 THEN 1 ELSE 0 END ) AS losses
+        SUM(CASE WHEN "match_score".home_goals > "match_score".away_goals THEN 1 ELSE 0 END) AS wins,
+        SUM(CASE WHEN "match_score".home_goals = "match_score".away_goals THEN 1 ELSE 0 END) AS draws,
+        SUM(CASE WHEN "match_score".home_goals < "match_score".away_goals THEN 1 ELSE 0 END ) AS losses
     FROM "match_score"
     GROUP BY home_club_id
     UNION ALL
@@ -306,9 +285,9 @@ FROM (
         "match_score".away_club_id AS club_id,
         SUM("match_score".away_goals) AS goals,
         SUM("match_score".home_goals) AS opp_goals,
-        SUM(CASE WHEN "match_score".goals_diff < 0 THEN 1 ELSE 0 END) AS wins,
-        SUM(CASE WHEN "match_score".goals_diff = 0 THEN 1 ELSE 0 END) AS draws,
-        SUM(CASE WHEN "match_score".goals_diff > 0 THEN 1 ELSE 0 END ) AS losses
+        SUM(CASE WHEN "match_score".home_goals < "match_score".away_goals THEN 1 ELSE 0 END) AS wins,
+        SUM(CASE WHEN "match_score".home_goals = "match_score".away_goals THEN 1 ELSE 0 END) AS draws,
+        SUM(CASE WHEN "match_score".home_goals > "match_score".away_goals THEN 1 ELSE 0 END ) AS losses
     FROM "match_score"
     GROUP BY away_club_id
 ) AS "results"
