@@ -31,6 +31,22 @@ func HandleHomePage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
+	last_week, err := repo.Queries.FindLatestFinishedMatchweek(repo.Ctx)
+	if err != nil {
+		return err
+	}
+
+	last_week_matches, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
+		FilterClubID: false,
+		FilterWeek:   true,
+		Week:         int32(last_week),
+		IsFinished:   true,
+		Order:        "ASC",
+	})
+	if err != nil {
+		return err
+	}
+
 	top_goal_cards, err := listTopPlayerCards("GOAL", repo)
 	if err != nil {
 		return err
@@ -46,7 +62,10 @@ func HandleHomePage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	return handlers.Render(w, r, views.Home(user, fixtures, clubs, views.TopPlayersCardParams{
+	return handlers.Render(w, r, views.Home(user, fixtures, clubs, views.MatchTableParams{
+		Week:    last_week,
+		Matches: last_week_matches,
+	}, views.TopPlayersCardParams{
 		Goal:       top_goal_cards,
 		Assist:     top_assist_cards,
 		CleanSheet: top_cleansheet_cards,

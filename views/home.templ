@@ -7,6 +7,11 @@ import (
 	"football-stat-goth/views/layouts"
 )
 
+type MatchTableParams struct {
+	Week    int16
+	Matches []queries.ListMatchesWithClubsAndGoalsRow
+}
+
 type TopPlayersCardParams struct {
 	Goal       []components.PlayerPerformanceCardParams
 	Assist     []components.PlayerPerformanceCardParams
@@ -17,6 +22,7 @@ templ Home(
 	user *queries.FindUserByUsernameRow,
 	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
 	clubs []queries.ListClubStandingsRow,
+	match_table MatchTableParams,
 	top_players TopPlayersCardParams,
 ) {
 	@layouts.Base() {
@@ -32,23 +38,30 @@ templ Home(
 						@table_components.ShortStandingsTable(clubs)
 					</div>
 					<section class="w-full col-span-3">
-						<h1 class="text-3xl font-extrabold text-secondary my-2">Top Scorers</h1>
-						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-							for _, top_player := range(top_players.Goal) {
-								@components.PlayerPerformanceCard(top_player, "GOAL", top_player.Performance.GoalsRank)
-							}
+						@table_components.HorizontalMatchTable(match_table.Week, match_table.Matches)
+						<div class="mt-4">
+							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Scorers</h1>
+							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+								for _, top_player := range(top_players.Goal) {
+									@components.PlayerPerformanceCard(top_player, "GOAL", top_player.Performance.GoalsRank)
+								}
+							</div>
 						</div>
-						<h1 class="text-3xl font-extrabold text-secondary mt-4 mb-2">Top Assists</h1>
-						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-							for _, top_player := range(top_players.Assist) {
-								@components.PlayerPerformanceCard(top_player, "ASSIST", top_player.Performance.AssistsRank)
-							}
+						<div class="mt-4">
+							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Assists</h1>
+							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+								for _, top_player := range(top_players.Assist) {
+									@components.PlayerPerformanceCard(top_player, "ASSIST", top_player.Performance.AssistsRank)
+								}
+							</div>
 						</div>
-						<h1 class="text-3xl font-extrabold text-secondary mt-4 mb-2">Top Clean Sheets</h1>
-						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-							for _, top_player := range(top_players.CleanSheet) {
-								@components.PlayerPerformanceCard(top_player, "CLEANSHEET", top_player.Performance.CleanSheetsRank)
-							}
+						<div class="mt-4">
+							<h1 class="text-3xl font-extrabold text-secondary mb-2">Top Clean Sheets</h1>
+							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+								for _, top_player := range(top_players.CleanSheet) {
+									@components.PlayerPerformanceCard(top_player, "CLEANSHEET", top_player.Performance.CleanSheetsRank)
+								}
+							</div>
 						</div>
 					</section>
 				</div>
