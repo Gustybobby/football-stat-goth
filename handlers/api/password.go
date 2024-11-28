@@ -27,6 +27,7 @@ func HandleUpdatePassword(w http.ResponseWriter, r *http.Request, repo *repos.Re
 	}
 
 	if subtle.ConstantTimeCompare([]byte(currentPasswordHash), []byte(newPasswordHash)) == 1 {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return nil
 	}
 
@@ -37,5 +38,6 @@ func HandleUpdatePassword(w http.ResponseWriter, r *http.Request, repo *repos.Re
 		})
 	}
 
+	http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 	return nil
 }
