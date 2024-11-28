@@ -171,7 +171,26 @@ ORDER BY
     "player".position ASC,
     "player".lastname ASC;
 
--- name: InsertFantasyTransacion :copyfrom
+-- name: FindFantasyTeamByUsernameSeason :one
+SELECT *
+FROM "fantasy_team"
+WHERE
+    "fantasy_team".username = $1 AND
+    "fantasy_team".season = $2;
+
+-- name: CreateFantasyTeam :one
+INSERT INTO "fantasy_team" (
+    username,
+    season,
+    budget
+) VALUES (
+    $1,
+    $2,
+    $3
+)
+RETURNING *;
+
+-- name: CreateFantasyTransaction :copyfrom
 INSERT INTO "fantasy_transaction" (
     cost,
     type,

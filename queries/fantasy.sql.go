@@ -11,11 +11,67 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type InsertFantasyTransacionParams struct {
+const createFantasyTeam = `-- name: CreateFantasyTeam :one
+INSERT INTO "fantasy_team" (
+    username,
+    season,
+    budget
+) VALUES (
+    $1,
+    $2,
+    $3
+)
+RETURNING id, username, season, budget
+`
+
+type CreateFantasyTeamParams struct {
+	Username string
+	Season   string
+	Budget   int32
+}
+
+func (q *Queries) CreateFantasyTeam(ctx context.Context, arg CreateFantasyTeamParams) (FantasyTeam, error) {
+	row := q.db.QueryRow(ctx, createFantasyTeam, arg.Username, arg.Season, arg.Budget)
+	var i FantasyTeam
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Season,
+		&i.Budget,
+	)
+	return i, err
+}
+
+type CreateFantasyTransactionParams struct {
 	Cost            int32
 	Type            FantasyTransactionType
 	FantasyTeamID   int32
 	FantasyPlayerID int32
+}
+
+const findFantasyTeamByUsernameSeason = `-- name: FindFantasyTeamByUsernameSeason :one
+SELECT id, username, season, budget
+FROM "fantasy_team"
+WHERE
+    "fantasy_team".username = $1 AND
+    "fantasy_team".season = $2
+`
+
+type FindFantasyTeamByUsernameSeasonParams struct {
+	Username string
+	Season   string
+}
+
+func (q *Queries) FindFantasyTeamByUsernameSeason(ctx context.Context, arg FindFantasyTeamByUsernameSeasonParams) (FantasyTeam, error) {
+	row := q.db.QueryRow(ctx, findFantasyTeamByUsernameSeason, arg.Username, arg.Season)
+	var i FantasyTeam
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Season,
+		&i.Budget,
+	)
+	return i, err
 }
 
 const listFantasyPlayers = `-- name: ListFantasyPlayers :many

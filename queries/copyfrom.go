@@ -9,13 +9,13 @@ import (
 	"context"
 )
 
-// iteratorForInsertFantasyTransacion implements pgx.CopyFromSource.
-type iteratorForInsertFantasyTransacion struct {
-	rows                 []InsertFantasyTransacionParams
+// iteratorForCreateFantasyTransaction implements pgx.CopyFromSource.
+type iteratorForCreateFantasyTransaction struct {
+	rows                 []CreateFantasyTransactionParams
 	skippedFirstNextCall bool
 }
 
-func (r *iteratorForInsertFantasyTransacion) Next() bool {
+func (r *iteratorForCreateFantasyTransaction) Next() bool {
 	if len(r.rows) == 0 {
 		return false
 	}
@@ -27,7 +27,7 @@ func (r *iteratorForInsertFantasyTransacion) Next() bool {
 	return len(r.rows) > 0
 }
 
-func (r iteratorForInsertFantasyTransacion) Values() ([]interface{}, error) {
+func (r iteratorForCreateFantasyTransaction) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Cost,
 		r.rows[0].Type,
@@ -36,10 +36,10 @@ func (r iteratorForInsertFantasyTransacion) Values() ([]interface{}, error) {
 	}, nil
 }
 
-func (r iteratorForInsertFantasyTransacion) Err() error {
+func (r iteratorForCreateFantasyTransaction) Err() error {
 	return nil
 }
 
-func (q *Queries) InsertFantasyTransacion(ctx context.Context, arg []InsertFantasyTransacionParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"fantasy_transaction"}, []string{"cost", "type", "fantasy_team_id", "fantasy_player_id"}, &iteratorForInsertFantasyTransacion{rows: arg})
+func (q *Queries) CreateFantasyTransaction(ctx context.Context, arg []CreateFantasyTransactionParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"fantasy_transaction"}, []string{"cost", "type", "fantasy_team_id", "fantasy_player_id"}, &iteratorForCreateFantasyTransaction{rows: arg})
 }
