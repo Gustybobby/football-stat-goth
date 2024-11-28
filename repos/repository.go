@@ -6,31 +6,31 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Repository struct {
 	Queries *queries.Queries
-	Conn    *pgx.Conn
+	Pool    *pgxpool.Pool
 	Ctx     context.Context
 	dsn     string
 }
 
 func DbConnect(dsn string) (*Repository, error) {
 	ctx := context.Background()
-	config, err := pgx.ParseConfig(dsn)
+	config, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		return nil, err
 	}
 
 	if os.Getenv("DB_LOG") == "true" {
-		config.Tracer = NewMultiQueryTracer(NewLoggingQueryTracer(slog.Default()))
+		config.ConnConfig.Tracer = NewMultiQueryTracer(NewLoggingQueryTracer(slog.Default()))
 	}
 
-	conn, err := pgx.ConnectConfig(ctx, config)
+	pool, err := pgxpool.NewWithConfig(ctx, config)
 	if err != nil {
 		return nil, err
 	}
-	queries := queries.New(conn)
-	return &Repository{Queries: queries, Conn: conn, Ctx: ctx, dsn: dsn}, nil
+	queries := queries.New(pool)
+	return &Repository{Queries: queries, Pool: pool, Ctx: ctx, dsn: dsn}, nil
 }

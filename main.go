@@ -57,7 +57,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer repo.Conn.Close(repo.Ctx)
+	defer repo.Pool.Close()
 
 	SetupRoutes(router, repo)
 
