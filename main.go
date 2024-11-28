@@ -37,7 +37,7 @@ func SetupRoutes(router *chi.Mux, repo *repos.Repository) {
 }
 
 func main() {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Overload(); err != nil {
 		log.Fatal(err)
 	}
 
