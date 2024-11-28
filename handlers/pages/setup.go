@@ -22,7 +22,6 @@ func SetupPageRoutes(router *chi.Mux, repo *repos.Repository) {
 	router.Get("/signup", handlers.Make(HandleSignupPage, repo))
 	router.Get("/signin", handlers.Make(HandleSigninPage, repo))
 	router.Get("/profile", handlers.Make(HandleProfilePage, repo))
-	router.Get("/password", handlers.Make(HandlePasswordPage, repo))
 
 	router.Route("/admin", func(r_admin chi.Router) {
 		SetupAdminPageRoutes(r_admin, repo)

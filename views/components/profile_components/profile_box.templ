@@ -1,4 +1,4 @@
-package components
+package profile_components
 
 import "football-stat-goth/queries"
 
@@ -23,7 +23,7 @@ templ ProfileBox(user *queries.FindUserByUsernameRow) {
 			<div class="border-b grid grid-cols-2 place-content-end">
 				<button
 					class="text-left hover:underline"
-					hx-get="/password"
+					hx-get="/cmps/password"
 					hx-trigger="click"
 					hx-target="#password-div"
 					hx-swap="innerHTML"
@@ -31,7 +31,7 @@ templ ProfileBox(user *queries.FindUserByUsernameRow) {
 					Change Password
 				</button>
 			</div>
-			<div id="password-div"></div>
+			<div id="password-div" class="flex justify-center items-center"></div>
 		</div>
 	</main>
 }
