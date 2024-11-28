@@ -18,7 +18,7 @@ func HandleHomePage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 
 	fixtures, err := repo.Queries.ListMatchesWithClubsAndGoals(repo.Ctx, queries.ListMatchesWithClubsAndGoalsParams{
 		FilterClubID: false,
-		ClubID:       "",
+		FilterWeek:   false,
 		IsFinished:   false,
 		Order:        "ASC",
 	})
@@ -31,39 +31,46 @@ func HandleHomePage(w http.ResponseWriter, r *http.Request, repo *repos.Reposito
 		return err
 	}
 
-	top_goals, err := repo.Queries.ListPlayerSeasonPerformance(repo.Ctx, queries.ListPlayerSeasonPerformanceParams{
+	top_goal_cards, err := listTopPlayerCards("GOAL", repo)
+	if err != nil {
+		return err
+	}
+
+	top_assist_cards, err := listTopPlayerCards("ASSIST", repo)
+	if err != nil {
+		return err
+	}
+
+	top_cleansheet_cards, err := listTopPlayerCards("CLEANSHEET", repo)
+	if err != nil {
+		return err
+	}
+
+	return handlers.Render(w, r, views.Home(user, fixtures, clubs, views.TopPlayersCardParams{
+		Goal:       top_goal_cards,
+		Assist:     top_assist_cards,
+		CleanSheet: top_cleansheet_cards,
+	}))
+}
+
+func listTopPlayerCards(order_by string, repo *repos.Repository) ([]components.PlayerPerformanceCardParams, error) {
+	top_players, err := repo.Queries.ListPlayerSeasonPerformance(repo.Ctx, queries.ListPlayerSeasonPerformanceParams{
 		Season:         pltime.GetCurrentSeasonString(),
 		FilterPlayerID: false,
 		FilterClubID:   false,
 		Limit:          pgtype.Int4{Int32: 3, Valid: true},
-		OrderBy:        "GOAL",
+		OrderBy:        order_by,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	top_goal_cards, err := listPerformanceCardParams(top_goals, repo)
+	top_player_cards, err := listPerformanceCardParams(top_players, repo)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	top_assists, err := repo.Queries.ListPlayerSeasonPerformance(repo.Ctx, queries.ListPlayerSeasonPerformanceParams{
-		Season:         pltime.GetCurrentSeasonString(),
-		FilterPlayerID: false,
-		FilterClubID:   false,
-		Limit:          pgtype.Int4{Int32: 3, Valid: true},
-		OrderBy:        "ASSIST",
-	})
-	if err != nil {
-		return err
-	}
-
-	top_assist_cards, err := listPerformanceCardParams(top_assists, repo)
-	if err != nil {
-		return err
-	}
-
-	return handlers.Render(w, r, views.Home(user, fixtures, clubs, views.TopPlayersCardParams{Goal: top_goal_cards, Assist: top_assist_cards}))
+	return top_player_cards, nil
 }
 
 func listPerformanceCardParams(performances []queries.ListPlayerSeasonPerformanceRow, repo *repos.Repository) ([]components.PlayerPerformanceCardParams, error) {
