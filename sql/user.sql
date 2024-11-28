@@ -15,6 +15,18 @@ FROM "user"
 WHERE "user".username = $1
 LIMIT 1;
 
+-- name: ListUsers :many
+SELECT
+    "user".username,
+    "user".firstname,
+    "user".lastname,
+    "user".role
+FROM "user"
+ORDER BY
+    "user".username ASC,
+    "user".role ASC;
+
+
 -- name: CreateUser :one
 INSERT INTO "user" (
     username, password_hash, firstname, lastname

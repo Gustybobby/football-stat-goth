@@ -88,6 +88,50 @@ func (q *Queries) FindUserByUsername(ctx context.Context, username string) (Find
 	return i, err
 }
 
+const listUsers = `-- name: ListUsers :many
+SELECT
+    "user".username,
+    "user".firstname,
+    "user".lastname,
+    "user".role
+FROM "user"
+ORDER BY
+    "user".username ASC,
+    "user".role ASC
+`
+
+type ListUsersRow struct {
+	Username  string
+	Firstname string
+	Lastname  string
+	Role      UserRole
+}
+
+func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
+	rows, err := q.db.Query(ctx, listUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListUsersRow
+	for rows.Next() {
+		var i ListUsersRow
+		if err := rows.Scan(
+			&i.Username,
+			&i.Firstname,
+			&i.Lastname,
+			&i.Role,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updatePasswordByUsername = `-- name: UpdatePasswordByUsername :exec
 UPDATE 
     "user" 

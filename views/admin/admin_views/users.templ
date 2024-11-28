@@ -1,0 +1,37 @@
+package admin_views
+
+import (
+	"football-stat-goth/queries"
+	"football-stat-goth/views/admin/admin_components"
+	"football-stat-goth/views/layouts"
+)
+
+templ Users(users []queries.ListUsersRow) {
+	@layouts.Base() {
+		@admin_components.AdminNav()
+		<main class="w-full p-4 bg-primary-background flex justify-center">
+			<div class="max-w-5xl w-full">
+				<table class="w-full">
+					<thead>
+						<tr class="border-b border-primary text-left bg-primary-foreground">
+							<th class="p-1">Username</th>
+							<th class="p-1">Firstname</th>
+							<th class="p-1">Lastname</th>
+							<th class="p-1">Role</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, user := range(users) {
+							<tr class="border-b border-primary last:border-none">
+								<td class="p-1">{ user.Username }</td>
+								<td class="p-1">{ user.Firstname }</td>
+								<td class="p-1">{ user.Lastname }</td>
+								<td class="p-1">{ string(user.Role) }</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</main>
+	}
+}

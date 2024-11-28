@@ -32,6 +32,10 @@ func SetupPageRoutes(router *chi.Mux, repo *repos.Repository) {
 func SetupAdminPageRoutes(r_admin chi.Router, repo *repos.Repository) {
 	r_admin.Use(plmiddleware.AuthAdmin)
 
+	r_admin.Get("/", handlers.Make(admin_pages.HandleAdminHomePage, repo))
+
+	r_admin.Get("/users", handlers.Make(admin_pages.HandleAdminUsersPage, repo))
+
 	r_admin.Get("/players", handlers.Make(admin_pages.HandleAdminCreatePlayersPage, repo))
 	r_admin.Get("/players/{playerID}", handlers.Make(admin_pages.HandleAdminEditPlayersPage, repo))
 
