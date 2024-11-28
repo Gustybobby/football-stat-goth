@@ -80,5 +80,6 @@ func HandleSignin(w http.ResponseWriter, r *http.Request, repo *repos.Repository
 
 func HandleSignout(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	plauth.DeleteSessionTokenCookie(w, os.Getenv("ENV") == "production")
+	w.Header().Add("Hx-Redirect", "/")
 	return nil
 }

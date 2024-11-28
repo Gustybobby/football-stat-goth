@@ -32,6 +32,14 @@ templ ProfileBox(user *queries.FindUserByUsernameRow) {
 				</button>
 			</div>
 			<div id="password-div" class="flex justify-center items-center"></div>
+			<div class="flex justify-end">
+				<button
+					hx-delete="/api/signout"
+					class="bg-red-600 text-primary-background font-semibold px-2 py-1 rounded-lg hover:bg-red-500"
+				>
+					Sign out
+				</button>
+			</div>
 		</div>
 	</main>
 }
