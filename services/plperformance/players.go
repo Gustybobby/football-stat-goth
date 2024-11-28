@@ -10,7 +10,6 @@ import (
 )
 
 func ListTopPlayerCards(order_by string, club_id string, limit int, repo *repos.Repository) ([]components.PlayerPerformanceCardParams, error) {
-
 	top_players, err := repo.Queries.ListPlayerSeasonPerformance(repo.Ctx, queries.ListPlayerSeasonPerformanceParams{
 		Season:         pltime.GetCurrentSeasonString(),
 		FilterPlayerID: false,
