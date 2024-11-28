@@ -6,35 +6,55 @@ import (
 	"strconv"
 )
 
-templ PlayersTable(players []queries.Player) {
+templ PlayersTable(players []queries.Player, page int) {
 	<div class="p-4">
-		<table class="text-left w-full border-collapse">
-			<thead class="from-secondary-foreground to-secondary-background bg-gradient-to-br text-white">
-				<th class="p-2">Player</th>
-				<th class="p-2">Position</th>
-				<th class="p-2">Nationality</th>
-			</thead>
-			<tbody class="motion-preset-fade-sm">
-				for _, player := range players {
-					<tr class="border-t first:border-none border-primary">
-						<td class="p-2">
-							<a
-								href={ templ.SafeURL("/players/" + strconv.Itoa(int(player.ID))) }
-								class="font-semibold flex items-center space-x-2 hover:underline"
-							>
-								<img
-									src={ player.Image.String }
-									onerror="this.src='/public/missing_portrait.webp';"
-									class="size-12"
-								/>
-								<span>{ player.Firstname } { player.Lastname }</span>
-							</a>
-						</td>
-						<td class="p-2">{ plformat.FormatPlayerPosition(player.Position) }</td>
-						<td class="p-2">{ player.Nationality }</td>
-					</tr>
+		<div class="overflow-x-auto mb-2">
+			<table class="text-left w-full border-collapse">
+				<thead class="from-secondary-foreground to-secondary-background bg-gradient-to-br text-white">
+					<th class="p-2 min-w-72">Player</th>
+					<th class="p-2 min-w-32">Position</th>
+					<th class="p-2 min-w-48">Nationality</th>
+				</thead>
+				<tbody class="motion-preset-fade-sm">
+					for _, player := range players {
+						<tr class="border-t first:border-none border-primary">
+							<td class="p-2">
+								<a
+									href={ templ.SafeURL("/players/" + strconv.Itoa(int(player.ID))) }
+									class="font-semibold flex items-center space-x-2 hover:underline"
+								>
+									<img
+										src={ player.Image.String }
+										onerror="this.src='/public/missing_portrait.webp';"
+										class="size-12"
+									/>
+									<span>{ player.Firstname } { player.Lastname }</span>
+								</a>
+							</td>
+							<td class="p-2">{ plformat.FormatPlayerPosition(player.Position) }</td>
+							<td class="p-2">{ player.Nationality }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<div class="w-full flex justify-end items-center space-x-2">
+			for i := range(5) {
+				if i > 2 && len(players) < 30 {
+				} else if page + i - 2 >= 1 {
+					<button
+						hx-get={ "/cmps/players-table?page=" + strconv.Itoa(page+i-2) }
+						hx-target="#players_table"
+						class="bg-secondary-background text-white rounded-lg size-8 flex items-center justify-center shadow-lg hover:bg-secondary-foreground"
+					>
+						if i == 2 {
+							<p class="font-extrabold">{ strconv.Itoa(page + i - 2) }</p>
+						} else {
+							{ strconv.Itoa(page + i - 2) }
+						}
+					</button>
 				}
-			</tbody>
-		</table>
+			}
+		</div>
 	</div>
 }

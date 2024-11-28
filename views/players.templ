@@ -4,14 +4,15 @@ import (
 	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
 	"football-stat-goth/views/layouts"
+	"strconv"
 )
 
-templ Players(user *queries.FindUserByUsernameRow) {
+templ Players(user *queries.FindUserByUsernameRow, page int) {
 	@layouts.Base() {
 		@components.Nav(user)
 		<main class="w-full p-4 bg-primary-background flex flex-col items-center">
 			<div class="max-w-7xl w-full">
-				<section class="w-full px-2 pt-12 pb-6 border-b border-primary flex justify-between items-center">
+				<section class="w-full px-2 pt-12 pb-6 border-b border-primary flex flex-col justify-between items-center space-y-4 md:flex-row md:space-y-0">
 					<h1 class="text-5xl font-extrabold text-secondary">Premier League Players</h1>
 					<form
 						class="h-full flex items-center border-collapse"
@@ -38,7 +39,8 @@ templ Players(user *queries.FindUserByUsernameRow) {
 				<div
 					id="players_table"
 					hx-trigger="load"
-					hx-get="/cmps/players-table"
+					hx-get={ "/cmps/players-table?page=" + strconv.Itoa(page) }
+					hx-include="[name='fullname']"
 				></div>
 			</div>
 		</main>
