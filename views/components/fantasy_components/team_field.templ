@@ -43,7 +43,7 @@ templ FantasyTeamField(
 								if i >= len(players.GK) {
 									@BlankPlayerCard(queries.PlayerPositionGK)
 								} else {
-									@PlayerCardImg(players.GK[i])
+									@PlayerCardImg(players.GK[i], true)
 								}
 							</div>
 						}
@@ -54,7 +54,7 @@ templ FantasyTeamField(
 								if i >= len(players.DEF) {
 									@BlankPlayerCard(queries.PlayerPositionDEF)
 								} else {
-									@PlayerCardImg(players.DEF[i])
+									@PlayerCardImg(players.DEF[i], true)
 								}
 							</div>
 						}
@@ -65,7 +65,7 @@ templ FantasyTeamField(
 								if i >= len(players.MFD) {
 									@BlankPlayerCard(queries.PlayerPositionMFD)
 								} else {
-									@PlayerCardImg(players.MFD[i])
+									@PlayerCardImg(players.MFD[i], true)
 								}
 							</div>
 						}
@@ -76,7 +76,7 @@ templ FantasyTeamField(
 								if i >= len(players.FWD) {
 									@BlankPlayerCard(queries.PlayerPositionFWD)
 								} else {
-									@PlayerCardImg(players.FWD[i])
+									@PlayerCardImg(players.FWD[i], true)
 								}
 							</div>
 						}

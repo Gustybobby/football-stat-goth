@@ -13,8 +13,8 @@ templ BlankPlayerCard(position queries.PlayerPosition) {
 	<img class="h-full w-full hover:cursor-pointer" src="/public/blank-playerCard.png" blank="true" pos={ string(position) }/>
 }
 
-templ PlayerCardImg(player queries.ListFantasyPlayersRow) {
-	<div class="relative size-full hover:cursor-pointer">
+templ PlayerCardImg(player queries.ListFantasyPlayersRow, is_small bool) {
+	<div class={ playerCardVariant(is_small) }>
 		@PlayerCard()
 		<span class="absolute inset-0 p-4 translate-y-6 size-full justify-center">
 			<img src={ player.Image.String } onerror=" this.src = '/public/blank-player.png'"/>
@@ -35,4 +35,12 @@ templ PlayerCardInfo(player queries.ListFantasyPlayersRow) {
 			<p class="font-semibold player-cost">Cost: { strconv.Itoa(int(player.Cost)) }</p>
 		</span>
 	</div>
+}
+
+func playerCardVariant(is_small bool) string {
+	base_class := "relative size-full hover:cursor-pointer"
+	if is_small {
+		base_class += " text-xs"
+	}
+	return base_class
 }
