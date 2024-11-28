@@ -3,16 +3,48 @@ package views
 import (
 	"football-stat-goth/queries"
 	"football-stat-goth/views/components"
+	"football-stat-goth/views/components/table_components"
 	"football-stat-goth/views/layouts"
 )
 
-templ Home(user *queries.FindUserByUsernameRow, fixtures []queries.ListMatchesWithClubsAndGoalsRow) {
+type TopPlayersCardParams struct {
+	Goal   []components.PlayerPerformanceCardParams
+	Assist []components.PlayerPerformanceCardParams
+}
+
+templ Home(
+	user *queries.FindUserByUsernameRow,
+	fixtures []queries.ListMatchesWithClubsAndGoalsRow,
+	clubs []queries.ListClubStandingsRow,
+	top_players TopPlayersCardParams,
+) {
 	@layouts.Base() {
 		@components.Fixture(fixtures)
 		@components.Nav(user)
-		<main class="w-full p-4 bg-primary-background min-h-screen">
-			<div class="my-8 w-full flex flex-col items-center">
-				@components.PlaymakerTitle()
+		<main class="w-full p-4 bg-primary-background min-h-screen flex justify-center">
+			<div class="max-w-[96rem] w-full flex flex-col items-center">
+				<div class="my-16 w-full hidden flex-col items-center md:flex">
+					@components.PlaymakerTitle()
+				</div>
+				<div class="w-full grid grid-cols-1 xl:grid-cols-4 gap-4 place-content-center">
+					<div>
+						@table_components.ShortStandingsTable(clubs)
+					</div>
+					<section class="w-full col-span-3">
+						<h1 class="text-3xl font-extrabold text-secondary my-2">Top Scorers</h1>
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+							for _, top_player := range(top_players.Goal) {
+								@components.PlayerPerformanceCard(top_player, top_player.Performance.GoalsRank)
+							}
+						</div>
+						<h1 class="text-3xl font-extrabold text-secondary mt-4 mb-2">Top Assists</h1>
+						<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+							for _, top_player := range(top_players.Assist) {
+								@components.PlayerPerformanceCard(top_player, top_player.Performance.AssistsRank)
+							}
+						</div>
+					</section>
+				</div>
 			</div>
 		</main>
 	}

@@ -200,4 +200,14 @@ WHERE
         THEN "player_ranked_total_stats".id = sqlc.arg('player_id')::INTEGER
         ELSE true
     END
+ORDER BY
+    CASE
+        WHEN sqlc.arg('order_by')::TEXT = 'GOAL'
+        THEN "player_ranked_total_stats".goals_rank
+        WHEN sqlc.arg('order_by')::TEXT = 'ASSIST'
+        THEN "player_ranked_total_stats".assists_rank
+        WHEN sqlc.arg('order_by')::TEXT = 'FANTASY'
+        THEN "player_ranked_total_stats".fantasy_rank
+        ELSE NULL
+    END ASC
 LIMIT sqlc.narg('limit')::INTEGER;

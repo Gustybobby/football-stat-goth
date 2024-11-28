@@ -270,25 +270,25 @@ WITH "player_total_stats" AS (
     ON
         "lineup_player".lineup_id = "match".home_lineup_id OR
         "lineup_player".lineup_id = "match".away_lineup_id
-    WHERE "match".season = $4::TEXT
+    WHERE "match".season = $5::TEXT
     GROUP BY "player".id
     HAVING
         CASE
-            WHEN $5::bool
+            WHEN $6::bool
             THEN EXISTS (
                 SELECT 1
                 FROM "club_player"
                 WHERE
                     "club_player".player_id = "player".id AND
-                    "club_player".club_id = $6::TEXT AND
-                    "club_player".season = $4::TEXT
+                    "club_player".club_id = $7::TEXT AND
+                    "club_player".season = $5::TEXT
             )
             ELSE true
         END
 ), "player_ranked_total_stats" AS (
     SELECT
         player_total_stats.id, player_total_stats.total_goals, player_total_stats.total_assists, player_total_stats.total_yellow_cards, player_total_stats.total_red_cards, player_total_stats.total_own_goals, player_total_stats.appearances, player_total_stats.clean_sheets,
-        $4::TEXT AS season,
+        $5::TEXT AS season,
         RANK() OVER (
             ORDER BY "player_total_stats".total_goals DESC
         ) AS goals_rank,
@@ -315,12 +315,23 @@ WHERE
         THEN "player_ranked_total_stats".id = $2::INTEGER
         ELSE true
     END
-LIMIT $3::INTEGER
+ORDER BY
+    CASE
+        WHEN $3::TEXT = 'GOAL'
+        THEN "player_ranked_total_stats".goals_rank
+        WHEN $3::TEXT = 'ASSIST'
+        THEN "player_ranked_total_stats".assists_rank
+        WHEN $3::TEXT = 'FANTASY'
+        THEN "player_ranked_total_stats".fantasy_rank
+        ELSE NULL
+    END ASC
+LIMIT $4::INTEGER
 `
 
 type ListPlayerSeasonPerformanceParams struct {
 	FilterPlayerID bool
 	PlayerID       int32
+	OrderBy        string
 	Limit          pgtype.Int4
 	Season         string
 	FilterClubID   bool
@@ -347,6 +358,7 @@ func (q *Queries) ListPlayerSeasonPerformance(ctx context.Context, arg ListPlaye
 	rows, err := q.db.Query(ctx, listPlayerSeasonPerformance,
 		arg.FilterPlayerID,
 		arg.PlayerID,
+		arg.OrderBy,
 		arg.Limit,
 		arg.Season,
 		arg.FilterClubID,
