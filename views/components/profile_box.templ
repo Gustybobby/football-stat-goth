@@ -1,0 +1,42 @@
+package components
+
+import "football-stat-goth/queries"
+
+templ ProfileBox(user *queries.FindUserByUsernameRow) {
+	<main class="flex flex-col items-center space-y-4 rounded-lg shadow-lg size-full p-4 bg-primary-background">
+		<div class="flex space-x-4 w-full">
+			<h2 class="text-2xl font-bold">{ user.Username }</h2>
+			<p class="text-sm text-gray-600 align-text-bottom">{ user.Firstname + " " + user.Lastname }</p>
+		</div>
+		<div class="grid grid-cols-1 place-content-between w-full border-b">
+			<h3>Personal Fantasy Stats</h3>
+			<div class="flex justify-end align-top">
+				<p></p>
+				<p>Team cost: </p>
+			</div>
+		</div>
+		<div class="grid grid-cols-1 place-content-evenly w-full space-y-4">
+			<div
+				class=" border-b grid grid-cols-2 place-content-end"
+				hx-get="/api/usernane"
+			>
+				<p class=" border-b">User ID</p>
+				<p class="text-right">{ user.Username }</p>
+			</div>
+			<div
+				class=" border-b grid grid-cols-2 place-content-end"
+			>
+				<p
+					class=""
+					hx-get="/password"
+					hx-trigger="click"
+					hx-target="#password-div"
+					hx-swap="innerHTML"
+				>
+					View Password
+				</p>
+			</div>
+			<div id="password-div"></div>
+		</div>
+	</main>
+}
