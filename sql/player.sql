@@ -44,8 +44,8 @@ WHERE "player".id = $1;
 SELECT *
 FROM "player"
 WHERE
-    CONCAT("player".firstname,' ',"player".lastname)
-    LIKE sqlc.arg('fullname_like')::TEXT
+    LOWER(CONCAT("player".firstname,' ',"player".lastname))
+    LIKE LOWER(sqlc.arg('fullname_like')::TEXT)
 ORDER BY "player".id ASC
 OFFSET sqlc.arg('offset')::INTEGER
 LIMIT sqlc.arg('limit')::INTEGER;

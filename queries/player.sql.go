@@ -103,8 +103,8 @@ const listPlayerLikeFullname = `-- name: ListPlayerLikeFullname :many
 SELECT id, firstname, lastname, dob, height, nationality, position, image
 FROM "player"
 WHERE
-    CONCAT("player".firstname,' ',"player".lastname)
-    LIKE $1::TEXT
+    LOWER(CONCAT("player".firstname,' ',"player".lastname))
+    LIKE LOWER($1::TEXT)
 ORDER BY "player".id ASC
 OFFSET $2::INTEGER
 LIMIT $3::INTEGER
