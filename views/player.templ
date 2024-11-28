@@ -13,7 +13,7 @@ templ Player(
 	user *queries.FindUserByUsernameRow,
 	player queries.Player,
 	club_players []queries.ListClubPlayerByPlayerIDRow,
-	performance queries.ListPlayerSeasonPerformanceRow,
+	performance *queries.ListPlayerSeasonPerformanceRow,
 	matches []queries.ListPlayerMatchHistoryRow,
 ) {
 	@layouts.Base() {
@@ -23,11 +23,17 @@ templ Player(
 				@playerProfile(player)
 				<div class="grid grid-cols-1 lg:grid-cols-3 p-4 gap-4">
 					<div class="flex flex-col space-y-4">
-						@clubRecords(club_players)
-						@seasonPerformance(performance, player.Position)
+						if len(club_players) > 0 {
+							@clubRecords(club_players)
+						}
+						if performance != nil {
+							@seasonPerformance(*performance, player.Position)
+						}
 					</div>
 					<div class="col-span-2">
-						@matchHistory(matches)
+						if len(matches) > 0 {
+							@matchHistory(matches)
+						}
 					</div>
 				</div>
 			</div>
