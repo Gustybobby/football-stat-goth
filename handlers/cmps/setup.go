@@ -12,7 +12,7 @@ import (
 func SetupComponentRoutes(r_cmps chi.Router, repo *repos.Repository) {
 	r_cmps.Get("/players-table", handlers.Make(HandlePlayersTable, repo))
 
-	r_cmps.Get("/password", handlers.Make(HandleChangePasswordComponent, repo))
+	r_cmps.Get("/password", handlers.Make(HandleChangePasswordForm, repo))
 
 	r_cmps.Get("/fantasy/players/{playerID}", handlers.Make(HandleFantasyPlayerDetailsComponent, repo))
 

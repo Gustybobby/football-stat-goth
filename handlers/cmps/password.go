@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func HandleChangePasswordComponent(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+func HandleChangePasswordForm(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
 	user := plauth.GetContextUser(r)
 	return handlers.Render(w, r, profile_components.Password(user))
 }
