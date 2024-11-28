@@ -83,3 +83,25 @@ func HandleSignout(w http.ResponseWriter, r *http.Request, repo *repos.Repositor
 	w.Header().Add("Hx-Redirect", "/")
 	return nil
 }
+
+func HandleUpdatePassword(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	user := plauth.GetContextUser(r)
+
+	currentPassword := r.FormValue("current")
+	newPassword := r.FormValue("new")
+	confirmNewPassword := r.FormValue("confirm_new")
+
+	if newPassword != confirmNewPassword {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return nil
+	}
+
+	err := plauth.UpdatePassword(user.Username, currentPassword, newPassword, repo.Queries, repo.Ctx)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return err
+	}
+
+	w.Header().Add("HX-Refresh", "true")
+	return nil
+}

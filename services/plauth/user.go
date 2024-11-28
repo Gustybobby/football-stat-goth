@@ -2,6 +2,7 @@ package plauth
 
 import (
 	"context"
+	"errors"
 	"football-stat-goth/queries"
 )
 
@@ -25,4 +26,32 @@ func FindPasswordHash(username string, db *queries.Queries, ctx context.Context)
 		return "", err
 	}
 	return passwordHash, nil
+}
+
+func UpdatePassword(username string, currentPassword string, newPassword string, db *queries.Queries, ctx context.Context) error {
+	userPasswordHash, err := FindPasswordHash(username, db, ctx)
+	if err != nil {
+		return err
+	}
+
+	valid, err := VerifyPassword(currentPassword, userPasswordHash)
+	if err != nil {
+		return err
+	}
+
+	if !valid {
+		return errors.New("invalid password")
+	}
+
+	newPasswordHash, err := HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	db.UpdatePasswordByUsername(ctx, queries.UpdatePasswordByUsernameParams{
+		Username:     username,
+		PasswordHash: newPasswordHash,
+	})
+
+	return nil
 }
