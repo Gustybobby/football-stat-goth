@@ -155,20 +155,51 @@ CREATE TABLE "fantasy_transaction" (
 );
 
 CREATE OR REPLACE FUNCTION fantasy_player_team_transaction()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+AS $$
+DECLARE
+    current_budget INT;
 BEGIN
-    INSERT INTO fantasy_team_player (
-        fantasy_team_id,
-        fantasy_player_id
-    ) VALUES (
-        NEW.fantasy_team_id,
-        NEW.fantasy_player_id
-    );
+    IF NEW.type = 'BUY' THEN
+        SELECT
+            "fantasy_team".budget
+        FROM "fantasy_team"
+        WHERE "fantasy_team".id = NEW.fantasy_team_id
+        INTO current_budget;
+
+        IF current_budget < NEW.cost THEN
+            RAISE EXCEPTION 'budget is not sufficient';
+        END IF;
+
+        UPDATE "fantasy_team"
+        SET budget = budget - NEW.cost
+        WHERE "fantasy_team".id = NEW.fantasy_team_id;
+
+        INSERT INTO "fantasy_team_player" (
+            fantasy_team_id,
+            fantasy_player_id
+        ) VALUES (
+            NEW.fantasy_team_id,
+            NEW.fantasy_player_id
+        );
+    ELSEIF NEW.type = 'SELL' THEN
+        UPDATE "fantasy_team"
+        SET budget = budget + NEW.cost
+        WHERE "fantasy_team".id = NEW.fantasy_team_id;
+
+        DELETE FROM "fantasy_team_player"
+        WHERE
+            "fantasy_team_player".fantasy_team_id = NEW.fantasy_team_id AND
+            "fantasy_team_player".fantasy_player_id = NEW.fantasy_player_id;
+    ELSE
+        RAISE EXCEPTION 'invalid transaction type';
+    END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER fantasy_player_team_transaction
-AFTER INSERT ON fantasy_transaction
+BEFORE INSERT
+ON fantasy_transaction
 FOR EACH ROW
 EXECUTE FUNCTION fantasy_player_team_transaction();

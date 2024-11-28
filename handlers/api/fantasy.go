@@ -4,6 +4,7 @@ import (
 	"football-stat-goth/handlers"
 	"football-stat-goth/queries"
 	"football-stat-goth/repos"
+	"football-stat-goth/services/plauth"
 	"football-stat-goth/services/pltime"
 	"football-stat-goth/views/components/fantasy_components"
 	"net/http"
@@ -12,6 +13,12 @@ import (
 )
 
 func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos.Repository) error {
+	user := plauth.GetContextUser(r)
+	if user == nil {
+		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		return nil
+	}
+
 	r.ParseForm()
 
 	var fantasy_player_ids []int32
@@ -39,30 +46,39 @@ func HandleCreateFantasyTeam(w http.ResponseWriter, r *http.Request, repo *repos
 		return err
 	}
 
-	if r.Form.Get("submit_team") == "submit" {
-		var fantasy_transactions []queries.InsertFantasyTransacionParams
-		for i, fantasy_player := range fantasy_players {
-			FantasyTeamID, err := strconv.Atoi(r.FormValue("player_" + strconv.Itoa(i) + "FantasyTeamID"))
-			if err != nil {
-				return err
-			}
-
-			transaction := queries.InsertFantasyTransacionParams{
-				Cost:            fantasy_player.Cost,
-				Type:            queries.FantasyTransactionTypeBUY,
-				FantasyTeamID:   int32(FantasyTeamID),
-				FantasyPlayerID: fantasy_player.ID,
-			}
-
-			fantasy_transactions = append(fantasy_transactions, transaction)
-		}
-
-		repo.Queries.InsertFantasyTransacion(repo.Ctx, fantasy_transactions)
-	}
-
 	cost := 0
 	for _, fantasy_player := range fantasy_players {
 		cost += int(fantasy_player.Cost)
+	}
+
+	if r.Form.Get("submit_team") == "submit" {
+		if cost > 100 {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return nil
+		}
+
+		fantasy_team, err := repo.Queries.CreateFantasyTeam(repo.Ctx, queries.CreateFantasyTeamParams{
+			Username: user.Username,
+			Season:   pltime.GetCurrentSeasonString(),
+			Budget:   100,
+		})
+		if err != nil {
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			return err
+		}
+
+		var fantasy_transactions []queries.CreateFantasyTransactionParams
+		for _, fantasy_player := range fantasy_players {
+
+			fantasy_transactions = append(fantasy_transactions, queries.CreateFantasyTransactionParams{
+				Cost:            fantasy_player.Cost,
+				Type:            queries.FantasyTransactionTypeBUY,
+				FantasyTeamID:   fantasy_team.ID,
+				FantasyPlayerID: fantasy_player.ID,
+			})
+		}
+
+		repo.Queries.CreateFantasyTransaction(repo.Ctx, fantasy_transactions)
 	}
 
 	gk_fantasy_players := filterFantasyPlayersByPosition(queries.PlayerPositionGK, fantasy_players)
