@@ -137,7 +137,7 @@ WITH "player_total_stats" AS (
                         "lineup_player".player_id = "player".id AND (
                             "lineup_player".lineup_id = "match".home_lineup_id OR
                             "lineup_player".lineup_id = "match".away_lineup_id
-                        )
+                        ) AND "lineup_player".position = 'GK'
                     )
             )
             ELSE 0
@@ -206,6 +206,8 @@ ORDER BY
         THEN "player_ranked_total_stats".goals_rank
         WHEN sqlc.arg('order_by')::TEXT = 'ASSIST'
         THEN "player_ranked_total_stats".assists_rank
+        WHEN sqlc.arg('order_by')::TEXT = 'CLEANSHEET'
+        THEN "player_ranked_total_stats".clean_sheets_rank
         WHEN sqlc.arg('order_by')::TEXT = 'FANTASY'
         THEN "player_ranked_total_stats".fantasy_rank
         ELSE NULL
