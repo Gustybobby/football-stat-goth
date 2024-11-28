@@ -59,7 +59,7 @@ SELECT
     "match".week
 FROM "match"
 WHERE "match".is_finished = true
-ORDER BY "match".start_at ASC;
+ORDER BY "match".start_at DESC;
 
 -- name: FindMatchByID :one
 SELECT

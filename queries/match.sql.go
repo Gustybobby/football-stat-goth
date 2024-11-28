@@ -16,7 +16,7 @@ SELECT
     "match".week
 FROM "match"
 WHERE "match".is_finished = true
-ORDER BY "match".start_at ASC
+ORDER BY "match".start_at DESC
 `
 
 func (q *Queries) FindLatestFinishedMatchweek(ctx context.Context) (int16, error) {
