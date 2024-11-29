@@ -35,6 +35,12 @@ INSERT INTO "user" (
 )
 RETURNING *;
 
+-- name: UpdateUser :exec
+UPDATE "user" SET
+    firstname = COALESCE(sqlc.narg('firstname')::TEXT, firstname),
+    lastname = COALESCE(sqlc.narg('lastname')::TEXT, lastname)
+WHERE "user".username = $1;
+
 -- name: UpdatePasswordByUsername :exec
 UPDATE 
     "user" 

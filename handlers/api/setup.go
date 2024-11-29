@@ -19,9 +19,20 @@ func SetupApiRoutes(r_api chi.Router, repo *repos.Repository) {
 	r_api.Post("/fantasy/players/{playerID}", handlers.Make(HandleBuyFantasyPlayer, repo))
 	r_api.Delete("/fantasy/players/{playerID}", handlers.Make(HandleSellFantasyPlayer, repo))
 
+	r_api.Route("/users/{username}", func(r_api_user chi.Router) {
+		SetupUserApiRoutes(r_api_user, repo)
+	})
+
 	r_api.Route("/admin", func(r_api_admin chi.Router) {
 		SetupAdminApiRoutes(r_api_admin, repo)
 	})
+}
+
+// prefix path '/api/users/{username}'
+func SetupUserApiRoutes(r_api_user chi.Router, repo *repos.Repository) {
+	r_api_user.Use(plmiddleware.AuthSessionUser)
+
+	r_api_user.Patch("/", handlers.Make(HandleUpdateUser, repo))
 }
 
 // prefix path '/api/admin'

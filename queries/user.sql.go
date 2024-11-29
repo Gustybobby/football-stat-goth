@@ -7,6 +7,8 @@ package queries
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -146,5 +148,23 @@ type UpdatePasswordByUsernameParams struct {
 
 func (q *Queries) UpdatePasswordByUsername(ctx context.Context, arg UpdatePasswordByUsernameParams) error {
 	_, err := q.db.Exec(ctx, updatePasswordByUsername, arg.Username, arg.PasswordHash)
+	return err
+}
+
+const updateUser = `-- name: UpdateUser :exec
+UPDATE "user" SET
+    firstname = COALESCE($2::TEXT, firstname),
+    lastname = COALESCE($3::TEXT, lastname)
+WHERE "user".username = $1
+`
+
+type UpdateUserParams struct {
+	Username  string
+	Firstname pgtype.Text
+	Lastname  pgtype.Text
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.Exec(ctx, updateUser, arg.Username, arg.Firstname, arg.Lastname)
 	return err
 }
